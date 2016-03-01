@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="br.com.wakim.eslpodclient">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,7 +15,7 @@
         android:theme="@style/AppTheme"
         android:name=".Application">
 
-        <activity android:name="br.com.wakim.eslpodclient.podcastlist.view.PodcastListActivity">
+        <activity android:name=".podcastlist.view.PodcastListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

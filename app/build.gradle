@@ -5,31 +5,66 @@ apply plugin: 'kotlin-android'
 def final appConfig = [
         versions: [
                 "support_library": "23.2.0",
-                "permission_dispatcher": "2.0.7"
+                "kotlin_version": "$kotlin_version"
         ],
 
         "rss_base_url": "http://feeds.feedburner.com/EnglishAsASecondLanguagePodcast"
 ];
+
+def generateVersionCode() {
+    try {
+        def cmd = 'git rev-list --count HEAD'
+        cmd.execute().text.trim().toInteger()
+    } catch (ignored) {
+        1
+    }
+}
+
+def generateVersionName() {
+    try {
+        def cmd = 'git describe --tags --abbrev=0'
+        cmd.execute().text.trim()
+    } catch (ignored) {
+        "1.0"
+    }
+}
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "br.com.wakim.elspodclient"
+        applicationId "br.com.wakim.eslpodclient"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+
+        resConfigs "en", "pt-rBR"
 
         buildConfigField("String", "RSS_BASE_URL", "\"$appConfig.rss_base_url\"")
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
+
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            applicationVariants.all { variant ->
+                def versionCode = generateVersionCode() ?: 1
+                def versionName = generateVersionName() + "." + versionCode ?: "1"
+
+                variant.mergedFlavor.versionCode = versionCode
+                variant.mergedFlavor.versionName = versionName
+            }
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
@@ -40,7 +75,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:$appConfig.versions.support_library"
     compile "com.android.support:design:$appConfig.versions.support_library"
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$appConfig.versions.kotlin_version"
 
     compile 'com.google.dagger:dagger:2.0.1'
     kapt 'com.google.dagger:dagger-compiler:2.0'
