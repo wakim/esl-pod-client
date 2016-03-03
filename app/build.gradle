@@ -5,7 +5,9 @@ apply plugin: 'kotlin-android'
 def final appConfig = [
         versions: [
                 "support_library": "23.2.0",
-                "kotlin_version": "$kotlin_version"
+                "kotlin_version": "$kotlin_version",
+                "support_test": "0.4.1",
+                "espresso": "2.2.1"
         ],
 
         "base_url": "https://www.eslpod.com/website/show_all.php"
@@ -39,6 +41,8 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
 
         resConfigs "en", "pt-rBR"
 
@@ -76,7 +80,6 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
 
     compile "com.android.support:appcompat-v7:$appConfig.versions.support_library"
     compile "com.android.support:design:$appConfig.versions.support_library"
@@ -100,6 +103,30 @@ dependencies {
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
     debugCompile 'com.facebook.stetho:stetho:1.3.0'
+
+    testCompile 'junit:junit:4.12'
+
+    // Android Testing Support Library's runner and rules
+    androidTestCompile ("com.android.support.test:runner:$appConfig.versions.support_test") {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+
+    androidTestCompile ("com.android.support.test:rules:$appConfig.versions.support_test") {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+
+    // Espresso UI Testing
+    androidTestCompile ("com.android.support.test.espresso:espresso-core:$appConfig.versions.espresso") {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+
+    androidTestCompile ("com.android.support.test.espresso:espresso-contrib:$appConfig.versions.espresso") {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'support-annotations'
+
+        exclude module: 'recyclerview-v7'
+    }
 }
 
 kapt {
