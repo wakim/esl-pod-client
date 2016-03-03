@@ -8,7 +8,7 @@ def final appConfig = [
                 "kotlin_version": "$kotlin_version"
         ],
 
-        "rss_base_url": "http://feeds.feedburner.com/EnglishAsASecondLanguagePodcast"
+        "base_url": "https://www.eslpod.com/website/show_all.php"
 ];
 
 def generateVersionCode() {
@@ -42,7 +42,7 @@ android {
 
         resConfigs "en", "pt-rBR"
 
-        buildConfigField("String", "RSS_BASE_URL", "\"$appConfig.rss_base_url\"")
+        buildConfigField("String", "BASE_URL", "\"$appConfig.base_url\"")
     }
 
     buildTypes {
@@ -68,12 +68,20 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
 
     compile "com.android.support:appcompat-v7:$appConfig.versions.support_library"
     compile "com.android.support:design:$appConfig.versions.support_library"
+    compile "com.android.support:cardview-v7:$appConfig.versions.support_library"
+    compile "com.android.support:recyclerview-v7:$appConfig.versions.support_library"
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$appConfig.versions.kotlin_version"
 
@@ -82,6 +90,12 @@ dependencies {
 
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'io.reactivex:rxjava:1.1.1'
+
+    compile 'com.jakewharton.threetenabp:threetenabp:1.0.3'
+    compile 'org.jsoup:jsoup:1.8.3'
+
+    compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 
     provided 'org.glassfish:javax.annotation:10.0-b28'
 

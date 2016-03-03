@@ -1,12 +1,10 @@
 package br.com.wakim.eslpodclient.presenter
 
+import android.os.Bundle
 import br.com.wakim.eslpodclient.view.View
 import rx.Subscription
 import rx.subscriptions.CompositeSubscription
 
-/**
- * Created by wakim on 2/29/16.
- */
 abstract class Presenter<T : View>() {
 
     var view : T? = null
@@ -24,16 +22,19 @@ abstract class Presenter<T : View>() {
         view = null
     }
 
-    fun onStop() {
+    open fun onSaveInstanceState(outState: Bundle) {
+    }
+
+    open fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+    }
+
+    open fun onStop() {
         compositeSubscription?.unsubscribe()
         compositeSubscription = null
     }
 
-    fun addSubscription(subscription: Subscription) {
-        compositeSubscription?.add(subscription)
+    open fun onResume() {
     }
 
-    fun onResume() {
-        // TODO
-    }
+    fun addSubscription(fn : () -> Subscription) = compositeSubscription?.add(fn())
 }

@@ -1,10 +1,9 @@
 package br.com.wakim.eslpodclient.podcastlist.view
 
+import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.view.View
+import java.util.*
 
-/**
- * Created by wakim on 2/29/16.
- */
 interface PodcastListView : View {
-
+    fun addItems(list: ArrayList<PodcastItem>)
 }

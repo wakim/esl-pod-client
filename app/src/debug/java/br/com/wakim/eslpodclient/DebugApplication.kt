@@ -1,6 +1,5 @@
 package br.com.wakim.eslpodclient
 
-import android.app.Application
 import com.facebook.stetho.Stetho
 
 /**
