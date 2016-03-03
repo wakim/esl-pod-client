@@ -22,8 +22,14 @@ class PodcastListPresenter(val interactor: PodcastListInteractor) : Presenter<Po
             pages = it.getParcelableArrayList(PAGES_EXTRA)
         }
 
-        pages?.forEach {
-            view?.addItems(it.list)
+        view?.let {
+            val that = it
+
+            pages?.forEach {
+                that.addItems(it.list)
+            }
+
+            it.hasMore = pages?.lastOrNull()?.nextPageUrl != null
         }
     }
 
@@ -38,13 +44,21 @@ class PodcastListPresenter(val interactor: PodcastListInteractor) : Presenter<Po
     }
 
     fun loadNextPage() {
+        view!!.setLoading(true)
+
         addSubscription {
             interactor.getPodcasts(pages?.last())
                     .ofIOToMainThread()
                     .subscribe(object : SingleSubscriber<PodcastList>(){
                         override fun onSuccess(podcastList: PodcastList) {
-                            view?.addItems(podcastList.list)
                             pages!!.add(podcastList)
+
+                            view?.let {
+                                it.setLoading(false)
+                                it.addItems(podcastList.list)
+
+                                it.hasMore = podcastList.nextPageUrl != null
+                            }
                         }
 
                         override fun onError(e: Throwable?) {

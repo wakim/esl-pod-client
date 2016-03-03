@@ -1,6 +1,7 @@
 package br.com.wakim.eslpodclient.podcastlist.view
 
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.model.PodcastItem
@@ -12,6 +13,18 @@ import java.util.*
 import javax.inject.Inject
 
 class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListView {
+
+    companion object {
+        final const val MINIMUM_THRESHOLD = 5
+    }
+
+    private var _hasMore : Boolean = false
+
+    override var hasMore: Boolean
+        get() = _hasMore
+        set(value) {
+            _hasMore = value
+        }
 
     val recyclerView : RecyclerView by bindView(R.id.recycler_view)
 
@@ -31,9 +44,29 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
         adapter = PodcastListAdapter(this)
 
         recyclerView.adapter = adapter
+        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val linearLayoutManager : LinearLayoutManager = recyclerView?.layoutManager as LinearLayoutManager
+
+                val totalItemCount = linearLayoutManager.itemCount
+                val lastVisible = linearLayoutManager.findLastVisibleItemPosition()
+
+                val mustLoadMore = totalItemCount <= (lastVisible + MINIMUM_THRESHOLD)
+
+                if (mustLoadMore && _hasMore && !adapter.loading) {
+                    presenter!!.loadNextPage()
+                }
+            }
+        })
     }
 
     override fun addItems(list: ArrayList<PodcastItem>) {
         adapter.addAll(list)
+    }
+
+    override fun setLoading(loading: Boolean) {
+        adapter.loading = loading
     }
 }
