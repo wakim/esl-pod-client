@@ -1,7 +1,9 @@
 package br.com.wakim.eslpodclient.podcastlist.view
 
-import android.support.test.espresso.Espresso.*
-import android.support.test.espresso.matcher.ViewMatchers.*
+import android.support.test.espresso.Espresso.onView
+import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
+import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import br.com.wakim.eslpodclient.R
@@ -17,6 +19,7 @@ class PodcastListActivityTest() {
 
     @Test
     fun test() {
-        onView(withId(R.id.recycler_view))
+        onView(withId(R.id.pb_loading))
+                .check(matches(isDisplayed()))
     }
 }

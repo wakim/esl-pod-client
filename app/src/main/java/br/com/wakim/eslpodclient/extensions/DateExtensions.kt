@@ -28,3 +28,17 @@ fun String.monthOfYear() : Int =
             "DECEMBER" -> 11
             else -> -1
         }
+
+fun String.secondsFromHourMinute() : Int {
+    val split = split(":")
+    return (split[0].toInt() * 60) + split[1].toInt()
+}
+
+fun Int.millisToElapsedTime() : String {
+    var seconds = this / 1000
+    val minutes = seconds / 60
+
+    seconds %= 60
+
+    return (if (minutes < 10) "0" + minutes.toString() else minutes.toString()) + ":" + seconds.toString().padStart(2, '0')
+}

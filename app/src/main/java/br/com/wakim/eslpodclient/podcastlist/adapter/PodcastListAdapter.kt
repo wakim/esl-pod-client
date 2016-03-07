@@ -10,15 +10,18 @@ import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.podcastlist.view.PodcastListItemView
 import java.util.*
 
-class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder> {
+class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>, View.OnClickListener {
 
     companion object {
         final const val LOADING_TYPE = 0
         final const val ITEM_TYPE = 1
+        final const val PODCAST_TAG = "PODCAST"
     }
 
     val list : MutableList<PodcastItem> = mutableListOf()
     val layoutInflater : LayoutInflater
+
+    var onClickListener : ((PodcastItem) -> Unit)? = null
 
     var loading : Boolean = false
         set(value) {
@@ -44,16 +47,25 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder> {
             if (loading && position == list.size) LOADING_TYPE else ITEM_TYPE
 
     override fun onCreateViewHolder(viewGroup: ViewGroup?, viewType: Int): PodcastListAdapter.ViewHolder? {
-        return if (viewType == ITEM_TYPE) ViewHolder(layoutInflater.inflate(R.layout.podcast_list_item, viewGroup, false))
-            else ViewHolder(layoutInflater.inflate(R.layout.list_item_loading, viewGroup, false))
+        return if (viewType == ITEM_TYPE) {
+            val view = layoutInflater.inflate(R.layout.podcast_list_item, viewGroup, false)
+
+            view.setOnClickListener(this)
+
+            ViewHolder(view)
+        } else ViewHolder(layoutInflater.inflate(R.layout.list_item_loading, viewGroup, false))
     }
 
     override fun onBindViewHolder(viewHolder: PodcastListAdapter.ViewHolder?, position: Int) {
         if (viewHolder!!.itemViewType == LOADING_TYPE) {
             val lp = viewHolder.itemView.layoutParams as? RecyclerView.LayoutParams;
             lp?.height = if (list.size == 0) RecyclerView.LayoutParams.MATCH_PARENT else RecyclerView.LayoutParams.WRAP_CONTENT
-        } else
-            viewHolder.view()?.bind(list[position])
+        } else {
+            val item = list[position]
+
+            viewHolder.view()?.bind(item)
+            viewHolder.itemView.setTag(R.layout.podcast_list_item, item)
+        }
     }
 
     override fun getItemCount(): Int = list.size + if (loading) 1 else 0
@@ -64,6 +76,14 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder> {
         list.addAll(addition)
 
         notifyItemRangeInserted(previousSize, addition.size)
+    }
+
+    override fun onClick(view: View) {
+        val item = view.getTag(R.layout.podcast_list_item) as? PodcastItem
+
+        item?.let {
+            onClickListener!!(it)
+        }
     }
 
     class ViewHolder : RecyclerView.ViewHolder {

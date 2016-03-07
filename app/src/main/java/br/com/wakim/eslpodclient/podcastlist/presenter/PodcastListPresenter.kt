@@ -3,13 +3,13 @@ package br.com.wakim.eslpodclient.podcastlist.presenter
 import android.os.Bundle
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.model.PodcastList
-import br.com.wakim.eslpodclient.podcastlist.interactor.PodcastListInteractor
+import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.podcastlist.view.PodcastListView
 import br.com.wakim.eslpodclient.presenter.Presenter
 import rx.SingleSubscriber
 import java.util.*
 
-class PodcastListPresenter(val interactor: PodcastListInteractor) : Presenter<PodcastListView>() {
+class PodcastListPresenter(private val interactor: PodcastInteractor) : Presenter<PodcastListView>() {
 
     companion object {
         private final val PAGES_EXTRA = "PAGES"
@@ -47,7 +47,7 @@ class PodcastListPresenter(val interactor: PodcastListInteractor) : Presenter<Po
         view!!.setLoading(true)
 
         addSubscription {
-            interactor.getPodcasts(pages?.last())
+            interactor.getPodcasts(pages?.lastOrNull())
                     .ofIOToMainThread()
                     .subscribe(object : SingleSubscriber<PodcastList>(){
                         override fun onSuccess(podcastList: PodcastList) {

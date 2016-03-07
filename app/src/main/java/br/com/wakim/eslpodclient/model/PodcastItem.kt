@@ -23,6 +23,15 @@ data class PodcastItem(val title: String, val remoteId: Long, val blurb: String,
         p0.writeLong(type)
     }
 
+    override fun hashCode(): Int {
+        return remoteId.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        val casted = other as? PodcastItem
+        return remoteId == casted?.remoteId ?: super.equals(other)
+    }
+
     override fun describeContents(): Int {
         return 0
     }

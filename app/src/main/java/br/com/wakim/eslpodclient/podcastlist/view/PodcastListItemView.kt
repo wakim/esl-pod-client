@@ -24,17 +24,19 @@ class PodcastListItemView : LinearLayoutCompat {
     constructor(context: Context?) : super(context)
 
     fun bind(podcastItem : PodcastItem) {
-        tvTitle!!.text = podcastItem.title
-        tvDescription!!.text = podcastItem.blurb
-        tvDate!!.text = podcastItem.date.toString()
+        with (podcastItem) {
+            tvTitle!!.text = title
+            tvDescription!!.text = blurb
+            tvDate!!.text = date.toString()
 
-        tvTags?.let {
-            it.visibility = if (podcastItem.tags == null) View.GONE else View.VISIBLE
-            it.text = podcastItem.tags ?: null
+            tvTags?.let {
+                it.visibility = if (tags == null) View.GONE else View.VISIBLE
+                it.text = tags ?: null
+            }
+
+            Picasso.with(context)
+                    .load(if (type == PodcastItem.ENGLISH_CAFE) R.drawable.ic_local_cafe_white_24dp else R.drawable.ic_chat_white_24dp)
+                    .into(ivCategory)
         }
-
-        Picasso.with(context)
-            .load(if (podcastItem.type == PodcastItem.ENGLISH_CAFE) R.drawable.ic_local_cafe_white_24dp else R.drawable.ic_chat_white_24dp)
-            .into(ivCategory)
     }
 }

@@ -2,6 +2,7 @@
 <br.com.wakim.eslpodclient.podcastlist.view.PodcastListItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -45,7 +46,9 @@
                 android:textStyle="bold"
                 android:ellipsize="end"
                 android:maxLines="1"
-                tools:text="Titulo do podcast com um pouco mais texto para ver como fica a zoeira reinar nesse layout" />
+                fontPath="fonts/Roboto-Bold.ttf"
+                tools:text="Titulo do podcast com um pouco mais texto para ver como fica a zoeira reinar nesse layout"
+                tools:ignore="MissingPrefix" />
 
             <TextView
                 android:id="@+id/tv_date"

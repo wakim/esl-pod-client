@@ -28,6 +28,9 @@ abstract class Presenter<T : View>() {
     open fun onRestoreInstanceState(savedInstanceState: Bundle?) {
     }
 
+    open fun onStart() {
+    }
+
     open fun onStop() {
         compositeSubscription?.unsubscribe()
         compositeSubscription = null
@@ -36,5 +39,5 @@ abstract class Presenter<T : View>() {
     open fun onResume() {
     }
 
-    fun addSubscription(fn : () -> Subscription) = compositeSubscription?.add(fn())
+    inline fun addSubscription(fn : () -> Subscription) = compositeSubscription?.add(fn())
 }
