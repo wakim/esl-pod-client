@@ -3,6 +3,7 @@ package br.com.wakim.eslpodclient.podcastlist.view
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
+import android.support.annotation.StringRes
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.CoordinatorLayout
@@ -15,15 +16,15 @@ import android.widget.SeekBar
 import android.widget.TextView
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.ActivityComponent
-import br.com.wakim.eslpodclient.extensions.hideAnimated
-import br.com.wakim.eslpodclient.extensions.millisToElapsedTime
-import br.com.wakim.eslpodclient.extensions.showAnimated
+import br.com.wakim.eslpodclient.extensions.*
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastItemDetail
-import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
-import br.com.wakim.eslpodclient.podcastplayer.view.PlayerView
 import br.com.wakim.eslpodclient.podcastdetail.presenter.PodcastDetailPresenter
 import br.com.wakim.eslpodclient.podcastdetail.view.PodcastDetailView
+import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
+import br.com.wakim.eslpodclient.podcastplayer.view.PlayerView
+import br.com.wakim.eslpodclient.view.BaseActivity
+import br.com.wakim.eslpodclient.view.LoadingFloatingActionButton
 import butterknife.bindView
 import javax.inject.Inject
 
@@ -60,10 +61,12 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
     private var playFab : FloatingActionButton? = null
     private var pauseFab : FloatingActionButton? = null
 
+    private var loadingFab : LoadingFloatingActionButton? = null
+
     private var bottomSheetBehavior : BottomSheetBehavior<*>? = null
 
     lateinit var playerPresenter : PlayerPresenter
-    lateinit var podcastDetailPresenter : PodcastDetailPresenter
+    lateinit var detailPresenter : PodcastDetailPresenter
 
     var podcastItem : PodcastItem? = null
 
@@ -72,15 +75,36 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
         presenter.view = this
         this.playerPresenter = presenter
     }
+
     @Inject
     fun injectDetailPresenter(presenter: PodcastDetailPresenter) {
         presenter.view = this
-        this.podcastDetailPresenter = presenter
+        this.detailPresenter = presenter
     }
+
+    @get:Inject
+    var baseActivity: BaseActivity<*>? = null
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         setupBehaviorCallback()
+
+        playerPresenter.onStart()
+        detailPresenter.onStart()
+
+        title.setOnClickListener {
+            bottomSheetBehavior?.toggleState(BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.STATE_COLLAPSED)
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
+        playerPresenter.onStop()
+        detailPresenter.onStop()
+
+        playerPresenter.onDestroy()
+        detailPresenter.onDestroy()
     }
 
     override fun onFinishInflate() {
@@ -113,6 +137,7 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
         val bundle = Bundle()
 
         playerPresenter.onSaveInstanceState(bundle)
+        detailPresenter.onSaveInstanceState(bundle)
 
         bundle.putParcelable(PARENT_STATE_KEY, superState)
 
@@ -124,7 +149,9 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
 
         if (state is Bundle) {
             parentState = state.getParcelable(PARENT_STATE_KEY)
+
             playerPresenter.onRestoreInstanceState(state)
+            detailPresenter.onRestoreInstanceState(state)
         }
 
         super.onRestoreInstanceState(parentState)
@@ -137,7 +164,12 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
         script.text = null
 
         playerPresenter.play(podcastItem)
-        podcastDetailPresenter.loadDetail(podcastItem)
+        detailPresenter.loadDetail(podcastItem)
+
+        this.loadingFab?.let {
+            it.showAnimated()
+            it.startAnimation()
+        }
     }
 
     override fun setProgressValue(position: Int) {
@@ -152,16 +184,23 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
         this.duration.text = duration.millisToElapsedTime()
     }
 
+    override fun showMessage(@StringRes messageResId: Int) {
+        baseActivity?.showMessage(messageResId) ?: context.snack(this, messageResId)
+    }
+
     fun hideFabs() {
         playFab?.hideAnimated()
         pauseFab?.hideAnimated()
+        loadingFab?.hideAnimated()
     }
 
     fun showFabs() {
         if (playerPresenter.isPlaying()) {
             showPauseButton()
-        } else {
+        } else if (playerPresenter.isPrepared()) {
             showPlayButton()
+        } else {
+            showLoadingButton()
         }
     }
 
@@ -169,19 +208,43 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
         if (bottomSheetBehavior?.state == BottomSheetBehavior.STATE_COLLAPSED) {
             playFab?.hideAnimated()
             pauseFab?.showAnimated()
+
+            loadingFab?.let{
+                it.stopAnimation()
+                it.hideAnimated()
+            }
         }
     }
 
     override fun showPlayButton() {
         if (bottomSheetBehavior?.state == BottomSheetBehavior.STATE_COLLAPSED) {
             playFab?.showAnimated()
+
             pauseFab?.hideAnimated()
+
+            loadingFab?.let {
+                it.stopAnimation()
+                it.hideAnimated()
+            }
         }
     }
 
-    fun setControls(playFab: FloatingActionButton, pauseFab: FloatingActionButton) {
+    fun showLoadingButton() {
+        if (bottomSheetBehavior?.state == BottomSheetBehavior.STATE_COLLAPSED) {
+            playFab?.hideAnimated()
+            pauseFab?.hideAnimated()
+
+            loadingFab?.let {
+                it.showAnimated()
+                it.startAnimation()
+            }
+        }
+    }
+
+    fun setControls(playFab: FloatingActionButton, pauseFab: FloatingActionButton, loadingFab: LoadingFloatingActionButton) {
         this.playFab = playFab
         this.pauseFab = pauseFab
+        this.loadingFab = loadingFab
 
         playFab.setOnClickListener {
             playerPresenter.onPlayClicked()

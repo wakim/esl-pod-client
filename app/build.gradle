@@ -109,8 +109,6 @@ dependencies {
 
     compile 'org.jsoup:jsoup:1.8.3'
 
-    compile 'com.squareup.picasso:picasso:2.5.2'
-
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'com.nbsp:library:1.07'
 

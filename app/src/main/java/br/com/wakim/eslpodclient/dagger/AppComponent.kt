@@ -1,5 +1,6 @@
 package br.com.wakim.eslpodclient.dagger
 
+import br.com.wakim.eslpodclient.dagger.module.ActivityModule
 import br.com.wakim.eslpodclient.dagger.module.AppModule
 import br.com.wakim.eslpodclient.dagger.module.InteractorModule
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
@@ -17,5 +18,5 @@ interface AppComponent {
 
     fun podcastListInteractor() : PodcastInteractor
     fun prefencesManager() : PreferenceManager
-    fun plus() : ActivityComponent
+    fun plus(activityModule: ActivityModule) : ActivityComponent
 }

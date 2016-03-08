@@ -1,9 +1,9 @@
 package br.com.wakim.eslpodclient.view
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.NavUtils
 import android.support.v4.app.TaskStackBuilder
 import android.support.v4.view.GravityCompat
@@ -14,13 +14,16 @@ import android.view.MenuItem
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.ActivityComponent
 import br.com.wakim.eslpodclient.dagger.AppComponent
+import br.com.wakim.eslpodclient.dagger.module.ActivityModule
 import br.com.wakim.eslpodclient.extensions.startActivity
+import br.com.wakim.eslpodclient.extensions.toast
 import br.com.wakim.eslpodclient.presenter.Presenter
+import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.settings.view.SettingsActivity
 import butterknife.bindOptionalView
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
-open class BaseActivity<T : Presenter<*>> : AppCompatActivity() {
+open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionRequester {
 
     companion object {
         final const val PARENT_EXTRA = "PARENT_EXTRA"
@@ -35,7 +38,7 @@ open class BaseActivity<T : Presenter<*>> : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityComponent = getAppComponent()!!.plus()
+        activityComponent = getAppComponent()!!.plus(ActivityModule(this))
     }
 
     override fun onStart() {
@@ -147,5 +150,21 @@ open class BaseActivity<T : Presenter<*>> : AppCompatActivity() {
         }
 
         return super.getSystemService(name)
+    }
+
+    override fun requestPermission(permission: String, requestCode: Int) {
+        ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        PermissionPublishSubject.INSTANCE
+                .publishSubject
+                .onNext(PermissionPublishSubject.Permission(requestCode, permissions, grantResults))
+    }
+
+    open fun showMessage(messageResId: Int) {
+        toast(message = messageResId)
     }
 }

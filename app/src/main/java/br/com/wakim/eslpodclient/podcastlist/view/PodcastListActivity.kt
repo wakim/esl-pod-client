@@ -1,6 +1,7 @@
 package br.com.wakim.eslpodclient.podcastlist.view
 
 import android.os.Bundle
+import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -8,12 +9,13 @@ import android.view.View
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.dp
 import br.com.wakim.eslpodclient.extensions.isVisible
-import br.com.wakim.eslpodclient.extensions.startActivity
+import br.com.wakim.eslpodclient.extensions.snack
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.podcastlist.adapter.PodcastListAdapter
 import br.com.wakim.eslpodclient.podcastlist.presenter.PodcastListPresenter
 import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.view.BottomSpacingItemDecoration
+import br.com.wakim.eslpodclient.view.LoadingFloatingActionButton
 import butterknife.bindView
 import java.util.*
 import javax.inject.Inject
@@ -32,11 +34,13 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
             _hasMore = value
         }
 
+    val coordinatorLayout : CoordinatorLayout by bindView(R.id.coordinator_layout)
     val recyclerView : RecyclerView by bindView(R.id.recycler_view)
     val playerView : ListPlayerView by bindView(R.id.player_view)
 
     val playFab : FloatingActionButton by bindView(R.id.fab_play)
     val pauseFab : FloatingActionButton by bindView(R.id.fab_pause)
+    val loadingFab : LoadingFloatingActionButton by bindView(R.id.fab_loading)
 
     val bottomSpacingDecoration = BottomSpacingItemDecoration(0)
 
@@ -60,8 +64,11 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
             playerView.play(podcastItem)
         }
 
+        val spacing = dp(8F).toInt()
+
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(bottomSpacingDecoration)
+        recyclerView.addItemDecoration(SpacingItemDecoration(columns = 1, spacingTop = spacing, spacingBottom =  spacing))
 
         recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
@@ -80,7 +87,7 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
             }
         })
 
-        playerView.setControls(playFab, pauseFab)
+        playerView.setControls(playFab, pauseFab, loadingFab)
     }
 
     fun showPlayerViewIfNeeded() {
@@ -110,5 +117,9 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
     override fun onBackPressed() {
         super.onBackPressed()
         playerView.explicitlyStop()
+    }
+
+    override fun showMessage(messageResId: Int) {
+        snack(coordinatorLayout, messageResId)
     }
 }

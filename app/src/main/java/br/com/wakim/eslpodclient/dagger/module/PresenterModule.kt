@@ -3,9 +3,10 @@ package br.com.wakim.eslpodclient.dagger.module
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.dagger.scope.ActivityScope
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
-import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
 import br.com.wakim.eslpodclient.podcastdetail.presenter.PodcastDetailPresenter
 import br.com.wakim.eslpodclient.podcastlist.presenter.PodcastListPresenter
+import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
+import br.com.wakim.eslpodclient.view.PermissionRequester
 import dagger.Module
 import dagger.Provides
 
@@ -21,5 +22,6 @@ class PresenterModule() {
             PodcastDetailPresenter(podcastInteractor, app)
 
     @Provides @ActivityScope
-    fun providesPlayerPresenter(app: Application) : PlayerPresenter = PlayerPresenter(app)
+    fun providesPlayerPresenter(app: Application, permissionRequester: PermissionRequester) : PlayerPresenter =
+            PlayerPresenter(app, permissionRequester)
 }

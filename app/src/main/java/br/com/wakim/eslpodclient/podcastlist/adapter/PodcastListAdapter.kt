@@ -48,7 +48,7 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>, 
 
     override fun onCreateViewHolder(viewGroup: ViewGroup?, viewType: Int): PodcastListAdapter.ViewHolder? {
         return if (viewType == ITEM_TYPE) {
-            val view = layoutInflater.inflate(R.layout.podcast_list_item, viewGroup, false)
+            val view = layoutInflater.inflate(R.layout.list_item_podcast, viewGroup, false)
 
             view.setOnClickListener(this)
 
@@ -64,7 +64,7 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>, 
             val item = list[position]
 
             viewHolder.view()?.bind(item)
-            viewHolder.itemView.setTag(R.layout.podcast_list_item, item)
+            viewHolder.itemView.setTag(R.layout.list_item_podcast, item)
         }
     }
 
@@ -79,7 +79,7 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>, 
     }
 
     override fun onClick(view: View) {
-        val item = view.getTag(R.layout.podcast_list_item) as? PodcastItem
+        val item = view.getTag(R.layout.list_item_podcast) as? PodcastItem
 
         item?.let {
             onClickListener!!(it)

@@ -12,7 +12,7 @@ import rx.Single
 import rx.SingleSubscriber
 import java.util.*
 
-class PodcastListOnSubscribe(val url : String) : Single.OnSubscribe<PodcastList> {
+class PodcastListOnSubscribe(private var storageInteractor: StorageInteractor, val url : String) : Single.OnSubscribe<PodcastList> {
 
     companion object {
         final val PODCAST_TABLE_HOME_CLASS = ".podcast_table_home"
@@ -37,7 +37,9 @@ class PodcastListOnSubscribe(val url : String) : Single.OnSubscribe<PodcastList>
                 .filterIndexed { i, element -> i > 0 && i < (size - 1) }
                 .map { buildPodcastItem(it) }
                 .filter { it != null }
-                .forEach { podcastList.list.add(it!!) }
+                .forEach { it ->
+                    podcastList.list.add(it!!.copy(localPath = storageInteractor.getLocalPathIfExists(it)))
+                }
 
         podcastList.currentPageUrl = url
         podcastList.nextPageUrl = getNextPage(document)

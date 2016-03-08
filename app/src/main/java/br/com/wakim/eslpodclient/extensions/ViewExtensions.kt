@@ -1,5 +1,6 @@
 package br.com.wakim.eslpodclient.extensions
 
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.view.ViewCompat
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter
 import android.support.v4.view.animation.FastOutSlowInInterpolator
@@ -9,8 +10,16 @@ private val interpolator = FastOutSlowInInterpolator()
 
 fun View.isVisible() : Boolean = visibility == View.VISIBLE
 
+fun View.makeVisible() {
+    visibility = View.VISIBLE
+}
+
 fun View.hideAnimated() {
-    this.alpha = 1F
+    if (isVisible()) {
+        alpha = 1F
+    } else {
+        return
+    }
 
     ViewCompat.animate(this)
             .scaleX(0f)
@@ -26,9 +35,9 @@ fun View.hideAnimated() {
 }
 
 fun View.showAnimated() {
-    visibility = View.VISIBLE
+    makeVisible()
 
-    this.setAlpha(0f);
+    alpha = 0F
 
     ViewCompat.animate(this)
             .scaleX(1f)
@@ -36,4 +45,11 @@ fun View.showAnimated() {
             .alpha(1f)
             .setInterpolator(interpolator)
             .setListener(null);
+}
+
+fun BottomSheetBehavior<*>.toggleState(@BottomSheetBehavior.State state1 : Int, @BottomSheetBehavior.State state2 : Int) {
+    when (this.state) {
+        state1 -> state = state2
+        state2 -> state = state1
+    }
 }

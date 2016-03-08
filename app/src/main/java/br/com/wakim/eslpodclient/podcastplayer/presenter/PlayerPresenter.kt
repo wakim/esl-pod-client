@@ -1,21 +1,27 @@
 package br.com.wakim.eslpodclient.podcastplayer.presenter
 
-import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import br.com.wakim.eslpodclient.Application
+import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.bindService
 import br.com.wakim.eslpodclient.extensions.startService
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.podcastplayer.view.PlayerView
 import br.com.wakim.eslpodclient.presenter.Presenter
-import br.com.wakim.eslpodclient.service.*
+import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
+import br.com.wakim.eslpodclient.service.PlayerCallback
+import br.com.wakim.eslpodclient.service.PlayerService
+import br.com.wakim.eslpodclient.service.StorageService
+import br.com.wakim.eslpodclient.service.TypedBinder
+import br.com.wakim.eslpodclient.view.PermissionRequester
+import rx.Observable
 
-class PlayerPresenter(private val app : Application) : Presenter<PlayerView>() {
+class PlayerPresenter(private val app : Application, private val permissionRequester: PermissionRequester) : Presenter<PlayerView>() {
 
     companion object {
         private final val PODCAST_ITEM = "PODCAST_ITEM"
+        private final val WRITE_STORAGE_PERMISSION = 12
     }
 
     var playPending : Boolean = false
@@ -57,42 +63,8 @@ class PlayerPresenter(private val app : Application) : Presenter<PlayerView>() {
         }
     }
 
-    var playerConnection = object : ServiceConnection {
-
-        override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
-            val service = (p1!! as PlayerLocalBinder).getService()
-
-            service.callback = playerCallback
-
-            playerService = service
-
-            setupInitialState()
-
-            if (storageService != null) {
-                doPlay()
-            }
-        }
-
-        override fun onServiceDisconnected(p0: ComponentName?) {
-            playerService = null
-        }
-    }
-
-    var storageConnection = object : ServiceConnection {
-        override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
-            val service = (p1!! as StorageLocalBinder).getService()
-
-            storageService = service
-
-            if (playerService != null) {
-                doPlay()
-            }
-        }
-
-        override fun onServiceDisconnected(p0: ComponentName?) {
-            storageService = null
-        }
-    }
+    var playerServiceConnection : ServiceConnection? = null
+    var storageServiceConnection : ServiceConnection? = null
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -104,36 +76,78 @@ class PlayerPresenter(private val app : Application) : Presenter<PlayerView>() {
         podcastItem = savedInstanceState?.getParcelable<PodcastItem>(PODCAST_ITEM)
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        addSubscription {
+            PermissionPublishSubject.INSTANCE
+                    .publishSubject
+                    .subscribe { permission ->
+                        (permission.requestCode == WRITE_STORAGE_PERMISSION).let {
+                            if (permission.isGranted()) {
+                                doPlay()
+                            } else {
+                                view!!.showMessage(R.string.write_external_storage_permission_needed_to_play)
+                            }
+                        }
+                    }
+        }
+    }
+
     fun unbindToService() {
         playerService?.let {
             it.callback = null
-            app.unbindService(playerConnection)
+            app.unbindService(playerServiceConnection)
         }
 
         storageService?.let {
-            app.unbindService(storageConnection)
+            app.unbindService(storageServiceConnection)
         }
-
-        storageService = null
-        playerService = null
     }
 
     fun bindServiceIfNeeded() {
+        var playerObservable : Observable<Pair<ServiceConnection, TypedBinder<PlayerService>?>> = Observable.empty()
+        var storageObservable : Observable<Pair<ServiceConnection, TypedBinder<StorageService>?>> = Observable.empty()
+
         if (playerService == null) {
             app.startService<PlayerService> { }
-            app.bindService<PlayerService>(playerConnection)
+
+            playerObservable = app.bindService<PlayerService>()
+
+            playerObservable = playerObservable
+                .doOnNext { pair ->
+                    pair?.let {
+                        playerServiceConnection = pair.first
+                        playerService = pair.second?.getService()
+
+                        playerService?.callback = playerCallback
+                    }
+                }
         }
 
         if (storageService == null) {
-            app.bindService<StorageService>(storageConnection)
+            storageObservable = app.bindService<StorageService>()
+
+            storageObservable = storageObservable
+                .doOnNext { pair ->
+                    pair?.let {
+                        storageServiceConnection = pair.first
+                        storageService = pair.second?.getService()
+                    }
+                }
+        }
+
+        addSubscription {
+            Observable.combineLatest(playerObservable, storageObservable, { t1, t2 ->
+                setupInitialState()
+                doPlay()
+            }).subscribe()
         }
     }
 
     fun setupInitialState() {
         if (playerService?.isPlaying() ?: false) {
             view!!.showPauseButton()
-        } else {
-            view!!.showPlayButton()
         }
     }
 
@@ -156,6 +170,12 @@ class PlayerPresenter(private val app : Application) : Presenter<PlayerView>() {
         if (!playPending) return
 
         if (playerService == null || storageService == null) {
+            return
+        }
+
+        if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            permissionRequester.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, WRITE_STORAGE_PERMISSION)
+
             return
         }
 
@@ -185,4 +205,6 @@ class PlayerPresenter(private val app : Application) : Presenter<PlayerView>() {
     fun isPlaying(): Boolean {
         return playerService?.isPlaying() ?: false
     }
+
+    fun isPrepared() : Boolean = playerService?.initalized ?: false
 }

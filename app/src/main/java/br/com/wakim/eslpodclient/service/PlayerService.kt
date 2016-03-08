@@ -10,7 +10,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.AsyncTask
-import android.os.Binder
 import android.os.IBinder
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
@@ -41,7 +40,6 @@ class PlayerService : Service() {
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mp.setOnPreparedListener {
             initalized = true
-            prepared = true
 
             play()
         }
@@ -92,22 +90,23 @@ class PlayerService : Service() {
     @Inject
     lateinit var audioManager : AudioManager
 
-    var session : MediaSessionCompat? = null
-    var controller : MediaControllerCompat? = null
+    private var session : MediaSessionCompat? = null
+    private var controller : MediaControllerCompat? = null
 
-    var prepared : Boolean = false
-    var initalized : Boolean = false
+    private var url : String? = null
+    private var mediaTitle : String? = null
+    private var initialPosition : Int? = null
 
-    var url : String? = null
-    var mediaTitle : String? = null
-    var initialPosition : Int? = null
+    private var task : DurationUpdatesTask? = null
 
-    var task : DurationUpdatesTask? = null
     var callback : PlayerCallback? = null
         set(value) {
             field = value
             startTaskIfNeeded()
         }
+
+    var initalized : Boolean = false
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -165,7 +164,7 @@ class PlayerService : Service() {
         this.mediaTitle = mediaTitle
         this.initialPosition = position
 
-        if (prepared) {
+        if (initalized) {
             reset()
         }
 
@@ -173,7 +172,7 @@ class PlayerService : Service() {
     }
 
     fun reset() {
-        if (!prepared) {
+        if (!initalized) {
             return
         }
 
@@ -181,7 +180,7 @@ class PlayerService : Service() {
         mediaPlayer.reset()
 
         initialPosition = 0
-        prepared = false
+        initalized = false
     }
 
     private fun play() {
@@ -189,7 +188,7 @@ class PlayerService : Service() {
             return
         }
 
-        if (!prepared) {
+        if (!initalized) {
             prepareMediaPlayer()
             return
         }
@@ -310,13 +309,12 @@ class PlayerService : Service() {
         task?.cancel(true)
 
         isPlaying().let {
-            initialPosition = 0
-
             mediaPlayer.stop()
             mediaPlayer.release()
-
-            initalized = false
         }
+
+        initialPosition = 0
+        initalized = false
 
         audioManager.abandonAudioFocus(audioFocusChangeListener)
         unregisterNoisyReceiver()
@@ -351,7 +349,7 @@ class PlayerService : Service() {
                 .setLargeIcon((ContextCompat.getDrawable(this, R.mipmap.ic_launcher) as BitmapDrawable).bitmap)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .addAction(action)
-                .addAction(generateAction(R.drawable.ic_stop_white_24dp, R.string.stop, KeyEvent.KEYCODE_MEDIA_STOP))
+                .addAction(generateAction(R.drawable.ic_stop_white_36dp, R.string.stop, KeyEvent.KEYCODE_MEDIA_STOP))
                 .setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 
         startForeground(ID, builder.build())
@@ -370,7 +368,7 @@ class PlayerService : Service() {
     }
 }
 
-class PlayerLocalBinder : Binder {
+class PlayerLocalBinder : TypedBinder<PlayerService> {
 
     lateinit var reference : WeakReference<PlayerService>
 
@@ -378,7 +376,7 @@ class PlayerLocalBinder : Binder {
         reference = WeakReference(playerService)
     }
 
-    fun getService() : PlayerService = reference.get()
+    override fun getService(): PlayerService? = reference.get()
 }
 
 class DurationUpdatesTask(var service: PlayerService) : AsyncTask<Void , Int, Void>() {

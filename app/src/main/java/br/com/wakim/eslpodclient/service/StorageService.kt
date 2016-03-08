@@ -3,16 +3,11 @@ package br.com.wakim.eslpodclient.service
 import android.app.DownloadManager
 import android.app.Service
 import android.content.Intent
-import android.net.Uri
-import android.os.Binder
-import android.os.Environment
 import android.os.IBinder
 import br.com.wakim.eslpodclient.Application
-import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.AppComponent
-import br.com.wakim.eslpodclient.extensions.getFileName
+import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.model.PodcastItem
-import java.io.File
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
@@ -28,9 +23,14 @@ class StorageService : Service() {
     @Inject
     lateinit var downloadManager : DownloadManager
 
+    @Inject
+    lateinit var storageInteractor : StorageInteractor
+
     val binder = StorageLocalBinder(this)
 
     var fileServer : FileServer? = null
+
+    var lastDownloadRequest : StorageInteractor.DownloadRequest? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -38,7 +38,7 @@ class StorageService : Service() {
         (applicationContext.getSystemService(AppComponent::class.java.simpleName) as AppComponent?)?.inject(this)
 
         if (fileServer == null) {
-            fileServer = FileServer(getBaseDir())
+            fileServer = FileServer(storageInteractor.getBaseDir())
             fileServer!!.start()
         }
     }
@@ -47,58 +47,29 @@ class StorageService : Service() {
         return binder
     }
 
-    private fun getBaseDir() : String =
-            "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS)}${File.separator}${app.getString(R.string.app_name)}"
-
-    private fun getRelativePath(podcastItem: PodcastItem) : String =
-            "${File.separator}${app.getString(R.string.app_name)}${File.separator}${podcastItem.mp3Url.getFileName() ?: podcastItem.remoteId}"
-
-    private fun getLocalPath(podcastItem: PodcastItem) : String =
-            "${getBaseDir()}${File.separator}${podcastItem.mp3Url.getFileName() ?: podcastItem.remoteId}"
-
-    fun startDownloadIfNeeded(podcastItem: PodcastItem) : String {
-        val file = File(getLocalPath(podcastItem))
-
-        if (!file.exists()) {
-            downloadFile(podcastItem)
-        }
-
-        return getVirtualPath(file)
-    }
-
-    private fun getVirtualPath(file : File) : String {
-        return "http://localhost:${fileServer!!.listeningPort}${File.separator}${file.name}"
-    }
-
-    private fun downloadFile(podcastItem: PodcastItem) {
-        val request = DownloadManager.Request(Uri.parse(podcastItem.mp3Url))
-
-        request.allowScanningByMediaScanner()
-        request
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_PODCASTS, getRelativePath(podcastItem))
-                .setMimeType(MIME_TYPE)
-                .setDescription(podcastItem.blurb)
-                .setTitle(podcastItem.title)
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-                .setVisibleInDownloadsUi(true)
-
-        downloadManager.enqueue(request)
-    }
-
     override fun onDestroy() {
         super.onDestroy()
+
+        lastDownloadRequest?.let {
+            storageInteractor.cancelDownloadIfPending(it)
+        }
+
         fileServer?.stop()
+    }
+
+    fun startDownloadIfNeeded(podcastItem: PodcastItem) : String  {
+        lastDownloadRequest = storageInteractor.startDownloadIfNeeded(podcastItem)
+        return lastDownloadRequest!!.downloadUrl
     }
 }
 
-class StorageLocalBinder : Binder {
+class StorageLocalBinder : TypedBinder<StorageService> {
 
-    lateinit var weakReference : WeakReference<StorageService>
+    lateinit var reference : WeakReference<StorageService>
 
     constructor(storageService : StorageService) : super() {
-        weakReference = WeakReference(storageService)
+        reference = WeakReference(storageService)
     }
 
-    fun getService() : StorageService? =
-            weakReference.get()
+    override fun getService(): StorageService? = reference.get()
 }
