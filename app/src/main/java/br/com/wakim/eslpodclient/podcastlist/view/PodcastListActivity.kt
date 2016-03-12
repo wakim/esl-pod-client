@@ -5,10 +5,10 @@ import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.View
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.dp
 import br.com.wakim.eslpodclient.extensions.isVisible
+import br.com.wakim.eslpodclient.extensions.makeVisible
 import br.com.wakim.eslpodclient.extensions.snack
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.podcastlist.adapter.PodcastListAdapter
@@ -106,7 +106,7 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
             return
         }
 
-        playerView.visibility = View.VISIBLE
+        playerView.makeVisible()
 
         bottomSpacingDecoration.bottomSpacing = dp(72F).toInt()
         recyclerView.invalidateItemDecorations()

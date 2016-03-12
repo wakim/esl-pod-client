@@ -6,7 +6,6 @@ import android.os.Parcelable
 import android.support.annotation.StringRes
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.text.Html
 import android.util.AttributeSet
@@ -140,7 +139,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
     }
 
     fun setupBehaviorCallback() {
-        bottomSheetBehavior = (layoutParams as CoordinatorLayout.LayoutParams?)?.behavior as BottomSheetBehavior?
+        bottomSheetBehavior = BottomSheetBehavior.from(this)
         bottomSheetBehavior?.setBottomSheetCallback(callback)
     }
 
