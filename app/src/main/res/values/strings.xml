@@ -6,6 +6,8 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 
     <string name="write_external_storage_permission_needed_to_play">Write External Storage permission is needed to play podcast</string>
 </resources>

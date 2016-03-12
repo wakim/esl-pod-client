@@ -37,10 +37,10 @@ class StorageService : Service() {
 
         (applicationContext.getSystemService(AppComponent::class.java.simpleName) as AppComponent?)?.inject(this)
 
-        if (fileServer == null) {
-            fileServer = FileServer(storageInteractor.getBaseDir())
-            fileServer!!.start()
-        }
+//        if (fileServer == null) {
+//            fileServer = FileServer(storageInteractor.getBaseDir())
+//            fileServer!!.start()
+//        }
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -54,7 +54,7 @@ class StorageService : Service() {
             storageInteractor.cancelDownloadIfPending(it)
         }
 
-        fileServer?.stop()
+//        fileServer?.stop()
     }
 
     fun startDownloadIfNeeded(podcastItem: PodcastItem) : String  {

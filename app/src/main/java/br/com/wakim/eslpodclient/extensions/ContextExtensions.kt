@@ -76,6 +76,9 @@ inline fun <reified T: Service> Context.stopService() {
 fun Context.dp(dpValue : Float) : Float =
     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, resources.displayMetrics)
 
+fun Context.dp(dpValue : Int) : Int =
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue.toFloat(), resources.displayMetrics).toInt()
+
 fun Context.toast(@StringRes message: Int, duration: Int = Toast.LENGTH_LONG) : Toast {
     val toast = Toast.makeText(this, message, duration)
 

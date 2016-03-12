@@ -25,7 +25,7 @@ class PodcastListItemView : CardView {
 
     fun bind(podcastItem : PodcastItem) {
         with (podcastItem) {
-            tvTitle.text = title
+            tvTitle.text = userFriendlyTitle
 
             tvTags.let {
                 it.visibility = if (tags == null) View.GONE else View.VISIBLE

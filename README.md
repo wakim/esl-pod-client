@@ -8,7 +8,7 @@ This is a hobby project to learn some concepts and tools, including:
  
 The app uses jsoup to gather the podcasts of ESL Podcast website and allowing the user to store and listen via streaming any podcast.
 
-It uses a combination of MediaPlayer and MediaPlayback for streaming, DownloadManager to handle the download complexity and NanoHttpd to serve the file at same time that is downloaded
+It uses a combination of MediaPlayer and MediaPlayback for streaming, DownloadManager to handle the download complexity.
 
 ----
 

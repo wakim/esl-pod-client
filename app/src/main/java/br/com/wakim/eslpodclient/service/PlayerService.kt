@@ -21,7 +21,9 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.view.KeyEvent
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.AppComponent
+import br.com.wakim.eslpodclient.model.PodcastItem
 import java.lang.ref.WeakReference
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -40,8 +42,11 @@ class PlayerService : Service() {
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mp.setOnPreparedListener {
             initalized = true
-
             play()
+        }
+
+        mp.setOnBufferingUpdateListener { mediaPlayer, buffer ->
+            callback?.onDurationAvailabilityChanged(((buffer.toFloat() * getDuration()) / 100F).toInt())
         }
 
         mp.setOnCompletionListener {
@@ -56,6 +61,16 @@ class PlayerService : Service() {
         override fun onPlay() {
             super.onPlay()
             play()
+        }
+
+        override fun onSkipToNext() {
+            super.onSkipToNext()
+            skipToNext()
+        }
+
+        override fun onSkipToPrevious() {
+            super.onSkipToPrevious()
+            skipToPrevious()
         }
 
         override fun onPause() {
@@ -93,11 +108,14 @@ class PlayerService : Service() {
     private var session : MediaSessionCompat? = null
     private var controller : MediaControllerCompat? = null
 
-    private var url : String? = null
-    private var mediaTitle : String? = null
-    private var initialPosition : Int? = null
+    private var podcastItem: PodcastItem? = null
+    private var initialPosition: Int = 0
 
     private var task : DurationUpdatesTask? = null
+
+    val playlistManager: PlaylistManager by lazy {
+        PlaylistManager()
+    }
 
     var callback : PlayerCallback? = null
         set(value) {
@@ -139,9 +157,11 @@ class PlayerService : Service() {
 
         controller?.let {
             when (event?.keyCode) {
-                KeyEvent.KEYCODE_MEDIA_PLAY  -> it.transportControls.play()
-                KeyEvent.KEYCODE_MEDIA_PAUSE -> it.transportControls.pause()
-                KeyEvent.KEYCODE_MEDIA_STOP  -> it.transportControls.stop()
+                KeyEvent.KEYCODE_MEDIA_PLAY     -> it.transportControls.play()
+                KeyEvent.KEYCODE_MEDIA_PAUSE    -> it.transportControls.pause()
+                KeyEvent.KEYCODE_MEDIA_STOP     -> it.transportControls.stop()
+                KeyEvent.KEYCODE_MEDIA_NEXT     -> it.transportControls.skipToNext()
+                KeyEvent.KEYCODE_MEDIA_PREVIOUS -> it.transportControls.skipToPrevious()
             }
         }
     }
@@ -159,9 +179,8 @@ class PlayerService : Service() {
         return session
     }
 
-    fun play(url : String, mediaTitle: String, position: Int) {
-        this.url = url
-        this.mediaTitle = mediaTitle
+    fun play(podcastItem: PodcastItem, position: Int) {
+        this.podcastItem = podcastItem
         this.initialPosition = position
 
         if (initalized) {
@@ -205,11 +224,11 @@ class PlayerService : Service() {
         setupSessionState(true)
 
         callback?.let {
-            it.onDurationAvailable(mediaPlayer.duration)
+            it.onDurationChanged(mediaPlayer.duration)
             it.onPlayerStarted()
         }
 
-        startForeground(mediaTitle!!, generateAction(R.drawable.ic_pause_white_36dp, R.string.pause, KeyEvent.KEYCODE_MEDIA_PAUSE))
+        startForeground(podcastItem!!.title, generateAction(R.drawable.ic_pause_white_36dp, R.string.pause, KeyEvent.KEYCODE_MEDIA_PAUSE))
     }
 
     private fun setupSessionState(playing: Boolean) {
@@ -217,13 +236,13 @@ class PlayerService : Service() {
     }
 
     private fun prepareMediaPlayer() {
-        mediaPlayer.setDataSource(url)
+        mediaPlayer.setDataSource(podcastItem!!.mp3Url)
         mediaPlayer.prepareAsync()
     }
 
     private fun startAndSeek() {
         mediaPlayer.start()
-        mediaPlayer.seekTo(initialPosition ?: 0)
+        mediaPlayer.seekTo(initialPosition)
     }
 
     private fun startTaskIfNeeded() {
@@ -261,6 +280,24 @@ class PlayerService : Service() {
         return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     }
 
+    fun skipToNext() {
+        val nextItem = playlistManager.nextOrNull(podcastItem!!)
+
+        nextItem?.let {
+            play(it, 0)
+            callback?.onSkippedToNext(it)
+        }
+    }
+
+    fun skipToPrevious() {
+        var previousItem = playlistManager.previousOrNull(podcastItem!!)
+
+        previousItem?.let {
+            play(it, 0)
+            callback?.onSkippedToPrevious(it)
+        }
+    }
+
     fun stop() {
         stopSelf()
         stopForeground(true)
@@ -279,7 +316,7 @@ class PlayerService : Service() {
             callback?.onPlayerPaused()
             task?.cancel(true)
 
-            startForeground(mediaTitle!!, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
+            startForeground(podcastItem!!.title, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
         }
     }
 
@@ -302,6 +339,14 @@ class PlayerService : Service() {
     }
 
     fun isPlaying() : Boolean = initalized && mediaPlayer.isPlaying
+
+    private fun getDuration() : Float {
+        if (isPlaying()) {
+            return mediaPlayer.duration.toFloat()
+        }
+
+        return 0F
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -332,7 +377,7 @@ class PlayerService : Service() {
         val stopIntent = getActionIntent(KeyEvent.KEYCODE_MEDIA_STOP)
 
         style   .setMediaSession(session!!.sessionToken)
-                .setShowActionsInCompactView(0, 1)
+                .setShowActionsInCompactView(0, 1, 2, 3)
                 .setCancelButtonIntent(stopIntent)
                 .setShowCancelButton(true)
 
@@ -348,9 +393,10 @@ class PlayerService : Service() {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setLargeIcon((ContextCompat.getDrawable(this, R.mipmap.ic_launcher) as BitmapDrawable).bitmap)
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .addAction(generateAction(R.drawable.ic_skip_previous_white_36dp, R.string.previous, KeyEvent.KEYCODE_MEDIA_PREVIOUS))
                 .addAction(action)
                 .addAction(generateAction(R.drawable.ic_stop_white_36dp, R.string.stop, KeyEvent.KEYCODE_MEDIA_STOP))
-                .setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+                .addAction(generateAction(R.drawable.ic_skip_next_white_36dp, R.string.next, KeyEvent.KEYCODE_MEDIA_NEXT))
 
         startForeground(ID, builder.build())
     }
@@ -404,14 +450,42 @@ class DurationUpdatesTask(var service: PlayerService) : AsyncTask<Void , Int, Vo
     }
 }
 
+class PlaylistManager {
+    private var items : List<PodcastItem> = listOf()
+
+    fun clear() {
+        this.items = listOf()
+    }
+
+    fun setItems(items: ArrayList<PodcastItem>) {
+        this.items = items
+    }
+
+    fun nextOrNull(podcastItem: PodcastItem) : PodcastItem? {
+        val indexOf = items.indexOf(podcastItem)
+
+        return if (indexOf == -1) null else items.getOrNull(indexOf + 1)
+    }
+
+    fun previousOrNull(podcastItem: PodcastItem) : PodcastItem? {
+        val indexOf = items.indexOf(podcastItem)
+
+        return if (indexOf == -1) null else items.getOrNull(indexOf - 1)
+    }
+}
+
 interface PlayerCallback {
-    fun onDurationAvailable(duration : Int)
+    fun onDurationChanged(duration : Int)
+    fun onDurationAvailabilityChanged(durationAvailable: Int)
     fun onPositionChanged(position : Int)
     fun onAudioFocusFailed()
 
     fun onPlayerStarted()
     fun onPlayerPaused()
     fun onPlayerStopped()
+
+    fun onSkippedToPrevious(podcastItem: PodcastItem)
+    fun onSkippedToNext(podcastItem: PodcastItem)
 }
 
 abstract class SmartReceiver : BroadcastReceiver() {

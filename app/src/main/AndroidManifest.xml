@@ -21,7 +21,9 @@
 
         <activity
             android:name=".podcastlist.view.PodcastListActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:theme="@style/LauncherAppTheme" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -13,9 +13,11 @@ import br.com.wakim.eslpodclient.extensions.snack
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.podcastlist.adapter.PodcastListAdapter
 import br.com.wakim.eslpodclient.podcastlist.presenter.PodcastListPresenter
+import br.com.wakim.eslpodclient.podcastplayer.view.ListPlayerView
 import br.com.wakim.eslpodclient.view.BaseActivity
-import br.com.wakim.eslpodclient.view.BottomSpacingItemDecoration
-import br.com.wakim.eslpodclient.view.LoadingFloatingActionButton
+import br.com.wakim.eslpodclient.widget.BottomSpacingItemDecoration
+import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
+import br.com.wakim.eslpodclient.widget.SpacingItemDecoration
 import butterknife.bindView
 import java.util.*
 import javax.inject.Inject
@@ -36,7 +38,7 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
 
     val coordinatorLayout : CoordinatorLayout by bindView(R.id.coordinator_layout)
     val recyclerView : RecyclerView by bindView(R.id.recycler_view)
-    val playerView : ListPlayerView by bindView(R.id.player_view)
+    val playerView: ListPlayerView by bindView(R.id.player_view)
 
     val playFab : FloatingActionButton by bindView(R.id.fab_play)
     val pauseFab : FloatingActionButton by bindView(R.id.fab_pause)
@@ -53,22 +55,33 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_podcastlist)
 
         activityComponent.inject(this)
 
+        configureAdapter()
+        configureRecyclerView()
+
+        playerView.setControls(playFab, pauseFab, loadingFab)
+    }
+
+    fun configureAdapter() {
         adapter = PodcastListAdapter(this)
         adapter.onClickListener = { podcastItem : PodcastItem ->
             showPlayerViewIfNeeded()
             playerView.play(podcastItem)
         }
+    }
 
+    fun configureRecyclerView() {
         val spacing = dp(8F).toInt()
 
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(bottomSpacingDecoration)
-        recyclerView.addItemDecoration(SpacingItemDecoration(columns = 1, spacingTop = spacing, spacingBottom =  spacing))
+        recyclerView.addItemDecoration(SpacingItemDecoration(columns = 1, spacingTop = spacing, spacingBottom = spacing))
 
         recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
@@ -86,8 +99,6 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
                 }
             }
         })
-
-        playerView.setControls(playFab, pauseFab, loadingFab)
     }
 
     fun showPlayerViewIfNeeded() {
@@ -95,10 +106,10 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
             return
         }
 
+        playerView.visibility = View.VISIBLE
+
         bottomSpacingDecoration.bottomSpacing = dp(72F).toInt()
         recyclerView.invalidateItemDecorations()
-
-        playerView.visibility = View.VISIBLE
     }
 
     override fun addItems(list: ArrayList<PodcastItem>) {
@@ -115,8 +126,8 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
         playerView.explicitlyStop()
+        super.onBackPressed()
     }
 
     override fun showMessage(messageResId: Int) {

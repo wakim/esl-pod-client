@@ -29,8 +29,8 @@ class PodcastDetailOnSubscribe(val podcastItem: PodcastItem, val itemUrl: String
         podcastDetail.title = podcastItem.title
 
         subscriber?.let {
-            if (!subscriber.isUnsubscribed)
-                subscriber.onSuccess(podcastDetail)
+            if (!it.isUnsubscribed)
+                it.onSuccess(podcastDetail)
         }
     }
 

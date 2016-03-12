@@ -48,19 +48,17 @@
                 android:textStyle="bold"
                 android:ellipsize="end"
                 android:maxLines="1"
-                fontPath="fonts/Roboto-Bold.ttf"
                 tools:text="Titulo do podcast com um pouco mais texto para ver como fica a zoeira reinar nesse layout"
                 tools:ignore="MissingPrefix" />
 
-            <TextView
+            <pl.charmas.android.tagview.TagView
                 android:id="@+id/tv_tags"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="16dp"
-                android:layout_marginEnd="16dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="?android:attr/textColorSecondary"
-                tools:text="Tags, tags, tags, tags" />
+                style="@style/TagView"
+                tools:text="Tags tags tags tags" />
         </LinearLayout>
     </LinearLayout>
 </br.com.wakim.eslpodclient.podcastlist.view.PodcastListItemView>

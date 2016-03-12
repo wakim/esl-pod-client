@@ -32,10 +32,10 @@
 
         </LinearLayout>
 
-        <br.com.wakim.eslpodclient.podcastlist.view.ListPlayerView
+        <br.com.wakim.eslpodclient.podcastplayer.view.ListPlayerView
             android:id="@+id/player_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:minHeight="72dp"
             android:background="#fff"
             android:visibility="gone"
@@ -46,7 +46,7 @@
             tools:visibility="visible">
 
             <include layout="@layout/bottomsheet_list_player" />
-        </br.com.wakim.eslpodclient.podcastlist.view.ListPlayerView>
+        </br.com.wakim.eslpodclient.podcastplayer.view.ListPlayerView>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_play"
@@ -72,7 +72,7 @@
             app:layout_anchor="@+id/player_view"
             app:layout_anchorGravity="top|right" />
 
-        <br.com.wakim.eslpodclient.view.LoadingFloatingActionButton
+        <br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
             android:id="@+id/fab_loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

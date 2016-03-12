@@ -5,8 +5,11 @@ import android.os.Bundle
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.bindService
+import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.extensions.startService
+import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.model.PodcastItem
+import br.com.wakim.eslpodclient.model.PodcastItemDetail
 import br.com.wakim.eslpodclient.podcastplayer.view.PlayerView
 import br.com.wakim.eslpodclient.presenter.Presenter
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
@@ -16,18 +19,25 @@ import br.com.wakim.eslpodclient.service.StorageService
 import br.com.wakim.eslpodclient.service.TypedBinder
 import br.com.wakim.eslpodclient.view.PermissionRequester
 import rx.Observable
+import rx.SingleSubscriber
 
-class PlayerPresenter(private val app : Application, private val permissionRequester: PermissionRequester) : Presenter<PlayerView>() {
+class PlayerPresenter(private val app : Application,
+                      private val permissionRequester: PermissionRequester,
+                      private val podcastInteractor: PodcastInteractor) : Presenter<PlayerView>() {
 
     companion object {
         private final val PODCAST_ITEM = "PODCAST_ITEM"
+        private final val PODCAST_DETAIL = "PODCAST_DETAIL"
         private final val WRITE_STORAGE_PERMISSION = 12
     }
 
-    var playPending : Boolean = false
     var podcastItem : PodcastItem? = null
+    var podcastDetail : PodcastItemDetail? = null
+
     var playerService : PlayerService? = null
     var storageService : StorageService? = null
+
+    var playPending : Boolean = false
 
     val playerCallback = object : PlayerCallback {
 
@@ -35,10 +45,12 @@ class PlayerPresenter(private val app : Application, private val permissionReque
             // TODO
         }
 
-        override fun onDurationAvailable(duration: Int) {
-            view?.let {
-                it.setMaxProgress(duration)
-            }
+        override fun onDurationChanged(duration: Int) {
+            view?.setMaxProgress(duration)
+        }
+
+        override fun onDurationAvailabilityChanged(durationAvailable: Int) {
+            view?.setMaxAvailableProgress(durationAvailable)
         }
 
         override fun onPositionChanged(position: Int) {
@@ -61,6 +73,14 @@ class PlayerPresenter(private val app : Application, private val permissionReque
 
             unbindToService()
         }
+
+        override fun onSkippedToPrevious(podcastItem: PodcastItem) {
+            loadDetail(podcastItem)
+        }
+
+        override fun onSkippedToNext(podcastItem: PodcastItem) {
+            loadDetail(podcastItem)
+        }
     }
 
     var playerServiceConnection : ServiceConnection? = null
@@ -68,12 +88,16 @@ class PlayerPresenter(private val app : Application, private val permissionReque
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+
+        outState.putParcelable(PODCAST_DETAIL, podcastDetail)
         outState.putParcelable(PODCAST_ITEM, podcastItem)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
+
         podcastItem = savedInstanceState?.getParcelable<PodcastItem>(PODCAST_ITEM)
+        podcastDetail = savedInstanceState?.getParcelable<PodcastItemDetail>(PODCAST_DETAIL)
     }
 
     override fun onStart() {
@@ -173,18 +197,18 @@ class PlayerPresenter(private val app : Application, private val permissionReque
             return
         }
 
-        if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            permissionRequester.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, WRITE_STORAGE_PERMISSION)
-
-            return
-        }
+//        if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//            permissionRequester.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, WRITE_STORAGE_PERMISSION)
+//
+//            return
+//        }
 
         val item = podcastItem as PodcastItem
-        val remotePath = storageService!!.startDownloadIfNeeded(item)
+//        val remotePath = storageService!!.startDownloadIfNeeded(item)
 
         playerService!!.let {
             it.reset()
-            it.play(remotePath, item.title, view?.getProgressValue() ?: 0)
+            it.play(item, view?.getProgressValue() ?: 0)
 
             playPending = false
         }
@@ -200,6 +224,7 @@ class PlayerPresenter(private val app : Application, private val permissionReque
         view!!.setProgressValue(0)
 
         onPlayClicked()
+        loadDetail(podcastItem)
     }
 
     fun isPlaying(): Boolean {
@@ -207,4 +232,31 @@ class PlayerPresenter(private val app : Application, private val permissionReque
     }
 
     fun isPrepared() : Boolean = playerService?.initalized ?: false
+
+    // Details
+
+    fun loadDetail(podcastItem: PodcastItem) {
+        view!!.setLoading(true)
+
+        addSubscription() {
+            podcastInteractor.getPodcastDetail(podcastItem)
+                    .ofIOToMainThread()
+                    .subscribe(object : SingleSubscriber<PodcastItemDetail>(){
+                        override fun onSuccess(detail: PodcastItemDetail) {
+                            podcastDetail = detail
+                            bindDetail()
+                        }
+
+                        override fun onError(e: Throwable?) {
+                        }
+                    })
+        }
+    }
+
+    fun bindDetail() {
+        view?.let {
+            it.setLoading(false)
+            it.setPodcastDetail(podcastDetail!!)
+        }
+    }
 }

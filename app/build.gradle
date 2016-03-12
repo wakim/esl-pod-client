@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 
 def final appConfig = [
         versions: [
-                "support_library": "23.2.0",
+                "support_library": "23.2.1",
                 "kotlin_version": "$kotlin_version",
                 "support_test": "0.4.1",
                 "espresso": "2.2.1"

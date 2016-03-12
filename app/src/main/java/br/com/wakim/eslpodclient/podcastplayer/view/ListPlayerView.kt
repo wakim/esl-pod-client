@@ -1,4 +1,4 @@
-package br.com.wakim.eslpodclient.podcastlist.view
+package br.com.wakim.eslpodclient.podcastplayer.view
 
 import android.content.Context
 import android.os.Bundle
@@ -19,23 +19,24 @@ import br.com.wakim.eslpodclient.dagger.ActivityComponent
 import br.com.wakim.eslpodclient.extensions.*
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastItemDetail
-import br.com.wakim.eslpodclient.podcastdetail.presenter.PodcastDetailPresenter
-import br.com.wakim.eslpodclient.podcastdetail.view.PodcastDetailView
 import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
-import br.com.wakim.eslpodclient.podcastplayer.view.PlayerView
 import br.com.wakim.eslpodclient.view.BaseActivity
-import br.com.wakim.eslpodclient.view.LoadingFloatingActionButton
+import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
 import butterknife.bindView
 import javax.inject.Inject
 
-class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
+class ListPlayerView : AppBarLayout, PlayerView {
 
     companion object {
-        final const val PARENT_STATE_KEY = "STATE"
+        final const val SUPER_STATE_KEY = "SUPER_STATE"
     }
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?) : super(context)
+
+    init {
+        (context.getSystemService(ActivityComponent::class.java.simpleName) as ActivityComponent?)?.inject(this)
+    }
 
     val callback = object : BottomSheetBehavior.BottomSheetCallback() {
         override fun onSlide(bottomSheet: View, slideOffset: Float) {
@@ -44,7 +45,9 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             when (newState) {
                 BottomSheetBehavior.STATE_EXPANDED -> hideFabs()
-                BottomSheetBehavior.STATE_COLLAPSED -> showFabs()
+                BottomSheetBehavior.STATE_COLLAPSED ->
+                    showFabs()
+
             }
         }
     }
@@ -65,53 +68,62 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
 
     private var bottomSheetBehavior : BottomSheetBehavior<*>? = null
 
-    lateinit var playerPresenter : PlayerPresenter
-    lateinit var detailPresenter : PodcastDetailPresenter
+    lateinit var presenter: PlayerPresenter
 
-    var podcastItem : PodcastItem? = null
+    @set:Inject
+    var baseActivity: BaseActivity<*>? = null
 
     @Inject
     fun injectPlayerPresenter(presenter : PlayerPresenter) {
         presenter.view = this
-        this.playerPresenter = presenter
+        this.presenter = presenter
     }
-
-    @Inject
-    fun injectDetailPresenter(presenter: PodcastDetailPresenter) {
-        presenter.view = this
-        this.detailPresenter = presenter
-    }
-
-    @get:Inject
-    var baseActivity: BaseActivity<*>? = null
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+
         setupBehaviorCallback()
 
-        playerPresenter.onStart()
-        detailPresenter.onStart()
-
-        title.setOnClickListener {
-            bottomSheetBehavior?.toggleState(BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.STATE_COLLAPSED)
-        }
+        presenter.onStart()
+        presenter.onResume()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
 
-        playerPresenter.onStop()
-        detailPresenter.onStop()
+        with (presenter) {
+            onStop()
+            onDestroy()
+        }
+    }
 
-        playerPresenter.onDestroy()
-        detailPresenter.onDestroy()
+    override fun onSaveInstanceState(): Parcelable? {
+        val superState = super.onSaveInstanceState()
+        val bundle = Bundle()
+
+        bundle.putParcelable(SUPER_STATE_KEY, superState)
+
+        presenter.onSaveInstanceState(bundle)
+
+        return bundle
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        var realState = state
+
+        if (realState is Bundle) {
+            presenter.onRestoreInstanceState(realState)
+            realState = realState.getParcelable(SUPER_STATE_KEY)
+        }
+
+        super.onRestoreInstanceState(realState)
     }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
 
-        if (!isInEditMode) {
-            (context.getSystemService(ActivityComponent::class.java.simpleName) as ActivityComponent?)?.inject(this)
+        title.setOnClickListener {
+            bottomSheetBehavior?.toggleState(BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.STATE_COLLAPSED)
         }
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -122,7 +134,7 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
             }
 
             override fun onStopTrackingTouch(p0: SeekBar) {
-                playerPresenter.seekTo(p0.progress)
+                presenter.seekTo(p0.progress)
             }
         })
     }
@@ -132,39 +144,11 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
         bottomSheetBehavior?.setBottomSheetCallback(callback)
     }
 
-    override fun onSaveInstanceState(): Parcelable? {
-        val superState = super.onSaveInstanceState()
-        val bundle = Bundle()
-
-        playerPresenter.onSaveInstanceState(bundle)
-        detailPresenter.onSaveInstanceState(bundle)
-
-        bundle.putParcelable(PARENT_STATE_KEY, superState)
-
-        return bundle
-    }
-
-    override fun onRestoreInstanceState(state: Parcelable?) {
-        var parentState = state
-
-        if (state is Bundle) {
-            parentState = state.getParcelable(PARENT_STATE_KEY)
-
-            playerPresenter.onRestoreInstanceState(state)
-            detailPresenter.onRestoreInstanceState(state)
-        }
-
-        super.onRestoreInstanceState(parentState)
-    }
-
     fun play(podcastItem: PodcastItem) {
-        this.podcastItem = podcastItem
-
         title.text = podcastItem.title
         script.text = null
 
-        playerPresenter.play(podcastItem)
-        detailPresenter.loadDetail(podcastItem)
+        presenter.play(podcastItem)
 
         this.loadingFab?.let {
             it.showAnimated()
@@ -184,6 +168,10 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
         this.duration.text = duration.millisToElapsedTime()
     }
 
+    override fun setMaxAvailableProgress(available: Int) {
+        seekBar.secondaryProgress = available
+    }
+
     override fun showMessage(@StringRes messageResId: Int) {
         baseActivity?.showMessage(messageResId) ?: context.snack(this, messageResId)
     }
@@ -195,12 +183,14 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
     }
 
     fun showFabs() {
-        if (playerPresenter.isPlaying()) {
-            showPauseButton()
-        } else if (playerPresenter.isPrepared()) {
-            showPlayButton()
-        } else {
-            showLoadingButton()
+        with (presenter) {
+            if (isPlaying()) {
+                showPauseButton()
+            } else if (isPrepared()) {
+                showPlayButton()
+            } else {
+                showLoadingButton()
+            }
         }
     }
 
@@ -247,20 +237,16 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
         this.loadingFab = loadingFab
 
         playFab.setOnClickListener {
-            playerPresenter.onPlayClicked()
+            presenter.onPlayClicked()
         }
 
         pauseFab.setOnClickListener {
-            playerPresenter.onPauseClicked()
+            presenter.onPauseClicked()
         }
     }
 
     fun explicitlyStop() {
-        playerPresenter.explicitlyStop()
-    }
-
-    override fun getPodcastItemParameter(): PodcastItem {
-        return podcastItem!!
+        presenter.explicitlyStop()
     }
 
     override fun setLoading(loading: Boolean) {
@@ -269,5 +255,6 @@ class ListPlayerView : AppBarLayout, PlayerView, PodcastDetailView {
 
     override fun setPodcastDetail(podcastItemDetail: PodcastItemDetail) {
         script.text = Html.fromHtml(podcastItemDetail.script)
+        title.text = podcastItemDetail.title
     }
 }

@@ -11,6 +11,20 @@ data class PodcastItem(val title: String, val remoteId: Long, val blurb: String,
     @Retention(AnnotationRetention.SOURCE)
     annotation class Type()
 
+    val userFriendlyTitle: String by lazy {
+        if (type == ENGLISH_CAFE) {
+            return@lazy title
+        }
+
+        val indexOf = title.indexOf(" – ")
+
+        if (indexOf > -1) {
+            return@lazy title.substring(indexOf + 3)
+        }
+
+        title
+    }
+
     constructor(source: Parcel): this(source.readString(), source.readLong(), source.readString(), source.readString(), source.readSerializable() as LocalDate, source.readString(), source.readLong(), source.readString())
 
     override fun writeToParcel(p0: Parcel?, p1: Int) {

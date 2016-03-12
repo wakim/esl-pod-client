@@ -1,10 +1,11 @@
-package br.com.wakim.eslpodclient.view
+package br.com.wakim.eslpodclient.widget
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.support.design.widget.FloatingActionButton
 import android.util.AttributeSet
+import android.view.animation.LinearInterpolator
 import br.com.wakim.eslpodclient.R
 
 class LoadingFloatingActionButton : FloatingActionButton {
@@ -17,7 +18,6 @@ class LoadingFloatingActionButton : FloatingActionButton {
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-
         setImageResource(R.drawable.ic_loop_white_24dp)
     }
 
@@ -33,6 +33,8 @@ class LoadingFloatingActionButton : FloatingActionButton {
 
             repeatCount = ValueAnimator.INFINITE
             repeatMode = ValueAnimator.RESTART
+
+            interpolator = LinearInterpolator()
 
             start()
         }

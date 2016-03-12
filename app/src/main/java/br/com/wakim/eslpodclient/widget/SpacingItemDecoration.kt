@@ -1,4 +1,4 @@
-package br.com.wakim.eslpodclient.podcastlist.view
+package br.com.wakim.eslpodclient.widget
 
 import android.graphics.Rect
 import android.support.v7.widget.RecyclerView
