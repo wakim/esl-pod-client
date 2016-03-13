@@ -7,8 +7,8 @@ import android.support.annotation.RequiresPermission
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
-import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
+import rx.schedulers.Schedulers
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
@@ -30,14 +30,6 @@ class StorageService : Service() {
         super.onCreate()
 
         (applicationContext.getSystemService(AppComponent::class.java.simpleName) as AppComponent?)?.inject(this)
-
-        storageInteractor.bindReceiverForUpdates()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        storageInteractor.unbindReceiverForUpdates()
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -46,13 +38,9 @@ class StorageService : Service() {
 
     @RequiresPermission(allOf = arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE))
     fun startDownloadIfNeeded(podcastItem: PodcastItem) {
-        val currentStatus = podcastItem.downloadStatus.status
-
-        if (currentStatus == DownloadStatus.DOWNLOADING || currentStatus == DownloadStatus.DOWNLOADED) {
-            return
-        }
-
-        podcastItem.downloadStatus = storageInteractor.startDownloadIfNeeded(podcastItem)
+        storageInteractor.startDownloadIfNeeded(podcastItem)
+                .observeOn(Schedulers.io())
+                .subscribe()
     }
 }
 

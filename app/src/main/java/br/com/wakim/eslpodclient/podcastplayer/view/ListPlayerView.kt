@@ -364,6 +364,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
         this.loadingFab = loadingFab
 
         playFab.setOnClickListener {
+            showLoadingButton()
             presenter.onPlayClicked()
         }
 

@@ -12,7 +12,7 @@ import rx.Single
 import rx.SingleSubscriber
 import java.util.*
 
-class PodcastListOnSubscribe(private var storageInteractor: StorageInteractor, val url : String) : Single.OnSubscribe<PodcastList> {
+class PodcastListOnSubscribe(val url: String): Single.OnSubscribe<PodcastList> {
 
     companion object {
         final val PODCAST_TABLE_HOME_CLASS = ".podcast_table_home"
@@ -38,11 +38,7 @@ class PodcastListOnSubscribe(private var storageInteractor: StorageInteractor, v
                 .map { buildPodcastItem(it) }
                 .filter { it != null }
                 .forEach { item ->
-                    podcastList.list.add(
-                            item!!.let {
-                                it.copy(downloadStatus = storageInteractor.getDownloadStatus(it))
-                            }
-                    )
+                    podcastList.list.add(item!!)
                 }
 
         podcastList.currentPageUrl = url
@@ -54,7 +50,7 @@ class PodcastListOnSubscribe(private var storageInteractor: StorageInteractor, v
         }
     }
 
-    fun buildPodcastItem(rootElement : Element) : PodcastItem? {
+    fun buildPodcastItem(rootElement: Element) : PodcastItem? {
         val bodyElement = rootElement.select(BODY_SELECTOR).first()
         val titleElement = bodyElement.select(TITLE_SELECTOR).first()
 
@@ -84,13 +80,13 @@ class PodcastListOnSubscribe(private var storageInteractor: StorageInteractor, v
     fun getMp3Url(root: Element) : String = root.select("a")[3].attr("href")
 
     @PodcastItem.Type
-    fun getType(mp3Url : String) : Long {
+    fun getType(mp3Url: String) : Long {
         val fileName = mp3Url.split("/").last()
 
         return if (fileName.startsWith(ENGLISH_CAFE_TYPE_PREFIX)) PodcastItem.ENGLISH_CAFE else PodcastItem.PODCAST
     }
 
-    fun getDate(root : Element) : LocalDate? {
+    fun getDate(root: Element) : LocalDate? {
         val dateElement = root.select(DATE_SELECTOR).firstOrNull()
 
         dateElement?.let {
@@ -106,6 +102,6 @@ class PodcastListOnSubscribe(private var storageInteractor: StorageInteractor, v
         return null
     }
 
-    fun getNextPage(document : Document) : String?  =
+    fun getNextPage(document: Document) : String?  =
         document.select(PAGINATION_NEXT_SELECTOR).firstOrNull()?.attr("abs:href")
 }

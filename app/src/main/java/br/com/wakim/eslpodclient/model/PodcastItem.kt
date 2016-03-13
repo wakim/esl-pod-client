@@ -5,7 +5,7 @@ import android.os.Parcelable
 import android.support.annotation.IntDef
 import org.threeten.bp.LocalDate
 
-data class PodcastItem(val title: String, val remoteId: Long, val blurb: String, val mp3Url: String, val date: LocalDate?, val tags: String?, @Type val type : Long = PODCAST, var downloadStatus : DownloadStatus = DownloadStatus()) : Parcelable {
+data class PodcastItem(val title: String, val remoteId: Long, val blurb: String, val mp3Url: String, val date: LocalDate?, val tags: String?, @Type val type : Long = PODCAST) : Parcelable {
 
     @IntDef(ENGLISH_CAFE, PODCAST)
     @Retention(AnnotationRetention.SOURCE)
@@ -50,9 +50,7 @@ data class PodcastItem(val title: String, val remoteId: Long, val blurb: String,
             source.readString(),
             source.readSerializable() as LocalDate,
             source.readString(),
-            source.readLong(),
-            source.readParcelable<DownloadStatus>(DownloadStatus::class.java.classLoader)
-    )
+            source.readLong())
 
     override fun writeToParcel(p0: Parcel, p1: Int) {
         p0.writeString(title)
@@ -62,7 +60,6 @@ data class PodcastItem(val title: String, val remoteId: Long, val blurb: String,
         p0.writeSerializable(date)
         p0.writeString(tags)
         p0.writeLong(type)
-        p0.writeParcelable(downloadStatus, p1)
     }
 
     override fun hashCode(): Int  = remoteId.hashCode()

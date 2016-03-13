@@ -21,8 +21,11 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.view.KeyEvent
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.AppComponent
+import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
+import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
+import rx.Subscription
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -110,6 +113,9 @@ class PlayerService : Service() {
     @Inject
     lateinit var audioManager: AudioManager
 
+    @Inject
+    lateinit var storageInteractor: StorageInteractor
+
     private var session: MediaSessionCompat? = null
     private var controller: MediaControllerCompat? = null
 
@@ -117,6 +123,8 @@ class PlayerService : Service() {
     private var initialPosition: Int = 0
 
     private var task: DurationUpdatesTask? = null
+
+    private var downloadStatusSubscription: Subscription? = null
 
     val playlistManager: PlaylistManager by lazy {
         PlaylistManager()
@@ -136,6 +144,8 @@ class PlayerService : Service() {
     override fun onCreate() {
         super.onCreate()
         (applicationContext.getSystemService(AppComponent::class.java.simpleName) as AppComponent?)?.inject(this)
+
+        session = session ?: initMediaSession()
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -143,8 +153,6 @@ class PlayerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        session = session ?: initMediaSession()
-
         intent?.let {
             MediaButtonReceiver.handleIntent(session, intent)
             handleIntent(it)
@@ -202,7 +210,7 @@ class PlayerService : Service() {
             return
         }
 
-        if (initalized) {
+        if (isPlaying()) {
             pause()
         }
 
@@ -253,17 +261,26 @@ class PlayerService : Service() {
 
     private fun prepareMediaPlayer() {
         podcastItem?.let {
-            val url: String
+            downloadStatusSubscription?.unsubscribe()
 
-            if (it.downloadStatus.status == DownloadStatus.DOWNLOADED) {
-                url = it.downloadStatus.localPath!!
-            } else {
-                url = it.mp3Url
-            }
-
-            mediaPlayer.setDataSource(url)
-            mediaPlayer.prepareAsync()
+            downloadStatusSubscription =
+                    storageInteractor.getDownloadStatus(it)
+                            .ofIOToMainThread()
+                            .subscribe { downloadStatus -> prepare(downloadStatus, it) }
         }
+    }
+
+    private fun prepare(downloadStatus: DownloadStatus, podcastItem: PodcastItem) {
+        val url: String
+
+        if (downloadStatus.status == DownloadStatus.DOWNLOADED) {
+            url = downloadStatus.localPath!!
+        } else {
+            url = podcastItem.mp3Url
+        }
+
+        mediaPlayer.setDataSource(url)
+        mediaPlayer.prepareAsync()
     }
 
     private fun startAndSeek() {
@@ -327,8 +344,8 @@ class PlayerService : Service() {
     }
 
     fun dispose() {
-        stopSelf()
         stopForeground(true)
+        release()
     }
 
     fun stop() {
@@ -350,6 +367,7 @@ class PlayerService : Service() {
             initialPosition = mediaPlayer.currentPosition
 
             mediaPlayer.pause()
+
             session?.isActive = false
 
             unregisterNoisyReceiver()
@@ -414,6 +432,8 @@ class PlayerService : Service() {
             it.isActive = false
             it.release()
         }
+
+        callback?.onPlayerStopped()
     }
 
     private fun startForeground(mediaTitle: String, action: NotificationCompat.Action) {
@@ -498,10 +518,6 @@ class DurationUpdatesTask(var service: PlayerService) : AsyncTask<Void , Int, Vo
 
 class PlaylistManager {
     private var items : List<PodcastItem> = listOf()
-
-    fun clear() {
-        this.items = listOf()
-    }
 
     fun setItems(items: ArrayList<PodcastItem>) {
         this.items = items

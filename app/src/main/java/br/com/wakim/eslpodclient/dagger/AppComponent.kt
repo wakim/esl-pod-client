@@ -4,6 +4,7 @@ import br.com.wakim.eslpodclient.dagger.module.ActivityModule
 import br.com.wakim.eslpodclient.dagger.module.AppModule
 import br.com.wakim.eslpodclient.dagger.module.InteractorModule
 import br.com.wakim.eslpodclient.preference.PreferenceManager
+import br.com.wakim.eslpodclient.service.DownloadManagerReceiver
 import br.com.wakim.eslpodclient.service.PlayerService
 import br.com.wakim.eslpodclient.service.StorageService
 import dagger.Component
@@ -14,6 +15,7 @@ import javax.inject.Singleton
 interface AppComponent {
     fun inject(playerService: PlayerService)
     fun inject(storageService: StorageService)
+    fun inject(downloadManagerReceiver: DownloadManagerReceiver)
 
     fun prefencesManager() : PreferenceManager
     fun plus(activityModule: ActivityModule) : ActivityComponent

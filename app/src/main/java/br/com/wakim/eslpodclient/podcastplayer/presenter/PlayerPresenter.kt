@@ -6,7 +6,6 @@ import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.bindService
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
-import br.com.wakim.eslpodclient.extensions.startService
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastItemDetail
@@ -140,8 +139,6 @@ class PlayerPresenter(private val app : Application,
         var storageObservable : Observable<Pair<ServiceConnection, TypedBinder<StorageService>?>> = Observable.empty()
 
         if (playerService == null) {
-            app.startService<PlayerService> { }
-
             playerObservable = app.bindService<PlayerService>()
 
             playerObservable = playerObservable

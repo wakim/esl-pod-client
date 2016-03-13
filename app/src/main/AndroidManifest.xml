@@ -41,6 +41,13 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".service.DownloadManagerReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".service.PlayerService"
             android:exported="false">

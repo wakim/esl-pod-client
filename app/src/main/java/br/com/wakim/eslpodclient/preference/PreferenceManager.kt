@@ -16,7 +16,5 @@ class PreferenceManager {
         sharedPreferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
     }
 
-    fun getDownloadLocation() : String? {
-        return sharedPreferences.getString(DOWNLOAD_LOCATION_KEY, null)
-    }
+    fun getDownloadLocation(): String? = sharedPreferences.getString(DOWNLOAD_LOCATION_KEY, null)
 }
