@@ -1,9 +1,9 @@
 package br.com.wakim.eslpodclient.service
 
-import android.app.DownloadManager
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.support.annotation.RequiresPermission
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
@@ -22,49 +22,37 @@ class StorageService : Service() {
     lateinit var app : Application
 
     @Inject
-    lateinit var downloadManager : DownloadManager
-
-    @Inject
     lateinit var storageInteractor : StorageInteractor
 
     val binder = StorageLocalBinder(this)
-
-    var fileServer : FileServer? = null
-
-    var lastDownloadRequest : StorageInteractor.DownloadRequest? = null
 
     override fun onCreate() {
         super.onCreate()
 
         (applicationContext.getSystemService(AppComponent::class.java.simpleName) as AppComponent?)?.inject(this)
 
-//        if (fileServer == null) {
-//            fileServer = FileServer(storageInteractor.getBaseDir())
-//            fileServer!!.start()
-//        }
+        storageInteractor.bindReceiverForUpdates()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        storageInteractor.unbindReceiverForUpdates()
     }
 
     override fun onBind(p0: Intent?): IBinder? {
         return binder
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    @RequiresPermission(allOf = arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE))
+    fun startDownloadIfNeeded(podcastItem: PodcastItem) {
+        val currentStatus = podcastItem.downloadStatus.status
 
-        lastDownloadRequest?.let {
-            storageInteractor.cancelDownloadIfPending(it)
+        if (currentStatus == DownloadStatus.DOWNLOADING || currentStatus == DownloadStatus.DOWNLOADED) {
+            return
         }
 
-//        fileServer?.stop()
-    }
-
-    fun startDownloadIfNeeded(podcastItem: PodcastItem) : String  {
-        val lastDownloadRequest = storageInteractor.startDownloadIfNeeded(podcastItem)
-        this.lastDownloadRequest = lastDownloadRequest
-
-        podcastItem.downloadStatus = DownloadStatus(lastDownloadRequest.localPath, DownloadStatus.DOWNLOADING)
-
-        return lastDownloadRequest.downloadUrl
+        podcastItem.downloadStatus = storageInteractor.startDownloadIfNeeded(podcastItem)
     }
 }
 

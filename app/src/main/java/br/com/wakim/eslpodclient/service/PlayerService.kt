@@ -21,6 +21,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.view.KeyEvent
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.AppComponent
+import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
 import java.lang.ref.WeakReference
 import java.util.*
@@ -252,7 +253,15 @@ class PlayerService : Service() {
 
     private fun prepareMediaPlayer() {
         podcastItem?.let {
-            mediaPlayer.setDataSource(it.downloadStatus.localPath ?: it.mp3Url)
+            val url: String
+
+            if (it.downloadStatus.status == DownloadStatus.DOWNLOADED) {
+                url = it.downloadStatus.localPath!!
+            } else {
+                url = it.mp3Url
+            }
+
+            mediaPlayer.setDataSource(url)
             mediaPlayer.prepareAsync()
         }
     }

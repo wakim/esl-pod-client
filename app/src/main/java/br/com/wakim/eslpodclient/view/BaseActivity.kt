@@ -152,8 +152,8 @@ open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionReque
         return super.getSystemService(name)
     }
 
-    override fun requestPermission(permission: String, requestCode: Int) {
-        ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
+    override fun requestPermissions(requestCode: Int, vararg permissions: String) {
+        ActivityCompat.requestPermissions(this, permissions, requestCode)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

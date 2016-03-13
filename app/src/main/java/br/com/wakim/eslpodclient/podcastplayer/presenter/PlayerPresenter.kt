@@ -20,6 +20,7 @@ import br.com.wakim.eslpodclient.service.TypedBinder
 import br.com.wakim.eslpodclient.view.PermissionRequester
 import rx.Observable
 import rx.SingleSubscriber
+import rx.android.schedulers.AndroidSchedulers
 
 class PlayerPresenter(private val app : Application,
                       private val permissionRequester: PermissionRequester,
@@ -105,6 +106,7 @@ class PlayerPresenter(private val app : Application,
         addSubscription {
             PermissionPublishSubject.INSTANCE
                     .publishSubject
+                    .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe { permission ->
                         (permission.requestCode == WRITE_STORAGE_PERMISSION).let {
                             if (permission.isGranted()) {
@@ -224,19 +226,15 @@ class PlayerPresenter(private val app : Application,
     }
 
     fun startDownload() {
-//        podcastItem?.let {
-//            if (it.downloadStatus.isFinished()) {
-//                return
-//            }
-//
-//            if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//                permissionRequester.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, WRITE_STORAGE_PERMISSION)
-//
-//                return
-//            }
-//
-//            storageService!!.startDownloadIfNeeded(it)
-//        }
+        podcastItem?.let {
+            if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                permissionRequester.requestPermissions(WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+
+                return
+            }
+
+            storageService!!.startDownloadIfNeeded(it)
+        }
     }
 
     fun seekTo(pos : Int) {

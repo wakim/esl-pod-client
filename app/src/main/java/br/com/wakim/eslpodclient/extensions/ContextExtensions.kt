@@ -6,9 +6,11 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.os.IBinder
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
+import android.support.v4.content.ContextCompat
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
@@ -93,4 +95,8 @@ fun Context.snack(view: View, @StringRes message: Int, duration: Int = Snackbar.
     snack.show()
 
     return snack
+}
+
+fun Context.hasPermission(permission: String): Boolean {
+    return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 }

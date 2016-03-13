@@ -5,10 +5,11 @@
     package="br.com.wakim.eslpodclient">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
     <application
         android:allowBackup="true"
@@ -49,7 +50,8 @@
             </intent-filter>
         </service>
 
-        <service android:name=".service.StorageService"
+        <service
+            android:name=".service.StorageService"
             android:exported="false" />
     </application>
 </manifest>

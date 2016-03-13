@@ -92,22 +92,41 @@ data class PodcastItem(val title: String, val remoteId: Long, val blurb: String,
     }
 }
 
-data class DownloadStatus(val localPath: String? = null, @Status val status: Long = DownloadStatus.NOT_DOWNLOADED) : Parcelable {
+data class DownloadStatus(val localPath: String? = null, val remoteId: Long = -1, val downloadId: Long = -1, @Status var status: Long = DownloadStatus.NOT_DOWNLOADED) : Parcelable {
 
     @IntDef(DownloadStatus.DOWNLOADING, DownloadStatus.DOWNLOADED)
     @Retention(AnnotationRetention.SOURCE)
     annotation class Status()
 
-    constructor(source: Parcel): this(source.readString(), source.readLong())
+    constructor(source: Parcel): this(source.readString(), source.readLong(), source.readLong(), source.readLong())
 
     override fun writeToParcel(p0: Parcel, p1: Int) {
         p0.writeString(localPath)
+        p0.writeLong(remoteId)
+        p0.writeLong(downloadId)
         p0.writeLong(status)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is DownloadStatus) {
+            return false
+        }
+
+        if (localPath == other.localPath) {
+            return true
+        }
+
+        if (downloadId != -1L && other.downloadId != -1L) {
+            return downloadId == other.downloadId
+        }
+
+        return remoteId == other.remoteId
     }
 
     override fun describeContents(): Int = 0
 
     companion object {
+        const val NO_PERMISSION = -1L
         const val NOT_DOWNLOADED = 0L
         const val DOWNLOADING = 1L
         const val DOWNLOADED = 2L
@@ -122,6 +141,4 @@ data class DownloadStatus(val localPath: String? = null, @Status val status: Lon
             }
         }
     }
-
-    fun isFinished(): Boolean = status == DOWNLOADED
 }

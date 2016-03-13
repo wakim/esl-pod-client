@@ -11,8 +11,7 @@ def final appConfig = [
         ],
 
         "base_url": "https://www.eslpod.com/website/show_all.php",
-        "detail_url": "https://www.eslpod.com/website/show_podcast.php",
-        "server_port": 8089
+        "detail_url": "https://www.eslpod.com/website/show_podcast.php"
 ];
 
 def generateVersionCode() {
@@ -50,8 +49,6 @@ android {
 
         buildConfigField("String", "BASE_URL", "\"$appConfig.base_url\"")
         buildConfigField("String", "DETAIL_URL", "\"$appConfig.detail_url\"")
-
-        buildConfigField("int", "SERVER_PORT", "$appConfig.server_port")
     }
 
     buildTypes {
@@ -111,8 +108,6 @@ dependencies {
 
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'com.nbsp:library:1.07'
-
-    compile 'org.nanohttpd:nanohttpd:2.3.0'
 
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
