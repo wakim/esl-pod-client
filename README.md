@@ -6,9 +6,9 @@ This is a hobby project to learn some concepts and tools, including:
  - MVP pattern with RxJava (not RxKotlin)
  - Dagger2
  
-The app uses jsoup to gather the podcasts of ESL Podcast website and allowing the user to store and listen via streaming any podcast.
+The app uses jsoup to gather the podcasts of ESL Podcast website and allowing the user to store and listen any podcast with streaming or using local storage (soon).
 
-It uses a combination of MediaPlayer and MediaPlayback for streaming, DownloadManager to handle the download complexity.
+It uses a combination of MediaPlayer and MediaPlayback for streaming audio and DownloadManager to handle the download complexity.
 
 ----
 
