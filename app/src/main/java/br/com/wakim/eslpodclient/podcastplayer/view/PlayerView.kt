@@ -1,6 +1,7 @@
 package br.com.wakim.eslpodclient.podcastplayer.view
 
 import android.support.annotation.StringRes
+import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastItemDetail
 import br.com.wakim.eslpodclient.view.View
 
@@ -19,5 +20,6 @@ interface PlayerView : View {
 
     fun setLoading(loading: Boolean)
 
+    fun setPodcastItem(podcastItem: PodcastItem)
     fun setPodcastDetail(podcastItemDetail: PodcastItemDetail)
 }

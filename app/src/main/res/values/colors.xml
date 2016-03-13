@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#333333</color>
+    <color name="colorPrimaryDark">#4A4A4A</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="category_cafe">#00f</color>
-    <color name="category_podcast">#0f0</color>
+    <color name="category_cafe">#4A90E2</color>
+    <color name="category_podcast">#1BC09B</color>
+
+    <color name="player_background">#4A90E2</color>
+    <color name="player_controls_background">#4180CA</color>
 </resources>

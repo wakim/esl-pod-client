@@ -88,9 +88,13 @@ class TagView : TextView {
         if (text == null) {
             super.setText(null, type)
         } else {
-            val separator = tagSeparator ?: DEFAULT_SEPARATOR
-            setTags(text.toString().split(separator), tagColor ?: DEFAULT_COLOR, separator)
+            setTags(text.toString().split(tagSeparator ?: DEFAULT_SEPARATOR))
         }
+    }
+
+    fun setTags(tags: List<String>) {
+        val separator = tagSeparator ?: DEFAULT_SEPARATOR
+        setTags(tags, tagColor ?: DEFAULT_COLOR, separator)
     }
 
     fun setTags(tags: List<String>, @ColorInt color: Int, separator: String, type: TextView.BufferType = TextView.BufferType.NORMAL) {

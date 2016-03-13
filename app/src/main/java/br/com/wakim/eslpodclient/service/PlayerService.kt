@@ -42,6 +42,8 @@ class PlayerService : Service() {
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mp.setOnPreparedListener {
             initalized = true
+            preparing = false
+
             play()
         }
 
@@ -103,28 +105,30 @@ class PlayerService : Service() {
     }
 
     @Inject
-    lateinit var audioManager : AudioManager
+    lateinit var audioManager: AudioManager
 
-    private var session : MediaSessionCompat? = null
-    private var controller : MediaControllerCompat? = null
+    private var session: MediaSessionCompat? = null
+    private var controller: MediaControllerCompat? = null
 
     private var podcastItem: PodcastItem? = null
     private var initialPosition: Int = 0
 
-    private var task : DurationUpdatesTask? = null
+    private var task: DurationUpdatesTask? = null
 
     val playlistManager: PlaylistManager by lazy {
         PlaylistManager()
     }
 
-    var callback : PlayerCallback? = null
+    var callback: PlayerCallback? = null
         set(value) {
             field = value
             startTaskIfNeeded()
         }
 
-    var initalized : Boolean = false
+    var initalized: Boolean = false
         private set
+
+    private var preparing: Boolean = false
 
     override fun onCreate() {
         super.onCreate()
@@ -183,7 +187,7 @@ class PlayerService : Service() {
         this.podcastItem = podcastItem
         this.initialPosition = position
 
-        if (initalized) {
+        if (initalized || preparing) {
             reset()
         }
 
@@ -191,14 +195,19 @@ class PlayerService : Service() {
     }
 
     fun reset() {
-        if (!initalized) {
+        if (!initalized && !preparing) {
             return
         }
 
-        pause()
+        if (initalized) {
+            pause()
+        }
+
         mediaPlayer.reset()
 
         initialPosition = 0
+
+        preparing = false
         initalized = false
     }
 
@@ -209,6 +218,8 @@ class PlayerService : Service() {
 
         if (!initalized) {
             prepareMediaPlayer()
+            preparing = true
+
             return
         }
 
@@ -216,6 +227,8 @@ class PlayerService : Service() {
             callback?.onAudioFocusFailed()
             return
         }
+
+        session?.isActive = true
 
         registerNoisyReceiver()
 
@@ -258,7 +271,9 @@ class PlayerService : Service() {
     }
 
     fun registerNoisyReceiver() {
-        unregisterNoisyReceiver()
+        if (noisyReceiver.registered) {
+            return
+        }
 
         registerReceiver(noisyReceiver, IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY))
         noisyReceiver.registered = true
@@ -298,11 +313,22 @@ class PlayerService : Service() {
         }
     }
 
-    fun stop() {
-        stopSelf()
+    fun dispose() {
         stopForeground(true)
+    }
+
+    fun stop() {
+        initialPosition = 0
+
+        mediaPlayer.stop()
+        session?.isActive = false
+
+        unregisterNoisyReceiver()
 
         callback?.onPlayerStopped()
+        task?.cancel(true)
+
+        startForeground(podcastItem!!.title, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
     }
 
     fun pause() {
@@ -310,6 +336,7 @@ class PlayerService : Service() {
             initialPosition = mediaPlayer.currentPosition
 
             mediaPlayer.pause()
+            session?.isActive = false
 
             unregisterNoisyReceiver()
 
@@ -351,6 +378,10 @@ class PlayerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
+        release()
+    }
+
+    fun release() {
         task?.cancel(true)
 
         isPlaying().let {
@@ -359,7 +390,9 @@ class PlayerService : Service() {
         }
 
         initialPosition = 0
+
         initalized = false
+        preparing = false
 
         audioManager.abandonAudioFocus(audioFocusChangeListener)
         unregisterNoisyReceiver()

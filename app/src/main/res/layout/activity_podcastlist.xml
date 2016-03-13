@@ -36,12 +36,12 @@
             android:id="@+id/player_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:minHeight="72dp"
-            android:background="#fff"
+            android:minHeight="128dp"
+            android:background="?android:attr/windowBackground"
             android:visibility="gone"
             android:clickable="true"
             app:behavior_hideable="false"
-            app:behavior_peekHeight="72dp"
+            app:behavior_peekHeight="128dp"
             app:layout_behavior="@string/bottom_sheet_behavior"
             tools:visibility="visible">
 

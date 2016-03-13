@@ -26,4 +26,20 @@
         <item name="tagPrefix">" "</item>
         <item name="tagSeparator">" "</item>
     </style>
+
+    <style name="TextAppearance.AppTheme.Body1.Inverse" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
+    </style>
+
+    <style name="TextAppearance.AppTheme.Body1.Secondary" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="TextAppearance.AppTheme.Body1.Secondary.Inverse" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">?android:attr/textColorSecondaryInverse</item>
+    </style>
+
+    <style name="TextAppearance.AppCompat.Caption.Secondary.Inverse" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textColor">?android:attr/textColorSecondaryInverse</item>
+    </style>
 </resources>

@@ -10,6 +10,8 @@ import android.support.design.widget.FloatingActionButton
 import android.text.Html
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.TextView
@@ -22,6 +24,9 @@ import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
 import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
 import butterknife.bindView
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.FormatStyle
+import pl.charmas.android.tagview.TagView
 import javax.inject.Inject
 
 class ListPlayerView : AppBarLayout, PlayerView {
@@ -51,14 +56,35 @@ class ListPlayerView : AppBarLayout, PlayerView {
         }
     }
 
-    private val seekBar : SeekBar by bindView(R.id.seek_bar)
+    val clickListener = { view: View ->
+        when (view.id) {
+            R.id.ib_play     -> presenter.onPlayClicked()
+            R.id.ib_pause    -> presenter.onPauseClicked()
+            R.id.ib_stop     -> presenter.onStopClicked()
+            R.id.ib_next     -> presenter.onNextClicked()
+            R.id.ib_previous -> presenter.onPreviousClicked()
+        }
+    }
+
+    private val titleContainer : ViewGroup by bindView(R.id.ll_title)
+
     private val title : TextView by bindView(R.id.tv_title)
+    private val subtitle: TextView by bindView(R.id.tv_subtitle)
+    private val tagView: TagView by bindView(R.id.tv_tags)
+
+    private val seekBar : SeekBar by bindView(R.id.seek_bar)
 
     private val loading : ProgressBar by bindView(R.id.pb_loading)
     private val script : TextView by bindView(R.id.tv_script)
 
     private val timer : TextView by bindView(R.id.tv_timer)
     private val duration : TextView by bindView(R.id.tv_duration)
+
+    private val playButton: ImageButton by bindView(R.id.ib_play)
+    private val pauseButton: ImageButton by bindView(R.id.ib_pause)
+    private val stopButton: ImageButton by bindView(R.id.ib_stop)
+    private val nextButton: ImageButton by bindView(R.id.ib_next)
+    private val previousButton: ImageButton by bindView(R.id.ib_previous)
 
     private var playFab : FloatingActionButton? = null
     private var pauseFab : FloatingActionButton? = null
@@ -121,7 +147,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
     override fun onFinishInflate() {
         super.onFinishInflate()
 
-        title.setOnClickListener {
+        titleContainer.setOnClickListener {
             bottomSheetBehavior?.toggleState(BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.STATE_COLLAPSED)
         }
 
@@ -136,6 +162,13 @@ class ListPlayerView : AppBarLayout, PlayerView {
                 presenter.seekTo(p0.progress)
             }
         })
+
+        playButton.setOnClickListener(clickListener)
+        stopButton.setOnClickListener(clickListener)
+        pauseButton.setOnClickListener(clickListener)
+
+        previousButton.setOnClickListener(clickListener)
+        nextButton.setOnClickListener(clickListener)
     }
 
     fun setupBehaviorCallback() {
@@ -144,15 +177,35 @@ class ListPlayerView : AppBarLayout, PlayerView {
     }
 
     fun play(podcastItem: PodcastItem) {
-        title.text = podcastItem.title
-        script.text = null
-
+        bindPodcastInfo(podcastItem)
         presenter.play(podcastItem)
+
+        hideFabs()
+
+        nextButton.isEnabled = false
+        previousButton.isEnabled = false
 
         this.loadingFab?.let {
             it.showAnimated()
             it.startAnimation()
         }
+    }
+
+    fun bindPodcastInfo(podcastItem: PodcastItem) {
+        val formattedDate = podcastItem.date?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+        val titleText = podcastItem.userFriendlyTitle
+
+        if (podcastItem.isEnglishCafe()) {
+            title.text = podcastItem.title
+            subtitle.text = formattedDate
+        } else {
+            title.text = titleText
+            subtitle.text = context.getString(R.string.player_subtitle, podcastItem.podcastName, formattedDate)
+        }
+
+        tagView.setTags(podcastItem.tagList)
+
+        script.text = null
     }
 
     override fun setProgressValue(position: Int) {
@@ -203,6 +256,11 @@ class ListPlayerView : AppBarLayout, PlayerView {
                 it.hideAnimated()
             }
         }
+
+        enableAll()
+
+        playButton.makeHidden()
+        pauseButton.makeVisible()
     }
 
     override fun showPlayButton() {
@@ -216,6 +274,19 @@ class ListPlayerView : AppBarLayout, PlayerView {
                 it.hideAnimated()
             }
         }
+
+        enableAll()
+
+        playButton.makeVisible()
+        pauseButton.makeHidden()
+    }
+
+    fun enableAll() {
+        playButton.isEnabled = true
+        stopButton.isEnabled = true
+        pauseButton.isEnabled = true
+        nextButton.isEnabled = true
+        previousButton.isEnabled = true
     }
 
     fun showLoadingButton() {
@@ -228,6 +299,10 @@ class ListPlayerView : AppBarLayout, PlayerView {
                 it.startAnimation()
             }
         }
+
+        playButton.isEnabled = false
+        stopButton.isEnabled = false
+        pauseButton.isEnabled = false
     }
 
     fun setControls(playFab: FloatingActionButton, pauseFab: FloatingActionButton, loadingFab: LoadingFloatingActionButton) {
@@ -252,8 +327,11 @@ class ListPlayerView : AppBarLayout, PlayerView {
         this.loading.visibility = if (loading) View.VISIBLE else View.GONE
     }
 
+    override fun setPodcastItem(podcastItem: PodcastItem) {
+        bindPodcastInfo(podcastItem)
+    }
+
     override fun setPodcastDetail(podcastItemDetail: PodcastItemDetail) {
         script.text = Html.fromHtml(podcastItemDetail.script)
-        title.text = podcastItemDetail.title
     }
 }

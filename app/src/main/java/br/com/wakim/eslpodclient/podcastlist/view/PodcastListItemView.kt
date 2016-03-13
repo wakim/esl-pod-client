@@ -9,15 +9,19 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import br.com.wakim.eslpodclient.R
+import br.com.wakim.eslpodclient.extensions.makeHidden
+import br.com.wakim.eslpodclient.extensions.makeVisible
 import br.com.wakim.eslpodclient.model.PodcastItem
 import butterknife.bindView
+import pl.charmas.android.tagview.TagView
 
 class PodcastListItemView : CardView {
 
-    val ivCategory : ImageView by bindView(R.id.iv_category)
-    val flCategory : FrameLayout by bindView(R.id.fl_category)
-    val tvTitle : TextView by bindView(R.id.tv_title)
-    val tvTags : TextView by bindView(R.id.tv_tags)
+    val ivCategory: ImageView by bindView(R.id.iv_category)
+    val flCategory: FrameLayout by bindView(R.id.fl_category)
+    val tvTitle: TextView by bindView(R.id.tv_title)
+    val tvSubtitle: TextView by bindView(R.id.tv_subtitle)
+    val tvTags: TagView by bindView(R.id.tv_tags)
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -27,9 +31,16 @@ class PodcastListItemView : CardView {
         with (podcastItem) {
             tvTitle.text = userFriendlyTitle
 
+            if (isEnglishCafe()) {
+                tvSubtitle.makeHidden()
+            } else {
+                tvSubtitle.makeVisible()
+                tvSubtitle.text = podcastName
+            }
+
             tvTags.let {
                 it.visibility = if (tags == null) View.GONE else View.VISIBLE
-                it.text = tags ?: null
+                it.setTags(tagList)
             }
 
             val isCafe = type == PodcastItem.ENGLISH_CAFE

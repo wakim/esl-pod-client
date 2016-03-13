@@ -67,18 +67,18 @@ class PlayerPresenter(private val app : Application,
 
         override fun onPlayerStopped() {
             view?.let {
-                it.showPlayButton()
                 it.setProgressValue(0)
+                it.showPlayButton()
             }
-
-            unbindToService()
         }
 
         override fun onSkippedToPrevious(podcastItem: PodcastItem) {
+            view?.setPodcastItem(podcastItem)
             loadDetail(podcastItem)
         }
 
         override fun onSkippedToNext(podcastItem: PodcastItem) {
+            view?.setPodcastItem(podcastItem)
             loadDetail(podcastItem)
         }
     }
@@ -176,7 +176,8 @@ class PlayerPresenter(private val app : Application,
     }
 
     fun explicitlyStop() {
-        playerService?.stop()
+        playerService?.dispose()
+        unbindToService()
     }
 
     fun onPauseClicked() {
@@ -188,6 +189,18 @@ class PlayerPresenter(private val app : Application,
         playPending = true
 
         doPlay()
+    }
+
+    fun onStopClicked() {
+        playerService?.stop()
+    }
+
+    fun onNextClicked() {
+        playerService?.skipToNext()
+    }
+
+    fun onPreviousClicked() {
+        playerService?.skipToPrevious()
     }
 
     private fun doPlay() {

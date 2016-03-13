@@ -51,12 +51,22 @@
                 tools:text="Titulo do podcast com um pouco mais texto para ver como fica a zoeira reinar nesse layout"
                 tools:ignore="MissingPrefix" />
 
+            <TextView
+                android:id="@+id/tv_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppTheme.Body1.Secondary"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="Subtitulo do podcast com um pouco mais"
+                tools:ignore="MissingPrefix" />
+
             <pl.charmas.android.tagview.TagView
                 android:id="@+id/tv_tags"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="?android:attr/textColorSecondary"
+                android:textColor="#48000000"
                 style="@style/TagView"
                 tools:text="Tags tags tags tags" />
         </LinearLayout>

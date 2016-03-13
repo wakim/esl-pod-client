@@ -14,6 +14,10 @@ fun View.makeVisible() {
     visibility = View.VISIBLE
 }
 
+fun View.makeHidden() {
+    visibility = View.GONE
+}
+
 fun View.hideAnimated() {
     if (isVisible()) {
         alpha = 1F
