@@ -126,7 +126,13 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
     }
 
     override fun onBackPressed() {
+        if (playerView.isExpanded()) {
+            playerView.collapse()
+            return
+        }
+
         playerView.explicitlyStop()
+
         super.onBackPressed()
     }
 

@@ -48,7 +48,9 @@ class PlayerService : Service() {
         }
 
         mp.setOnBufferingUpdateListener { mediaPlayer, buffer ->
-            callback?.onDurationAvailabilityChanged(((buffer.toFloat() * getDuration()) / 100F).toInt())
+            if (isPlaying()) {
+                callback?.onDurationAvailabilityChanged(((buffer.toFloat() * getDuration()) / 100F).toInt())
+            }
         }
 
         mp.setOnCompletionListener {
@@ -249,8 +251,10 @@ class PlayerService : Service() {
     }
 
     private fun prepareMediaPlayer() {
-        mediaPlayer.setDataSource(podcastItem!!.mp3Url)
-        mediaPlayer.prepareAsync()
+        podcastItem?.let {
+            mediaPlayer.setDataSource(it.downloadStatus.localPath ?: it.mp3Url)
+            mediaPlayer.prepareAsync()
+        }
     }
 
     private fun startAndSeek() {
@@ -314,6 +318,7 @@ class PlayerService : Service() {
     }
 
     fun dispose() {
+        stopSelf()
         stopForeground(true)
     }
 
@@ -377,7 +382,6 @@ class PlayerService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-
         release()
     }
 

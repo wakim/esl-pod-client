@@ -7,8 +7,10 @@ import android.support.annotation.StringRes
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.FloatingActionButton
+import android.support.v7.widget.PopupMenu
 import android.text.Html
 import android.util.AttributeSet
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -48,22 +50,32 @@ class ListPlayerView : AppBarLayout, PlayerView {
 
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             when (newState) {
-                BottomSheetBehavior.STATE_EXPANDED -> hideFabs()
-                BottomSheetBehavior.STATE_COLLAPSED ->
-                    showFabs()
-
+                BottomSheetBehavior.STATE_EXPANDED  -> hideFabs()
+                BottomSheetBehavior.STATE_COLLAPSED -> showFabs()
             }
         }
     }
 
-    val clickListener = { view: View ->
+    private val clickListener = { view: View ->
         when (view.id) {
             R.id.ib_play     -> presenter.onPlayClicked()
             R.id.ib_pause    -> presenter.onPauseClicked()
             R.id.ib_stop     -> presenter.onStopClicked()
             R.id.ib_next     -> presenter.onNextClicked()
             R.id.ib_previous -> presenter.onPreviousClicked()
+            R.id.ib_overflow -> showOverflow()
         }
+    }
+
+    private val menuClickListener = { menu: MenuItem ->
+        when (menu.itemId) {
+            R.id.download      -> presenter.startDownload()
+            R.id.slow_dialog   -> presenter.seekToSlowDialog()
+            R.id.explanation   -> presenter.seekToExplanation()
+            R.id.normal_dialog -> presenter.seekToNormalDialog()
+        }
+
+        true
     }
 
     private val titleContainer : ViewGroup by bindView(R.id.ll_title)
@@ -85,6 +97,16 @@ class ListPlayerView : AppBarLayout, PlayerView {
     private val stopButton: ImageButton by bindView(R.id.ib_stop)
     private val nextButton: ImageButton by bindView(R.id.ib_next)
     private val previousButton: ImageButton by bindView(R.id.ib_previous)
+    private val overflowButton: ImageButton by bindView(R.id.ib_overflow)
+
+    private val popupMenu: PopupMenu by lazy {
+        val menu = PopupMenu(context, overflowButton)
+
+        menu.inflate(R.menu.player_overflow)
+        menu.setOnMenuItemClickListener(menuClickListener)
+
+        menu
+    }
 
     private var playFab : FloatingActionButton? = null
     private var pauseFab : FloatingActionButton? = null
@@ -169,11 +191,17 @@ class ListPlayerView : AppBarLayout, PlayerView {
 
         previousButton.setOnClickListener(clickListener)
         nextButton.setOnClickListener(clickListener)
+
+        overflowButton.setOnClickListener(clickListener)
     }
 
     fun setupBehaviorCallback() {
         bottomSheetBehavior = BottomSheetBehavior.from(this)
         bottomSheetBehavior?.setBottomSheetCallback(callback)
+    }
+
+    fun showOverflow() {
+        popupMenu.show()
     }
 
     fun play(podcastItem: PodcastItem) {
@@ -206,6 +234,31 @@ class ListPlayerView : AppBarLayout, PlayerView {
         tagView.setTags(podcastItem.tagList)
 
         script.text = null
+    }
+
+    fun setupOverflowMenu(podcastItemDetail: PodcastItemDetail) {
+        val slowIndexMenu = popupMenu.menu.findItem(R.id.slow_dialog)
+        val explanationIndexMenu = popupMenu.menu.findItem(R.id.explanation)
+        val normalIndexMenu = popupMenu.menu.findItem(R.id.normal_dialog)
+        val context = this.context
+
+        if (podcastItemDetail.isEnglishCafe()) {
+            slowIndexMenu.isVisible = false
+            explanationIndexMenu.isVisible = false
+            normalIndexMenu.isVisible = false
+
+            return
+        }
+
+        val seekPost = podcastItemDetail.seekPos!!
+
+        slowIndexMenu.isVisible = true
+        explanationIndexMenu.isVisible = true
+        normalIndexMenu.isVisible = true
+
+        slowIndexMenu.title = context.getString(R.string.slow_dialog_index, seekPost.slow.secondsToElapsedTime())
+        explanationIndexMenu.title = context.getString(R.string.explanation_index, seekPost.explanation.secondsToElapsedTime())
+        normalIndexMenu.title = context.getString(R.string.normal_dialog_index, seekPost.normal.secondsToElapsedTime())
     }
 
     override fun setProgressValue(position: Int) {
@@ -333,5 +386,15 @@ class ListPlayerView : AppBarLayout, PlayerView {
 
     override fun setPodcastDetail(podcastItemDetail: PodcastItemDetail) {
         script.text = Html.fromHtml(podcastItemDetail.script)
+
+        setupOverflowMenu(podcastItemDetail)
+    }
+
+    fun isExpanded(): Boolean = bottomSheetBehavior?.state == BottomSheetBehavior.STATE_EXPANDED
+
+    fun collapse() {
+        if (isExpanded()) {
+            bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
     }
 }

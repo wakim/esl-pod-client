@@ -28,7 +28,6 @@
             android:paddingStart="16dp"
             android:paddingLeft="16dp"
             android:paddingEnd="72dp"
-            android:clickable="true"
             android:ellipsize="end"
             android:textColor="#FFF"
             android:maxLines="2"
@@ -131,7 +130,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginEnd="16dp"
             android:orientation="horizontal"
-            android:weightSum="4">
+            android:weightSum="5">
 
             <ImageButton
                 android:id="@+id/ib_previous"
@@ -140,7 +139,8 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/previous"
                 app:srcCompat="@drawable/ic_skip_previous_white_24dp"
-                style="@style/Widget.AppCompat.Button.Borderless" />
+                style="@style/Widget.AppCompat.Button.Borderless"
+                tools:src="@drawable/ic_skip_previous_white_24dp" />
 
             <ImageButton
                 android:id="@+id/ib_pause"
@@ -150,7 +150,8 @@
                 android:contentDescription="@string/pause"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_pause_white_24dp"
-                style="@style/Widget.AppCompat.Button.Borderless" />
+                style="@style/Widget.AppCompat.Button.Borderless"
+                tools:src="@drawable/ic_pause_white_24dp" />
 
             <ImageButton
                 android:id="@+id/ib_play"
@@ -159,7 +160,8 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/play"
                 app:srcCompat="@drawable/ic_play_arrow_white_24dp"
-                style="@style/Widget.AppCompat.Button.Borderless" />
+                style="@style/Widget.AppCompat.Button.Borderless"
+                tools:src="@drawable/ic_play_arrow_white_24dp" />
 
             <ImageButton
                 android:id="@+id/ib_stop"
@@ -168,7 +170,8 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/stop"
                 app:srcCompat="@drawable/ic_stop_white_36dp"
-                style="@style/Widget.AppCompat.Button.Borderless" />
+                style="@style/Widget.AppCompat.Button.Borderless"
+                tools:src="@drawable/ic_stop_white_36dp" />
 
             <ImageButton
                 android:id="@+id/ib_next"
@@ -177,7 +180,18 @@
                 android:layout_weight="1"
                 android:contentDescription="@string/next"
                 app:srcCompat="@drawable/ic_skip_next_white_24dp"
-                style="@style/Widget.AppCompat.Button.Borderless" />
+                style="@style/Widget.AppCompat.Button.Borderless"
+                tools:src="@drawable/ic_skip_next_white_24dp" />
+
+            <ImageButton
+                android:id="@+id/ib_overflow"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/more_options"
+                app:srcCompat="@drawable/ic_more_vert_white_24dp"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                tools:src="@drawable/ic_more_vert_white_24dp" />
 
         </LinearLayout>
 

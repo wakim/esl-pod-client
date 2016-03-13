@@ -44,7 +44,7 @@ class StorageInteractor(private var downloadManager: DownloadManager, private va
             id = downloadFile(podcastItem)
         }
 
-        return DownloadRequest(id, getVirtualPath(file))
+        return DownloadRequest(id, getVirtualPath(file), file.absolutePath)
     }
 
     fun cancelDownloadIfPending(downloadRequest: DownloadRequest) {
@@ -91,5 +91,5 @@ class StorageInteractor(private var downloadManager: DownloadManager, private va
         return downloadManager.enqueue(request)
     }
 
-    data class DownloadRequest(val downloadId: Long? = null, val downloadUrl: String)
+    data class DownloadRequest(val downloadId: Long? = null, val downloadUrl: String, val localPath: String)
 }

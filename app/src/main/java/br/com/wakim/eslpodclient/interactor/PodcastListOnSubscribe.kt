@@ -1,6 +1,7 @@
 package br.com.wakim.eslpodclient.interactor
 
 import br.com.wakim.eslpodclient.extensions.monthOfYear
+import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastList
 import org.jsoup.Jsoup
@@ -37,16 +38,29 @@ class PodcastListOnSubscribe(private var storageInteractor: StorageInteractor, v
                 .filterIndexed { i, element -> i > 0 && i < (size - 1) }
                 .map { buildPodcastItem(it) }
                 .filter { it != null }
-                .forEach { it ->
-                    podcastList.list.add(it!!.copy(localPath = storageInteractor.getLocalPathIfExists(it)))
+                .forEach { item ->
+                    podcastList.list.add(
+                            item!!.let {
+                                val localPath = storageInteractor.getLocalPathIfExists(it)
+                                var status: DownloadStatus
+
+                                if (localPath == null) {
+                                    status = DownloadStatus()
+                                } else {
+                                    status = DownloadStatus(localPath, DownloadStatus.DOWNLOADED)
+                                }
+
+                                it.copy(downloadStatus = status)
+                            }
+                    )
                 }
 
         podcastList.currentPageUrl = url
         podcastList.nextPageUrl = getNextPage(document)
 
         subscriber?.let {
-            if (!subscriber.isUnsubscribed)
-                subscriber.onSuccess(podcastList)
+            if (!it.isUnsubscribed)
+                it.onSuccess(podcastList)
         }
     }
 

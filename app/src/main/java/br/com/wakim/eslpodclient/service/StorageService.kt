@@ -7,6 +7,7 @@ import android.os.IBinder
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
+import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -58,8 +59,12 @@ class StorageService : Service() {
     }
 
     fun startDownloadIfNeeded(podcastItem: PodcastItem) : String  {
-        lastDownloadRequest = storageInteractor.startDownloadIfNeeded(podcastItem)
-        return lastDownloadRequest!!.downloadUrl
+        val lastDownloadRequest = storageInteractor.startDownloadIfNeeded(podcastItem)
+        this.lastDownloadRequest = lastDownloadRequest
+
+        podcastItem.downloadStatus = DownloadStatus(lastDownloadRequest.localPath, DownloadStatus.DOWNLOADING)
+
+        return lastDownloadRequest.downloadUrl
     }
 }
 

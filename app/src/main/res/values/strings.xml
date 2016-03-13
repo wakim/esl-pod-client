@@ -10,12 +10,14 @@
     <string name="stop">Stop</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
+    <string name="more_options">More options</string>
 
     <string name="player_subtitle">%1$s • %2$s</string>
 
-    <string name="slow_dialog_index">Slow dialog</string>
-    <string name="explanation_index">Explanations</string>
-    <string name="normal_dialog_index">Normal dialog</string>
+    <string name="download">Download</string>
+    <string name="slow_dialog_index">Slow dialog (%1$s)</string>
+    <string name="explanation_index">Explanations (%1$s)</string>
+    <string name="normal_dialog_index">Normal dialog (%1$s)</string>
 
     <string name="write_external_storage_permission_needed_to_play">Write External Storage permission is needed to play podcast</string>
 </resources>

@@ -18,7 +18,7 @@ class PodcastDetailOnSubscribe(val podcastItem: PodcastItem, val itemUrl: String
     override fun call(subscriber: SingleSubscriber<in PodcastItemDetail>?) {
         val document = Jsoup.connect(itemUrl).get()
         val bodies = document.select(PODCAST_BODY_CLASS)
-        val podcastDetail = PodcastItemDetail()
+        val podcastDetail = PodcastItemDetail(type = podcastItem.type)
 
         val seekPos = getSeekPositions(bodies[0])
         val script = getScript(bodies[1], bodies[2])
@@ -42,9 +42,9 @@ class PodcastDetailOnSubscribe(val podcastItem: PodcastItem, val itemUrl: String
 
         val slow = textNodes[1].text().trim()
         val explanation = textNodes[2].text().trim()
-        val fast = textNodes[3].text().trim()
+        val normal = textNodes[3].text().trim()
 
-        return SeekPos(extractSeekInSeconds(slow), extractSeekInSeconds(explanation), extractSeekInSeconds(fast))
+        return SeekPos(extractSeekInSeconds(slow), extractSeekInSeconds(explanation), extractSeekInSeconds(normal))
     }
 
     fun extractSeekInSeconds(label : String) : Int {

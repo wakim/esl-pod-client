@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/download"
+        android:title="@string/download" />
+
+    <item
+        android:id="@+id/slow_dialog"
+        android:title="@string/slow_dialog_index" />
+
+    <item
+        android:id="@+id/explanation"
+        android:title="@string/explanation_index" />
+
+    <item
+        android:id="@+id/normal_dialog"
+        android:title="@string/normal_dialog_index" />
+</menu>

@@ -5,7 +5,7 @@ import android.os.Parcelable
 import android.support.annotation.IntDef
 import org.threeten.bp.LocalDate
 
-data class PodcastItem(val title: String, val remoteId: Long, val blurb: String, val mp3Url: String, val date: LocalDate?, val tags: String?, @Type val type : Long = PODCAST, val localPath : String? = null) : Parcelable {
+data class PodcastItem(val title: String, val remoteId: Long, val blurb: String, val mp3Url: String, val date: LocalDate?, val tags: String?, @Type val type : Long = PODCAST, var downloadStatus : DownloadStatus = DownloadStatus()) : Parcelable {
 
     @IntDef(ENGLISH_CAFE, PODCAST)
     @Retention(AnnotationRetention.SOURCE)
@@ -43,22 +43,29 @@ data class PodcastItem(val title: String, val remoteId: Long, val blurb: String,
         tags?.split(",") ?: emptyList<String>()
     }
 
-    constructor(source: Parcel): this(source.readString(), source.readLong(), source.readString(), source.readString(), source.readSerializable() as LocalDate, source.readString(), source.readLong(), source.readString())
+    constructor(source: Parcel): this(
+            source.readString(),
+            source.readLong(),
+            source.readString(),
+            source.readString(),
+            source.readSerializable() as LocalDate,
+            source.readString(),
+            source.readLong(),
+            source.readParcelable<DownloadStatus>(DownloadStatus::class.java.classLoader)
+    )
 
-    override fun writeToParcel(p0: Parcel?, p1: Int) {
-        p0!!.writeString(title)
+    override fun writeToParcel(p0: Parcel, p1: Int) {
+        p0.writeString(title)
         p0.writeLong(remoteId)
         p0.writeString(blurb)
         p0.writeString(mp3Url)
         p0.writeSerializable(date)
         p0.writeString(tags)
         p0.writeLong(type)
-        p0.writeString(localPath)
+        p0.writeParcelable(downloadStatus, p1)
     }
 
-    override fun hashCode(): Int {
-        return remoteId.hashCode()
-    }
+    override fun hashCode(): Int  = remoteId.hashCode()
 
     override fun equals(other: Any?): Boolean {
         val casted = other as? PodcastItem
@@ -67,9 +74,7 @@ data class PodcastItem(val title: String, val remoteId: Long, val blurb: String,
 
     fun isEnglishCafe(): Boolean = ENGLISH_CAFE == type
 
-    override fun describeContents(): Int {
-        return 0
-    }
+    override fun describeContents(): Int = 0
 
     companion object {
         const val ENGLISH_CAFE = 0L
@@ -85,4 +90,38 @@ data class PodcastItem(val title: String, val remoteId: Long, val blurb: String,
             }
         }
     }
+}
+
+data class DownloadStatus(val localPath: String? = null, @Status val status: Long = DownloadStatus.NOT_DOWNLOADED) : Parcelable {
+
+    @IntDef(DownloadStatus.DOWNLOADING, DownloadStatus.DOWNLOADED)
+    @Retention(AnnotationRetention.SOURCE)
+    annotation class Status()
+
+    constructor(source: Parcel): this(source.readString(), source.readLong())
+
+    override fun writeToParcel(p0: Parcel, p1: Int) {
+        p0.writeString(localPath)
+        p0.writeLong(status)
+    }
+
+    override fun describeContents(): Int = 0
+
+    companion object {
+        const val NOT_DOWNLOADED = 0L
+        const val DOWNLOADING = 1L
+        const val DOWNLOADED = 2L
+
+        @JvmField final val CREATOR: Parcelable.Creator<DownloadStatus> = object : Parcelable.Creator<DownloadStatus> {
+            override fun createFromParcel(source: Parcel): DownloadStatus {
+                return DownloadStatus(source)
+            }
+
+            override fun newArray(size: Int): Array<DownloadStatus?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
+    fun isFinished(): Boolean = status == DOWNLOADED
 }

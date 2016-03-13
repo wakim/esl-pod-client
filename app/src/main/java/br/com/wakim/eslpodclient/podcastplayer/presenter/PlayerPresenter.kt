@@ -42,7 +42,6 @@ class PlayerPresenter(private val app : Application,
     val playerCallback = object : PlayerCallback {
 
         override fun onAudioFocusFailed() {
-            // TODO
         }
 
         override fun onDurationChanged(duration: Int) {
@@ -118,6 +117,11 @@ class PlayerPresenter(private val app : Application,
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        unbindToService()
+    }
+
     fun unbindToService() {
         playerService?.let {
             it.callback = null
@@ -177,7 +181,6 @@ class PlayerPresenter(private val app : Application,
 
     fun explicitlyStop() {
         playerService?.dispose()
-        unbindToService()
     }
 
     fun onPauseClicked() {
@@ -210,14 +213,7 @@ class PlayerPresenter(private val app : Application,
             return
         }
 
-//        if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//            permissionRequester.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, WRITE_STORAGE_PERMISSION)
-//
-//            return
-//        }
-
         val item = podcastItem as PodcastItem
-//        val remotePath = storageService!!.startDownloadIfNeeded(item)
 
         playerService!!.let {
             it.reset()
@@ -225,6 +221,22 @@ class PlayerPresenter(private val app : Application,
 
             playPending = false
         }
+    }
+
+    fun startDownload() {
+//        podcastItem?.let {
+//            if (it.downloadStatus.isFinished()) {
+//                return
+//            }
+//
+//            if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//                permissionRequester.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, WRITE_STORAGE_PERMISSION)
+//
+//                return
+//            }
+//
+//            storageService!!.startDownloadIfNeeded(it)
+//        }
     }
 
     fun seekTo(pos : Int) {
@@ -270,6 +282,24 @@ class PlayerPresenter(private val app : Application,
         view?.let {
             it.setLoading(false)
             it.setPodcastDetail(podcastDetail!!)
+        }
+    }
+
+    fun seekToSlowDialog() {
+        podcastDetail?.seekPos?.let {
+            playerService?.seek(it.slow * 1000)
+        }
+    }
+
+    fun seekToExplanation() {
+        podcastDetail?.seekPos?.let {
+            playerService?.seek(it.explanation * 1000)
+        }
+    }
+
+    fun seekToNormalDialog() {
+        podcastDetail?.seekPos?.let {
+            playerService?.seek(it.normal * 1000)
         }
     }
 }

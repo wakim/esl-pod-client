@@ -15,15 +15,13 @@ data class PodcastList(var currentPageUrl : String? = null, var nextPageUrl : St
         nextPageUrl = source.readString()
     }
 
-    override fun writeToParcel(p0: Parcel?, p1: Int) {
-        p0?.writeTypedList(list)
-        p0?.writeString(currentPageUrl)
-        p0?.writeString(nextPageUrl)
+    override fun writeToParcel(p0: Parcel, p1: Int) {
+        p0.writeTypedList(list)
+        p0.writeString(currentPageUrl)
+        p0.writeString(nextPageUrl)
     }
 
-    override fun describeContents(): Int {
-        return 0
-    }
+    override fun describeContents(): Int = 0
 
     companion object {
         @JvmField final val CREATOR: Parcelable.Creator<PodcastList> = object : Parcelable.Creator<PodcastList> {
