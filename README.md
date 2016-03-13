@@ -2,7 +2,7 @@
 
 This is a hobby project to learn some concepts and tools, including:
 
- - Kotlin language in Android Development
+ - Kotlin language
  - MVP pattern with RxJava (not RxKotlin)
  - Dagger2
  
