@@ -22,6 +22,7 @@ import android.view.KeyEvent
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
+import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
@@ -116,6 +117,9 @@ class PlayerService : Service() {
     @Inject
     lateinit var storageInteractor: StorageInteractor
 
+    @Inject
+    lateinit var podcastInteractor: PodcastInteractor
+
     private var session: MediaSessionCompat? = null
     private var controller: MediaControllerCompat? = null
 
@@ -181,7 +185,7 @@ class PlayerService : Service() {
         }
     }
 
-    fun initMediaSession() : MediaSessionCompat {
+    private fun initMediaSession() : MediaSessionCompat {
         val session = MediaSessionCompat(this, TAG)
         val flags = MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or
                 MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
@@ -195,12 +199,12 @@ class PlayerService : Service() {
     }
 
     fun play(podcastItem: PodcastItem, position: Int) {
-        this.podcastItem = podcastItem
-        this.initialPosition = position
-
         if (initalized || preparing) {
             reset()
         }
+
+        this.podcastItem = podcastItem
+        this.initialPosition = position
 
         play()
     }
@@ -265,8 +269,14 @@ class PlayerService : Service() {
 
             downloadStatusSubscription =
                     storageInteractor.getDownloadStatus(it)
+                            .zipWith(podcastInteractor.getLastSeekPos(it.remoteId)) {
+                                downloadStatus, lastSeekPos -> downloadStatus to lastSeekPos
+                            }
                             .ofIOToMainThread()
-                            .subscribe { downloadStatus -> prepare(downloadStatus, it) }
+                            .subscribe { pair ->
+                                prepare(pair.first, it)
+                                initialPosition = pair.second ?: initialPosition
+                            }
         }
     }
 
@@ -300,7 +310,7 @@ class PlayerService : Service() {
         }
     }
 
-    fun registerNoisyReceiver() {
+    private fun registerNoisyReceiver() {
         if (noisyReceiver.registered) {
             return
         }
@@ -309,7 +319,7 @@ class PlayerService : Service() {
         noisyReceiver.registered = true
     }
 
-    fun unregisterNoisyReceiver() {
+    private fun unregisterNoisyReceiver() {
         if (!noisyReceiver.registered) {
             return
         }
@@ -318,7 +328,7 @@ class PlayerService : Service() {
         noisyReceiver.registered = false
     }
 
-    fun requestAudioFocus() : Boolean {
+    private fun requestAudioFocus() : Boolean {
         val result = audioManager.requestAudioFocus(audioFocusChangeListener,
                 AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
@@ -349,6 +359,12 @@ class PlayerService : Service() {
     }
 
     fun stop() {
+        innerStop()
+        podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, 0)
+    }
+
+    private fun innerStop() {
+        downloadStatusSubscription?.unsubscribe()
         initialPosition = 0
 
         mediaPlayer.stop()
@@ -363,8 +379,10 @@ class PlayerService : Service() {
     }
 
     fun pause() {
-        isPlaying().let {
+        if (isPlaying()) {
             initialPosition = mediaPlayer.currentPosition
+
+            podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, initialPosition)
 
             mediaPlayer.pause()
 
@@ -382,13 +400,16 @@ class PlayerService : Service() {
     fun seek(pos : Int) {
         initialPosition = pos
 
-        mediaPlayer.isPlaying.let {
+        podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, pos)
+
+        if (isPlaying()) {
             mediaPlayer.seekTo(pos)
-            callback?.onPositionChanged(pos)
         }
+
+        callback?.onPositionChanged(pos)
     }
 
-    fun whenFromPosition() : Long {
+    private fun whenFromPosition() : Long {
         var now = System.currentTimeMillis()
 
         if (isPlaying())
@@ -412,28 +433,18 @@ class PlayerService : Service() {
         release()
     }
 
-    fun release() {
-        task?.cancel(true)
-
-        isPlaying().let {
-            mediaPlayer.stop()
+    private fun release() {
+        if (isPlaying()) {
+            innerStop()
             mediaPlayer.release()
         }
-
-        initialPosition = 0
 
         initalized = false
         preparing = false
 
         audioManager.abandonAudioFocus(audioFocusChangeListener)
-        unregisterNoisyReceiver()
 
-        session?.let {
-            it.isActive = false
-            it.release()
-        }
-
-        callback?.onPlayerStopped()
+        session?.release()
     }
 
     private fun startForeground(mediaTitle: String, action: NotificationCompat.Action) {
@@ -467,10 +478,10 @@ class PlayerService : Service() {
         startForeground(ID, builder.build())
     }
 
-    fun generateAction(@DrawableRes icon : Int, @StringRes titleResId : Int, intentAction : Int) : NotificationCompat.Action =
+    private fun generateAction(@DrawableRes icon : Int, @StringRes titleResId : Int, intentAction : Int) : NotificationCompat.Action =
         NotificationCompat.Action.Builder(icon, getString(titleResId), getActionIntent(intentAction)).build()
 
-    fun getActionIntent(intentAction : Int) : PendingIntent {
+    private fun getActionIntent(intentAction : Int) : PendingIntent {
         val intent = Intent(Intent.ACTION_MEDIA_BUTTON)
 
         intent.`package` = packageName
@@ -533,6 +544,10 @@ class PlaylistManager {
         val indexOf = items.indexOf(podcastItem)
 
         return if (indexOf == -1) null else items.getOrNull(indexOf - 1)
+    }
+
+    fun clearItems() {
+        items = listOf()
     }
 }
 

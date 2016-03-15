@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="8dp"
+    android:orientation="vertical"
+    android:paddingTop="8dp">
+
+    <Button
+        android:id="@+id/bt_share"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:drawableStart="@drawable/share_drawable"
+        android:drawableLeft="@drawable/share_drawable"
+        android:text="@string/share"
+        style="@style/Widget.AppTheme.BottomSheet.Button" />
+
+    <Button
+        android:id="@+id/bt_favorite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/favorite_drawable"
+        android:drawableLeft="@drawable/favorite_drawable"
+        android:text="@string/favorite"
+        style="@style/Widget.AppTheme.BottomSheet.Button" />
+
+    <Button
+        android:id="@+id/bt_download"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/file_download_drawable"
+        android:drawableLeft="@drawable/file_download_drawable"
+        android:text="@string/download"
+        style="@style/Widget.AppTheme.BottomSheet.Button" />
+
+    <Button
+        android:id="@+id/bt_open_with"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/open_with_drawable"
+        android:drawableLeft="@drawable/open_with_drawable"
+        android:text="@string/open_with"
+        style="@style/Widget.AppTheme.BottomSheet.Button" />
+
+</LinearLayout>

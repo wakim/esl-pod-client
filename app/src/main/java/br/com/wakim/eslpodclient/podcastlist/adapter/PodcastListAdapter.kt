@@ -10,18 +10,19 @@ import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.podcastlist.view.PodcastListItemView
 import java.util.*
 
-class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>, View.OnClickListener {
+class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>,
+        View.OnClickListener, View.OnLongClickListener {
 
     companion object {
         final const val LOADING_TYPE = 0
         final const val ITEM_TYPE = 1
-        final const val PODCAST_TAG = "PODCAST"
     }
 
     val list : MutableList<PodcastItem> = mutableListOf()
     val layoutInflater : LayoutInflater
 
     var onClickListener : ((PodcastItem) -> Unit)? = null
+    var onLongClickListener : ((PodcastItem) -> Unit)? = null
 
     var loading : Boolean = false
         set(value) {
@@ -51,6 +52,7 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>, 
             val view = layoutInflater.inflate(R.layout.list_item_podcast, viewGroup, false)
 
             view.setOnClickListener(this)
+            view.setOnLongClickListener(this)
 
             ViewHolder(view)
         } else ViewHolder(layoutInflater.inflate(R.layout.list_item_loading, viewGroup, false))
@@ -78,12 +80,30 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>, 
         notifyItemRangeInserted(previousSize, addition.size)
     }
 
+    fun removeAll() {
+        val size = list.size
+
+        list.clear()
+
+        notifyItemRangeRemoved(0, size)
+    }
+
     override fun onClick(view: View) {
         val item = view.getTag(R.layout.list_item_podcast) as? PodcastItem
 
         item?.let {
-            onClickListener!!(it)
+            onClickListener?.invoke(it)
         }
+    }
+
+    override fun onLongClick(view: View): Boolean {
+        val item = view.getTag(R.layout.list_item_podcast) as? PodcastItem
+
+        item?.let {
+            onLongClickListener?.invoke(it)
+        }
+
+        return true
     }
 
     class ViewHolder : RecyclerView.ViewHolder {

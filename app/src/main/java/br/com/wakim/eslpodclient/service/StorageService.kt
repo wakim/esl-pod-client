@@ -6,9 +6,11 @@ import android.os.IBinder
 import android.support.annotation.RequiresPermission
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.dagger.AppComponent
+import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
+import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
-import rx.schedulers.Schedulers
+import rx.Single
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
@@ -37,11 +39,8 @@ class StorageService : Service() {
     }
 
     @RequiresPermission(allOf = arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE))
-    fun startDownloadIfNeeded(podcastItem: PodcastItem) {
-        storageInteractor.startDownloadIfNeeded(podcastItem)
-                .observeOn(Schedulers.io())
-                .subscribe()
-    }
+    fun startDownloadIfNeeded(podcastItem: PodcastItem): Single<DownloadStatus> =
+            storageInteractor.startDownloadIfNeeded(podcastItem).ofIOToMainThread()
 }
 
 class StorageLocalBinder : TypedBinder<StorageService> {

@@ -1,5 +1,6 @@
 package br.com.wakim.eslpodclient.dagger.module
 
+import android.app.Activity
 import br.com.wakim.eslpodclient.dagger.scope.ActivityScope
 import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.view.PermissionRequester
@@ -10,8 +11,11 @@ import dagger.Provides
 class ActivityModule(private val activity: BaseActivity<*>) {
 
     @Provides @ActivityScope
-    fun providesActivity() : BaseActivity<*> = activity
+    fun providesBaseActivity(): BaseActivity<*> = activity
 
     @Provides @ActivityScope
-    fun providesPermissionRequests() : PermissionRequester = activity
+    fun providesActivity(): Activity = activity
+
+    @Provides @ActivityScope
+    fun providesPermissionRequests(): PermissionRequester = activity
 }

@@ -3,6 +3,7 @@ package br.com.wakim.eslpodclient.podcastlist.view
 import android.os.Bundle
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import br.com.wakim.eslpodclient.R
@@ -26,6 +27,7 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
 
     companion object {
         final const val MINIMUM_THRESHOLD = 5
+        final const val BOTTOM_SHEET_TAG = "BOTTOM_SHEET"
     }
 
     private var _hasMore : Boolean = false
@@ -38,11 +40,15 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
 
     val coordinatorLayout : CoordinatorLayout by bindView(R.id.coordinator_layout)
     val recyclerView : RecyclerView by bindView(R.id.recycler_view)
+    val swipeRefresh: SwipeRefreshLayout by bindView(R.id.swipe_refresh)
+
     val playerView: ListPlayerView by bindView(R.id.player_view)
 
     val playFab : FloatingActionButton by bindView(R.id.fab_play)
     val pauseFab : FloatingActionButton by bindView(R.id.fab_pause)
     val loadingFab : LoadingFloatingActionButton by bindView(R.id.fab_loading)
+
+    var dialogFragment: PodcastItemBottomSheetDialogFragment? = null
 
     val bottomSpacingDecoration = BottomSpacingItemDecoration(0)
 
@@ -64,8 +70,37 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
 
         configureAdapter()
         configureRecyclerView()
+        setupBottomSheet()
+
+        swipeRefresh.setOnRefreshListener {
+            adapter.removeAll()
+            presenter.onRefresh()
+
+            swipeRefresh.isRefreshing = false
+        }
 
         playerView.setControls(playFab, pauseFab, loadingFab)
+    }
+
+    fun setupBottomSheet() {
+        dialogFragment = supportFragmentManager.findFragmentByTag(BOTTOM_SHEET_TAG) as PodcastItemBottomSheetDialogFragment?
+        setupBottomSheetCallback()
+    }
+
+    fun share(podcastItem: PodcastItem) {
+        presenter.share(podcastItem)
+    }
+
+    fun favorite(podcastItem: PodcastItem) {
+        presenter.favorite(podcastItem)
+    }
+
+    fun download(podcastItem: PodcastItem) {
+        presenter.download(podcastItem)
+    }
+
+    fun openWith(podcastItem: PodcastItem) {
+        presenter.openWith(podcastItem)
     }
 
     fun configureAdapter() {
@@ -73,6 +108,10 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
         adapter.onClickListener = { podcastItem : PodcastItem ->
             showPlayerViewIfNeeded()
             playerView.play(podcastItem)
+        }
+
+        adapter.onLongClickListener = { podcastItem: PodcastItem ->
+            showBottomSheetFor(podcastItem)
         }
     }
 
@@ -95,10 +134,29 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
                 val mustLoadMore = totalItemCount <= (lastVisible + MINIMUM_THRESHOLD)
 
                 if (mustLoadMore && _hasMore && !adapter.loading) {
-                    presenter!!.loadNextPage()
+                    presenter.loadNextPage()
                 }
             }
         })
+    }
+
+    fun showBottomSheetFor(podcastItem: PodcastItem) {
+        dialogFragment = PodcastItemBottomSheetDialogFragment(podcastItem)
+
+        setupBottomSheetCallback()
+
+        dialogFragment!!.show(supportFragmentManager, BOTTOM_SHEET_TAG)
+    }
+
+    fun setupBottomSheetCallback() {
+        dialogFragment?.callback = { id, podcastItem ->
+            when (id) {
+                R.id.bt_share     -> share(podcastItem)
+                R.id.bt_favorite  -> favorite(podcastItem)
+                R.id.bt_download  -> download(podcastItem)
+                R.id.bt_open_with -> openWith(podcastItem)
+            }
+        }
     }
 
     fun showPlayerViewIfNeeded() {
@@ -108,7 +166,7 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
 
         playerView.makeVisible()
 
-        bottomSpacingDecoration.bottomSpacing = dp(72F).toInt()
+        bottomSpacingDecoration.bottomSpacing = dp(72)
         recyclerView.invalidateItemDecorations()
     }
 

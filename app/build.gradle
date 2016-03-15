@@ -11,7 +11,7 @@ def final appConfig = [
         ],
 
         "base_url": "https://www.eslpod.com/website/show_all.php",
-        "detail_url": "https://www.eslpod.com/website/show_podcast.php"
+        "detail_url": "https://www.eslpod.com/website/show_podcast.php?issue_id=%s"
 ];
 
 def generateVersionCode() {

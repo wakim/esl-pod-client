@@ -3,9 +3,10 @@ package br.com.wakim.eslpodclient.model
 import android.os.Parcel
 import android.os.Parcelable
 import android.support.annotation.IntDef
+import org.jetbrains.anko.db.RowParser
 import org.threeten.bp.LocalDate
 
-data class PodcastItem(val title: String, val remoteId: Long, val blurb: String, val mp3Url: String, val date: LocalDate?, val tags: String?, @Type val type : Long = PODCAST) : Parcelable {
+data class PodcastItem(val remoteId: Long, val title: String, val blurb: String, val mp3Url: String, val date: LocalDate?, val tags: String?, @Type val type : Long = PODCAST) : Parcelable {
 
     @IntDef(ENGLISH_CAFE, PODCAST)
     @Retention(AnnotationRetention.SOURCE)
@@ -44,8 +45,8 @@ data class PodcastItem(val title: String, val remoteId: Long, val blurb: String,
     }
 
     constructor(source: Parcel): this(
-            source.readString(),
             source.readLong(),
+            source.readString(),
             source.readString(),
             source.readString(),
             source.readSerializable() as LocalDate,
@@ -104,22 +105,6 @@ data class DownloadStatus(val localPath: String? = null, val remoteId: Long = -1
         p0.writeLong(status)
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (other !is DownloadStatus) {
-            return false
-        }
-
-        if (localPath == other.localPath) {
-            return true
-        }
-
-        if (downloadId != -1L && other.downloadId != -1L) {
-            return downloadId == other.downloadId
-        }
-
-        return remoteId == other.remoteId
-    }
-
     override fun describeContents(): Int = 0
 
     companion object {
@@ -137,5 +122,12 @@ data class DownloadStatus(val localPath: String? = null, val remoteId: Long = -1
                 return arrayOfNulls(size)
             }
         }
+    }
+}
+
+class PodcastItemRowParser: RowParser<PodcastItem> {
+    override fun parseRow(columns: Array<Any>): PodcastItem {
+        val date = columns[4] as Long
+        return PodcastItem(columns[0] as Long, columns[1] as String, columns[2] as String, columns[3] as String, LocalDate.ofEpochDay(date), columns[5] as String, columns[6] as Long)
     }
 }

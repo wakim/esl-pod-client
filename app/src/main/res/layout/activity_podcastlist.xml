@@ -22,67 +22,22 @@
 
             <include layout="@layout/include_app_bar" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view"
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipe_refresh"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-                tools:listitem="@layout/list_item_podcast" />
+                android:layout_weight="1">
 
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                    tools:listitem="@layout/list_item_podcast" />
+            </android.support.v4.widget.SwipeRefreshLayout>
         </LinearLayout>
 
-        <br.com.wakim.eslpodclient.podcastplayer.view.ListPlayerView
-            android:id="@+id/player_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:minHeight="128dp"
-            android:background="?android:attr/windowBackground"
-            android:visibility="gone"
-            android:clickable="true"
-            app:behavior_hideable="false"
-            app:behavior_peekHeight="128dp"
-            app:layout_behavior="@string/bottom_sheet_behavior"
-            tools:visibility="visible">
-
-            <include layout="@layout/bottomsheet_list_player" />
-        </br.com.wakim.eslpodclient.podcastplayer.view.ListPlayerView>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone"
-            android:src="@drawable/ic_play_arrow_white_24dp"
-            app:layout_anchor="@+id/player_view"
-            app:layout_anchorGravity="top|right" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone"
-            android:src="@drawable/ic_pause_white_24dp"
-            app:layout_anchor="@+id/player_view"
-            app:layout_anchorGravity="top|right" />
-
-        <br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
-            android:id="@+id/fab_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone"
-            android:src="@drawable/ic_loop_white_24dp"
-            app:layout_anchor="@+id/player_view"
-            app:layout_anchorGravity="top|right" />
+        <include layout="@layout/bottomsheet_list_player" />
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView

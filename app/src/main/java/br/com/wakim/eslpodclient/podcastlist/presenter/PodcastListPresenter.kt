@@ -1,33 +1,54 @@
 package br.com.wakim.eslpodclient.podcastlist.presenter
 
+import android.app.Activity
 import android.content.ComponentName
+import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.support.v4.app.ShareCompat
 import br.com.wakim.eslpodclient.Application
+import br.com.wakim.eslpodclient.BuildConfig
+import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.bindService
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
+import br.com.wakim.eslpodclient.extensions.startActivity
+import br.com.wakim.eslpodclient.extensions.view
+import br.com.wakim.eslpodclient.interactor.FavoritesInteractor
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
+import br.com.wakim.eslpodclient.interactor.StorageInteractor
+import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastList
 import br.com.wakim.eslpodclient.podcastlist.view.PodcastListView
 import br.com.wakim.eslpodclient.presenter.Presenter
+import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.service.PlayerService
 import br.com.wakim.eslpodclient.service.TypedBinder
+import br.com.wakim.eslpodclient.view.PermissionRequester
 import rx.SingleSubscriber
+import rx.android.schedulers.AndroidSchedulers
 import java.util.*
 
-class PodcastListPresenter(private val app: Application, private val interactor: PodcastInteractor) : Presenter<PodcastListView>() {
+class PodcastListPresenter(private val app: Application,
+                           private val interactor: PodcastInteractor,
+                           private val permissionRequester: PermissionRequester,
+                           private val storageInteractor: StorageInteractor,
+                           private val favoritesInteractor: FavoritesInteractor,
+                           private val baseActivity: Activity) : Presenter<PodcastListView>() {
 
     companion object {
         private final val ITEMS_EXTRA = "ITEMS"
         private final val NEXT_PAGE_URL_EXTRA = "NEXT_PAGE_URL"
+        private final val DOWNLOAD_PODCAST_EXTRA = "DOWNLOAD_PODCAST"
     }
 
     var items : ArrayList<PodcastItem> = ArrayList()
 
     var nextPageUrl : String? = null
     var playerSevice: PlayerService? = null
+
+    var downloadPodcastItem: PodcastItem? = null
 
     val serviceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(componentName: ComponentName?) {
@@ -50,6 +71,7 @@ class PodcastListPresenter(private val app: Application, private val interactor:
         savedInstanceState?.let {
             items = it.getParcelableArrayList(ITEMS_EXTRA)
             nextPageUrl = it.getString(NEXT_PAGE_URL_EXTRA)
+            downloadPodcastItem = it.getParcelable(DOWNLOAD_PODCAST_EXTRA)
         }
 
         view?.let {
@@ -61,11 +83,27 @@ class PodcastListPresenter(private val app: Application, private val interactor:
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelableArrayList(ITEMS_EXTRA, items)
         outState.putString(NEXT_PAGE_URL_EXTRA, nextPageUrl)
+        outState.putParcelable(DOWNLOAD_PODCAST_EXTRA, downloadPodcastItem)
     }
 
     override fun onStart() {
         super.onStart()
         app.bindService<PlayerService>(serviceConnection)
+
+        addSubscription {
+            PermissionPublishSubject.INSTANCE
+                    .publishSubject
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribe { permission ->
+                        (permission.requestCode == Application.LIST_WRITE_STORAGE_PERMISSION).let {
+                            if (downloadPodcastItem != null && permission.isGranted()) {
+                                download(downloadPodcastItem!!)
+                            } else {
+                                view!!.showMessage(R.string.write_external_storage_permission_needed_to_download)
+                            }
+                        }
+                    }
+        }
     }
 
     override fun onStop() {
@@ -96,13 +134,71 @@ class PodcastListPresenter(private val app: Application, private val interactor:
 
                                 it.hasMore = podcastList.nextPageUrl != null
 
-                                playerSevice!!.playlistManager.setItems(items)
+                                playerSevice?.playlistManager?.setItems(items)
                             }
                         }
 
                         override fun onError(e: Throwable?) {
                         }
                     })
+        }
+    }
+
+    fun onRefresh() {
+        items.clear()
+        playerSevice?.playlistManager?.clearItems()
+
+        nextPageUrl = null
+
+        loadNextPage()
+    }
+
+    fun download(podcastItem: PodcastItem) {
+        if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            permissionRequester.requestPermissions(Application.LIST_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+
+            downloadPodcastItem = podcastItem
+
+            return
+        }
+
+        val downloadStatus = storageInteractor.startDownloadIfNeeded(podcastItem)
+
+        addSubscription {
+            downloadStatus.ofIOToMainThread()
+            .subscribe{ downloadStatus ->
+                when (downloadStatus.status) {
+                    DownloadStatus.DOWNLOADED -> view?.showMessage(R.string.podcast_already_downloaded)
+                    DownloadStatus.DOWNLOADING -> view?.showMessage(R.string.podcast_download_started)
+                }
+            }
+        }
+    }
+
+    fun share(podcastItem: PodcastItem) {
+        val url = BuildConfig.DETAIL_URL.format(podcastItem.remoteId.toString())
+        val text = app.getString(R.string.share_text, podcastItem.userFriendlyTitle, url)
+
+        ShareCompat.IntentBuilder.from(baseActivity)
+                .setText(text)
+                .setType("text/plain")
+                .intent
+                .startActivity(baseActivity)
+    }
+
+    fun openWith(podcastItem: PodcastItem) {
+        Intent()
+                .view(BuildConfig.DETAIL_URL.format(podcastItem.remoteId))
+                .startActivity(baseActivity)
+    }
+
+    fun favorite(podcastItem: PodcastItem) {
+        addSubscription {
+            favoritesInteractor.addFavorite(podcastItem)
+                    .ofIOToMainThread()
+                    .subscribe {
+                        view?.showMessage(R.string.podcast_favorited)
+                    }
         }
     }
 }

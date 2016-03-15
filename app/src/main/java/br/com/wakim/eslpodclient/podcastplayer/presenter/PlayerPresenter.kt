@@ -7,6 +7,7 @@ import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.bindService
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
+import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastItemDetail
 import br.com.wakim.eslpodclient.podcastplayer.view.PlayerView
@@ -28,7 +29,6 @@ class PlayerPresenter(private val app : Application,
     companion object {
         private final val PODCAST_ITEM = "PODCAST_ITEM"
         private final val PODCAST_DETAIL = "PODCAST_DETAIL"
-        private final val WRITE_STORAGE_PERMISSION = 12
     }
 
     var podcastItem : PodcastItem? = null
@@ -107,11 +107,11 @@ class PlayerPresenter(private val app : Application,
                     .publishSubject
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe { permission ->
-                        (permission.requestCode == WRITE_STORAGE_PERMISSION).let {
+                        (permission.requestCode == Application.PLAYER_WRITE_STORAGE_PERMISSION).let {
                             if (permission.isGranted()) {
                                 doPlay()
                             } else {
-                                view!!.showMessage(R.string.write_external_storage_permission_needed_to_play)
+                                view!!.showMessage(R.string.write_external_storage_permission_needed_to_download)
                             }
                         }
                     }
@@ -225,12 +225,18 @@ class PlayerPresenter(private val app : Application,
     fun startDownload() {
         podcastItem?.let {
             if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                permissionRequester.requestPermissions(WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                permissionRequester.requestPermissions(Application.PLAYER_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
                 return
             }
 
             storageService!!.startDownloadIfNeeded(it)
+                .subscribe { downloadStatus ->
+                    when (downloadStatus.status) {
+                        DownloadStatus.DOWNLOADED -> view?.showMessage(R.string.podcast_already_downloaded)
+                        DownloadStatus.DOWNLOADING -> view?.showMessage(R.string.podcast_download_started)
+                    }
+                }
         }
     }
 

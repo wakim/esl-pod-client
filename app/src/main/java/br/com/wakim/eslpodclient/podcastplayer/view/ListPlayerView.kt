@@ -278,7 +278,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
     }
 
     override fun showMessage(@StringRes messageResId: Int) {
-        baseActivity?.showMessage(messageResId) ?: context.snack(this, messageResId)
+        baseActivity?.showMessage(messageResId) ?: snack(this, messageResId)
     }
 
     fun hideFabs() {

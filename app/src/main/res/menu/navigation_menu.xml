@@ -7,4 +7,9 @@
         android:icon="@drawable/ic_settings_black_24dp"
         android:title="@string/settings" />
 
+    <item
+        android:id="@+id/drawer_favorites"
+        android:icon="@drawable/ic_favorite_black_24dp"
+        android:title="@string/favorites" />
+
 </menu>

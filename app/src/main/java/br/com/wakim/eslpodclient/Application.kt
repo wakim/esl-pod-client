@@ -37,4 +37,10 @@ open class Application : android.app.Application() {
 
         return super.getSystemService(name)
     }
+
+    companion object {
+        final val PLAYER_WRITE_STORAGE_PERMISSION = 12
+        final val LIST_WRITE_STORAGE_PERMISSION = 13
+
+    }
 }

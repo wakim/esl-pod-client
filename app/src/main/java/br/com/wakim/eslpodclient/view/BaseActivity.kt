@@ -2,6 +2,7 @@ package br.com.wakim.eslpodclient.view
 
 import android.content.Context
 import android.os.Bundle
+import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.NavUtils
@@ -15,12 +16,14 @@ import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.ActivityComponent
 import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.dagger.module.ActivityModule
+import br.com.wakim.eslpodclient.extensions.snack
 import br.com.wakim.eslpodclient.extensions.startActivity
-import br.com.wakim.eslpodclient.extensions.toast
 import br.com.wakim.eslpodclient.presenter.Presenter
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.settings.view.SettingsActivity
 import butterknife.bindOptionalView
+import org.jetbrains.anko.find
+import org.jetbrains.anko.findOptional
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionRequester {
@@ -34,7 +37,7 @@ open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionReque
     val navigationView : NavigationView? by bindOptionalView(R.id.navigation_view)
 
     lateinit var activityComponent : ActivityComponent
-    var presenter : T? = null
+    lateinit var presenter : T
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +46,7 @@ open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionReque
 
     override fun onStart() {
         super.onStart()
-        presenter?.onStart()
+        presenter.onStart()
     }
 
     override fun attachBaseContext(newBase: Context?) {
@@ -117,27 +120,27 @@ open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionReque
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
-        presenter?.onRestoreInstanceState(savedInstanceState)
+        presenter.onRestoreInstanceState(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        presenter?.onSaveInstanceState(outState!!)
+        presenter.onSaveInstanceState(outState!!)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        presenter?.onDestroy()
+        presenter.onDestroy()
     }
 
     override fun onResume() {
         super.onResume()
-        presenter?.onResume()
+        presenter.onResume()
     }
 
     override fun onStop() {
         super.onStop()
-        presenter?.onStop()
+        presenter.onStop()
     }
 
     fun getAppComponent() : AppComponent? {
@@ -165,6 +168,8 @@ open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionReque
     }
 
     open fun showMessage(messageResId: Int) {
-        toast(message = messageResId)
+        val view = findOptional<CoordinatorLayout>(R.id.coordinator_layout) ?: find(android.R.id.content)
+
+        snack(view, message = messageResId)
     }
 }

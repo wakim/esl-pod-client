@@ -9,4 +9,6 @@ interface PodcastListView : View {
 
     fun addItems(list: ArrayList<PodcastItem>)
     fun setLoading(loading : Boolean)
+
+    fun showMessage(messageResId: Int)
 }
