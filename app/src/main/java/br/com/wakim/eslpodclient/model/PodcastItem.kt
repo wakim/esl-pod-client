@@ -54,8 +54,8 @@ data class PodcastItem(val remoteId: Long, val title: String, val blurb: String,
             source.readLong())
 
     override fun writeToParcel(p0: Parcel, p1: Int) {
-        p0.writeString(title)
         p0.writeLong(remoteId)
+        p0.writeString(title)
         p0.writeString(blurb)
         p0.writeString(mp3Url)
         p0.writeSerializable(date)
@@ -90,17 +90,17 @@ data class PodcastItem(val remoteId: Long, val title: String, val blurb: String,
     }
 }
 
-data class DownloadStatus(val localPath: String? = null, val remoteId: Long = -1, val downloadId: Long = -1, @Status var status: Long = DownloadStatus.NOT_DOWNLOADED) : Parcelable {
+data class DownloadStatus(val remoteId: Long = -1, val localPath: String? = null, val downloadId: Long = -1, @Status var status: Long = DownloadStatus.NOT_DOWNLOADED) : Parcelable {
 
     @IntDef(DownloadStatus.DOWNLOADING, DownloadStatus.DOWNLOADED)
     @Retention(AnnotationRetention.SOURCE)
     annotation class Status()
 
-    constructor(source: Parcel): this(source.readString(), source.readLong(), source.readLong(), source.readLong())
+    constructor(source: Parcel): this(source.readLong(), source.readString(), source.readLong(), source.readLong())
 
     override fun writeToParcel(p0: Parcel, p1: Int) {
-        p0.writeString(localPath)
         p0.writeLong(remoteId)
+        p0.writeString(localPath)
         p0.writeLong(downloadId)
         p0.writeLong(status)
     }

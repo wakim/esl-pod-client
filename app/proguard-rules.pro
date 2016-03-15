@@ -15,3 +15,15 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# Keep Source File Name and Line Number in Stacktrace
+# http://stackoverflow.com/questions/3913338/how-to-debug-with-obfuscated-with-proguard-applications-on-android
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable,Signature,InnerClasses
+
+-keepattributes LocalVariableTable,LocalVariableTypeTable
+
+# RxJava
+-dontwarn javax.annotation.**
+-dontwarn javax.inject.**
+-dontwarn rx.internal.util.**
