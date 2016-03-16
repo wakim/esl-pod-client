@@ -2,10 +2,7 @@ package br.com.wakim.eslpodclient.dagger.module
 
 import android.app.DownloadManager
 import br.com.wakim.eslpodclient.Application
-import br.com.wakim.eslpodclient.interactor.DownloadDbInteractor
-import br.com.wakim.eslpodclient.interactor.FavoritesInteractor
-import br.com.wakim.eslpodclient.interactor.PodcastInteractor
-import br.com.wakim.eslpodclient.interactor.StorageInteractor
+import br.com.wakim.eslpodclient.interactor.*
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -17,8 +14,11 @@ open class InteractorModule {
     open fun providesPodcastListInteractor(app: Application) : PodcastInteractor = PodcastInteractor(app)
 
     @Provides @Singleton
-    open fun providesStorageInteractor(downloadManager: DownloadManager, downloadDbInteractor: DownloadDbInteractor, app: Application) : StorageInteractor =
-            StorageInteractor(downloadManager, downloadDbInteractor, app)
+    open fun providesStorageInteractor(downloadManager: DownloadManager,
+                                       downloadDbInteractor: DownloadDbInteractor,
+                                       preferenceInteractor: PreferenceInteractor,
+                                       app: Application) : StorageInteractor =
+            StorageInteractor(downloadManager, downloadDbInteractor, preferenceInteractor, app)
 
     @Provides @Singleton
     open fun providesFavoritesInteractor(app: Application): FavoritesInteractor = FavoritesInteractor(app)

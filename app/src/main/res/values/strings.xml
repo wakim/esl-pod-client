@@ -31,5 +31,10 @@
 
     <string name="share_text">Hey! Check %1$s! It\'s awesome! Take a look at %2$s</string>
 
+    <string name="download_folder">Download Folder</string>
+    <string name="select_folder_to_store_downloads">Select a folder to store your downloads</string>
+
+    <string name="oss_licenses">OSS Licenses</string>
+
     <string name="write_external_storage_permission_needed_to_download">Write External Storage permission is needed to download any podcast</string>
 </resources>

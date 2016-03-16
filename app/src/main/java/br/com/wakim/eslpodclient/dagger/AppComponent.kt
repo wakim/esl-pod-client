@@ -3,7 +3,7 @@ package br.com.wakim.eslpodclient.dagger
 import br.com.wakim.eslpodclient.dagger.module.ActivityModule
 import br.com.wakim.eslpodclient.dagger.module.AppModule
 import br.com.wakim.eslpodclient.dagger.module.InteractorModule
-import br.com.wakim.eslpodclient.preference.PreferenceManager
+import br.com.wakim.eslpodclient.interactor.PreferenceInteractor
 import br.com.wakim.eslpodclient.service.DownloadManagerReceiver
 import br.com.wakim.eslpodclient.service.PlayerService
 import br.com.wakim.eslpodclient.service.StorageService
@@ -17,6 +17,6 @@ interface AppComponent {
     fun inject(storageService: StorageService)
     fun inject(downloadManagerReceiver: DownloadManagerReceiver)
 
-    fun prefencesManager() : PreferenceManager
+    fun prefencesManager() : PreferenceInteractor
     fun plus(activityModule: ActivityModule) : ActivityComponent
 }

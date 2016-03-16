@@ -15,14 +15,14 @@ import android.support.v4.content.ContextCompat
 import android.util.TypedValue
 import android.view.View
 import br.com.wakim.eslpodclient.service.TypedBinder
-import br.com.wakim.eslpodclient.view.BaseActivity
+import br.com.wakim.eslpodclient.view.BasePresenterActivity
 import rx.Observable
 import rx.Subscriber
 
 inline fun <reified T: Activity> Context.startActivity(noinline callback : ((Intent) -> Unit)? = null) {
     val intent = Intent(this, T::class.java)
 
-    intent.putExtra(BaseActivity.PARENT_EXTRA, this.javaClass)
+    intent.putExtra(BasePresenterActivity.PARENT_EXTRA, this.javaClass)
 
     callback?.invoke(intent)
 

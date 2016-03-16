@@ -15,7 +15,7 @@ import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.podcastlist.adapter.PodcastListAdapter
 import br.com.wakim.eslpodclient.podcastlist.presenter.PodcastListPresenter
 import br.com.wakim.eslpodclient.podcastplayer.view.ListPlayerView
-import br.com.wakim.eslpodclient.view.BaseActivity
+import br.com.wakim.eslpodclient.view.BasePresenterActivity
 import br.com.wakim.eslpodclient.widget.BottomSpacingItemDecoration
 import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
 import br.com.wakim.eslpodclient.widget.SpacingItemDecoration
@@ -23,7 +23,7 @@ import butterknife.bindView
 import java.util.*
 import javax.inject.Inject
 
-class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListView {
+class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), PodcastListView {
 
     companion object {
         final const val MINIMUM_THRESHOLD = 5
@@ -116,11 +116,13 @@ class PodcastListActivity : BaseActivity<PodcastListPresenter>(), PodcastListVie
     }
 
     fun configureRecyclerView() {
-        val spacing = dp(8F).toInt()
+        val hSpacing = dp(4)
+        val vSpacing = dp(2)
 
         recyclerView.adapter = adapter
+
+        recyclerView.addItemDecoration(SpacingItemDecoration(hSpacing, vSpacing, hSpacing, vSpacing))
         recyclerView.addItemDecoration(bottomSpacingDecoration)
-        recyclerView.addItemDecoration(SpacingItemDecoration(columns = 1, spacingTop = spacing, spacingBottom = spacing))
 
         recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {

@@ -59,11 +59,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             applicationVariants.all { variant ->
-                def versionCode = generateVersionCode() ?: 1
-                def versionName = generateVersionName() + "." + versionCode ?: "1"
+                if (!variant.buildType.isDebuggable()) {
+                    def versionCode = generateVersionCode() ?: 1
+                    def versionName = generateVersionName() + "." + versionCode ?: "1"
 
-                variant.mergedFlavor.versionCode = versionCode
-                variant.mergedFlavor.versionName = versionName
+                    variant.mergedFlavor.versionCode = versionCode
+                    variant.mergedFlavor.versionName = versionName
+                }
             }
         }
     }
@@ -108,7 +110,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.8.3'
 
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
-    compile 'com.nbsp:library:1.07'
+    compile 'com.nononsenseapps:filepicker:2.5.2'
 
     provided 'org.glassfish:javax.annotation:10.0-b28'
 

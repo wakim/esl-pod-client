@@ -2,10 +2,8 @@ package br.com.wakim.eslpodclient.interactor
 
 import android.app.DownloadManager
 import android.net.Uri
-import android.os.Environment
 import android.support.annotation.RequiresPermission
 import br.com.wakim.eslpodclient.Application
-import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.getFileName
 import br.com.wakim.eslpodclient.extensions.hasPermission
 import br.com.wakim.eslpodclient.model.DownloadStatus
@@ -15,16 +13,22 @@ import br.com.wakim.eslpodclient.service.StorageService
 import rx.Single
 import java.io.File
 
-class StorageInteractor(private var downloadManager: DownloadManager, private val downloadDbInteractor: DownloadDbInteractor, private val app: Application) {
+class StorageInteractor(private var downloadManager: DownloadManager,
+                        private val downloadDbInteractor: DownloadDbInteractor,
+                        private val preferenceInteractor: PreferenceInteractor,
+                        private val app: Application) {
 
     fun getBaseDir(): String =
-            "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS)}${File.separator}${app.getString(R.string.app_name)}"
+            preferenceInteractor.getDownloadLocation()
 
-    fun getRelativePath(podcastItem: PodcastItem): String =
-            "${File.separator}${app.getString(R.string.app_name)}${File.separator}${podcastItem.mp3Url.getFileName() ?: podcastItem.remoteId}"
+//    fun getRelativePath(podcastItem: PodcastItem): String =
+//            "${File.separator}${app.getString(R.string.app_name)}${File.separator}${podcastItem.mp3Url.getFileName() ?: podcastItem.remoteId}"
 
     fun getLocalPath(podcastItem: PodcastItem): String =
             "${getBaseDir()}${File.separator}${podcastItem.mp3Url.getFileName()}"
+
+    fun getLocalUri(podcastItem: PodcastItem): Uri =
+            Uri.fromFile(File(getLocalPath(podcastItem)))
 
     @RequiresPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
     fun getDownloadStatus(podcastItem: PodcastItem) : Single<DownloadStatus> {
@@ -60,7 +64,7 @@ class StorageInteractor(private var downloadManager: DownloadManager, private va
         val request = DownloadManager.Request(Uri.parse(podcastItem.mp3Url))
 
         request
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_PODCASTS, getRelativePath(podcastItem))
+                .setDestinationUri(getLocalUri(podcastItem))
                 .setMimeType(StorageService.MIME_TYPE)
                 .setDescription(podcastItem.blurb)
                 .setTitle(podcastItem.userFriendlyTitle)

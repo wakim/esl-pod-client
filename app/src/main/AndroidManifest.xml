@@ -33,7 +33,13 @@
 
         <activity
             android:name=".settings.view.SettingsActivity"
+            android:label="@string/settings"
             android:parentActivityName=".podcastlist.view.PodcastListActivity" />
+
+        <activity
+            android:name=".filepicker.CustomFilePickerActivity"
+            android:label="@string/app_name"
+            android:theme="@style/FilePickerTheme" />
         
         <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
             <intent-filter>

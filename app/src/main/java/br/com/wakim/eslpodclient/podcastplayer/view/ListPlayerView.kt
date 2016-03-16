@@ -41,7 +41,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
     constructor(context: Context?) : super(context)
 
     init {
-        (context.getSystemService(ActivityComponent::class.java.simpleName) as ActivityComponent?)?.inject(this)
+        (context.getSystemService(ActivityComponent::class.java.simpleName) as ActivityComponent).inject(this)
     }
 
     val callback = object : BottomSheetBehavior.BottomSheetCallback() {
@@ -117,8 +117,8 @@ class ListPlayerView : AppBarLayout, PlayerView {
 
     lateinit var presenter: PlayerPresenter
 
-    @set:Inject
-    var baseActivity: BaseActivity<*>? = null
+    @Inject
+    lateinit var baseActivity: BaseActivity
 
     @Inject
     fun injectPlayerPresenter(presenter : PlayerPresenter) {
@@ -278,7 +278,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
     }
 
     override fun showMessage(@StringRes messageResId: Int) {
-        baseActivity?.showMessage(messageResId) ?: snack(this, messageResId)
+        baseActivity.showMessage(messageResId)
     }
 
     fun hideFabs() {

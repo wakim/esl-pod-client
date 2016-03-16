@@ -4,7 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.media.AudioManager
 import br.com.wakim.eslpodclient.Application
-import br.com.wakim.eslpodclient.preference.PreferenceManager
+import br.com.wakim.eslpodclient.interactor.PreferenceInteractor
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -18,8 +18,8 @@ class AppModule(private val app : Application) {
     }
 
     @Provides @Singleton
-    fun providesPreferenceManager() : PreferenceManager {
-        return PreferenceManager(app)
+    fun providesPreferenceManager() : PreferenceInteractor {
+        return PreferenceInteractor(app)
     }
 
     @Provides @Singleton

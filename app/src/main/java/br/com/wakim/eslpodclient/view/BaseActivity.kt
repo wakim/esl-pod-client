@@ -18,7 +18,6 @@ import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.dagger.module.ActivityModule
 import br.com.wakim.eslpodclient.extensions.snack
 import br.com.wakim.eslpodclient.extensions.startActivity
-import br.com.wakim.eslpodclient.presenter.Presenter
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.settings.view.SettingsActivity
 import butterknife.bindOptionalView
@@ -26,31 +25,21 @@ import org.jetbrains.anko.find
 import org.jetbrains.anko.findOptional
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
-open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionRequester {
-
-    companion object {
-        final const val PARENT_EXTRA = "PARENT_EXTRA"
-    }
+open class BaseActivity: AppCompatActivity(), PermissionRequester {
 
     val toolbar : Toolbar? by bindOptionalView(R.id.toolbar)
     val drawerLayout : DrawerLayout? by bindOptionalView(R.id.drawer_layout)
     val navigationView : NavigationView? by bindOptionalView(R.id.navigation_view)
 
     lateinit var activityComponent : ActivityComponent
-    lateinit var presenter : T
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        activityComponent = getAppComponent()!!.plus(ActivityModule(this))
-    }
-
-    override fun onStart() {
-        super.onStart()
-        presenter.onStart()
-    }
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        activityComponent = getAppComponent().plus(ActivityModule(this))
+        super.onCreate(savedInstanceState)
     }
 
     override fun setContentView(layoutResID: Int) {
@@ -81,7 +70,7 @@ open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionReque
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        if (intent.hasExtra(PARENT_EXTRA)) {
+        if (intent.hasExtra(BasePresenterActivity.PARENT_EXTRA)) {
             supportFinishAfterTransition()
             return true
         }
@@ -118,33 +107,8 @@ open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionReque
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-        presenter.onRestoreInstanceState(savedInstanceState)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-        presenter.onSaveInstanceState(outState!!)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        presenter.onDestroy()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        presenter.onResume()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        presenter.onStop()
-    }
-
-    fun getAppComponent() : AppComponent? {
-        return applicationContext.getSystemService(AppComponent::class.java.simpleName) as AppComponent?
+    fun getAppComponent() : AppComponent {
+        return applicationContext.getSystemService(AppComponent::class.java.simpleName) as AppComponent
     }
 
     override fun getSystemService(name: String?): Any? {
@@ -153,6 +117,17 @@ open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionReque
         }
 
         return super.getSystemService(name)
+    }
+
+    fun showNavigationArrow() {
+        val ab = supportActionBar ?: return
+        ab.setDisplayHomeAsUpEnabled(true)
+    }
+
+    open fun showMessage(messageResId: Int) {
+        val view = findOptional<CoordinatorLayout>(R.id.coordinator_layout) ?: find(android.R.id.content)
+
+        snack(view, message = messageResId)
     }
 
     override fun requestPermissions(requestCode: Int, vararg permissions: String) {
@@ -165,11 +140,5 @@ open class BaseActivity<T : Presenter<*>> : AppCompatActivity(), PermissionReque
         PermissionPublishSubject.INSTANCE
                 .publishSubject
                 .onNext(PermissionPublishSubject.Permission(requestCode, permissions, grantResults))
-    }
-
-    open fun showMessage(messageResId: Int) {
-        val view = findOptional<CoordinatorLayout>(R.id.coordinator_layout) ?: find(android.R.id.content)
-
-        snack(view, message = messageResId)
     }
 }

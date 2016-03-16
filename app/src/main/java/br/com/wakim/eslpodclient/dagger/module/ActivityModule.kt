@@ -8,14 +8,14 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class ActivityModule(private val activity: BaseActivity<*>) {
+class ActivityModule(private val presenterActivity: BaseActivity) {
 
     @Provides @ActivityScope
-    fun providesBaseActivity(): BaseActivity<*> = activity
+    fun providesBaseActivity(): BaseActivity = presenterActivity
 
     @Provides @ActivityScope
-    fun providesActivity(): Activity = activity
+    fun providesActivity(): Activity = presenterActivity
 
     @Provides @ActivityScope
-    fun providesPermissionRequests(): PermissionRequester = activity
+    fun providesPermissionRequests(): PermissionRequester = presenterActivity
 }

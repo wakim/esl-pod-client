@@ -1,18 +1,16 @@
-package br.com.wakim.eslpodclient.widget
+package br.com.wakim.eslpodclient.preference
 
 import android.content.Context
+import android.support.v7.preference.DialogPreference
 import android.util.AttributeSet
-import android.view.MotionEvent
-import android.widget.SeekBar
 
-class CustomSeekBar : SeekBar {
-
+class LicensesDialogPreference: DialogPreference {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?) : super(context)
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        return super.onTouchEvent(event)
+    override fun onClick() {
+        // TODO
     }
 }

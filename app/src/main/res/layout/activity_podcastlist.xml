@@ -6,7 +6,6 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context=".podcastlist.view.PodcastListActivity">
 
     <android.support.design.widget.CoordinatorLayout
@@ -14,28 +13,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <include layout="@layout/include_app_bar" />
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:fitsSystemWindows="true">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <include layout="@layout/include_app_bar" />
-
-            <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/swipe_refresh"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-                    tools:listitem="@layout/list_item_podcast" />
-            </android.support.v4.widget.SwipeRefreshLayout>
-        </LinearLayout>
+                android:layout_height="match_parent"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                tools:listitem="@layout/list_item_podcast" />
+        </android.support.v4.widget.SwipeRefreshLayout>
 
         <include layout="@layout/bottomsheet_list_player" />
     </android.support.design.widget.CoordinatorLayout>
