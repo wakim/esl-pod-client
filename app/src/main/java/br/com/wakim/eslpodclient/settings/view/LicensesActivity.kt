@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.readRawString
 import br.com.wakim.eslpodclient.extensions.resolveRawResIdentifier
+import br.com.wakim.eslpodclient.settings.adapter.LicenseListAdapter
 import br.com.wakim.eslpodclient.view.BaseActivity
 import butterknife.bindView
 import org.jetbrains.anko.async
@@ -15,16 +16,21 @@ class LicensesActivity: BaseActivity() {
 
     val recyclerView: RecyclerView by bindView(R.id.recycler_view)
 
+    var adapter: LicenseListAdapter? = null
+    var licenses: MutableList<Pair<String, String>>? = mutableListOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showNavigationArrow()
 
         setContentView(R.layout.activity_licenses)
 
+        adapter = LicenseListAdapter(this)
+
+        recyclerView.adapter = adapter
+
         async() {
             val licensesJson = JSONObject(readRawString(R.raw.libraries))
-
-            val entries = arrayOfNulls<String>(licensesJson.length())
 
             licensesJson
                     .keys()
@@ -33,11 +39,11 @@ class LicensesActivity: BaseActivity() {
                         val title = licensesJson.getString(indexed.value)
                         val body = readRawString(resolveRawResIdentifier(indexed.value))
 
-                        entries[indexed.index] = "<b>$title</b><br />$body"
+                        licenses?.add(title to body)
                     }
 
             uiThread {
-                // TODO
+                adapter?.addAll(licenses!!)
             }
         }
     }

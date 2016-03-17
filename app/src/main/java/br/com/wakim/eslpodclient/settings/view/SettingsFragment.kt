@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.ActivityComponent
 import br.com.wakim.eslpodclient.extensions.hasPermission
+import br.com.wakim.eslpodclient.extensions.startActivity
 import br.com.wakim.eslpodclient.interactor.PreferenceInteractor
 import br.com.wakim.eslpodclient.preference.PickFolderPreference
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
@@ -64,6 +65,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 it.summary = preferencesInteractor.getDownloadLocationFor(value.toString())
                 true
             }
+        }
+
+        findPreference("oss_key")?.setOnPreferenceClickListener {
+            context.startActivity<LicensesActivity>()
+            false
         }
     }
 
