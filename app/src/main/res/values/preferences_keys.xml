@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="base_folder_key">base_folder_key</string>
+    <string name="base_folder_key">base_folder</string>
+    <string name="oss_licenses_key">oss_licenses</string>
+    <string name="source_key">source</string>
+    <string name="about_developer_key">about_developer</string>
+    <string name="version_key">version</string>
 </resources>

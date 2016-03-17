@@ -8,6 +8,7 @@ import android.support.v7.preference.PreferenceFragmentCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import br.com.wakim.eslpodclient.BuildConfig
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.ActivityComponent
 import br.com.wakim.eslpodclient.extensions.hasPermission
@@ -16,6 +17,7 @@ import br.com.wakim.eslpodclient.interactor.PreferenceInteractor
 import br.com.wakim.eslpodclient.preference.PickFolderPreference
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.view.BaseActivity
+import org.jetbrains.anko.browse
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
@@ -67,8 +69,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
-        findPreference("oss_key")?.setOnPreferenceClickListener {
+        findPreference(getString(R.string.version_key))?.summary = "${BuildConfig.BUILD_TYPE} ${BuildConfig.VERSION_NAME}"
+
+        findPreference(getString(R.string.oss_licenses_key))?.setOnPreferenceClickListener {
             context.startActivity<LicensesActivity>()
+            false
+        }
+
+        findPreference(getString(R.string.about_developer_key))?.setOnPreferenceClickListener {
+            context.browse("https://github.com/wakim")
+            false
+        }
+
+        findPreference(getString(R.string.source_key))?.setOnPreferenceClickListener {
+            context.browse("https://github.com/wakim/esl-pod-client")
             false
         }
     }

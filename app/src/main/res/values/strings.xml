@@ -44,7 +44,11 @@
     <string name="no_connectivity">No connectivity</string>
     <string name="error">Error</string>
 
+    <string name="about">About</string>
     <string name="oss_licenses">Licenses</string>
+    <string name="source">Source</string>
+    <string name="about_developer">About developer</string>
+    <string name="version">Version</string>
 
     <string name="write_external_storage_permission_needed_to_download">Write External Storage permission is needed to download any podcast</string>
 </resources>
