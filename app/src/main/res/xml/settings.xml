@@ -10,6 +10,7 @@
         android:key="@string/base_folder_key" />
 
     <br.com.wakim.eslpodclient.preference.LicensesDialogPreference
-        android:title="@string/oss_licenses" />
+        android:title="@string/oss_licenses"
+        android:key="oss_key" />
 
 </android.support.v7.preference.PreferenceScreen>

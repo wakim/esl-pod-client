@@ -1,15 +1,23 @@
 package br.com.wakim.eslpodclient
 
+import android.net.ConnectivityManager
 import android.support.annotation.VisibleForTesting
 import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.dagger.DaggerAppComponent
 import br.com.wakim.eslpodclient.dagger.module.AppModule
+import br.com.wakim.eslpodclient.receiver.ConnectivityBroadcastReceiver
 import com.jakewharton.threetenabp.AndroidThreeTen
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
+import javax.inject.Inject
 
 open class Application : android.app.Application() {
 
     lateinit var appComponent : AppComponent
+
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
+
+    var connected: Boolean = false
 
     override fun onCreate() {
         super.onCreate()
@@ -23,6 +31,10 @@ open class Application : android.app.Application() {
         )
 
         createComponent()
+
+        appComponent.inject(this)
+
+        connected = ConnectivityBroadcastReceiver.isNetworkConnected(connectivityManager)
     }
 
     @VisibleForTesting

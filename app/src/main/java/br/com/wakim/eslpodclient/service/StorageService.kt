@@ -41,6 +41,8 @@ class StorageService : Service() {
     @RequiresPermission(allOf = arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE))
     fun startDownloadIfNeeded(podcastItem: PodcastItem): Single<DownloadStatus> =
             storageInteractor.startDownloadIfNeeded(podcastItem).ofIOToMainThread()
+
+    fun cancelDownload(downloadStatus: DownloadStatus) = storageInteractor.cancelDownload(downloadStatus)
 }
 
 class StorageLocalBinder : TypedBinder<StorageService> {

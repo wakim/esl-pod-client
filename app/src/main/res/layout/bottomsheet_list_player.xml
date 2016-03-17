@@ -13,7 +13,7 @@
         android:visibility="gone"
         app:behavior_hideable="false"
         app:behavior_peekHeight="128dp"
-        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:layout_behavior="br.com.wakim.eslpodclient.behavior.BottomSheetSnackPushBehavior"
         tools:visibility="visible">
 
         <LinearLayout

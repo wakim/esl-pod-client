@@ -3,13 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/drawer_settings"
-        android:icon="@drawable/ic_settings_black_24dp"
-        android:title="@string/settings" />
-
-    <item
         android:id="@+id/drawer_favorites"
         android:icon="@drawable/ic_favorite_black_24dp"
         android:title="@string/favorites" />
+
+    <group android:id="@+id/bottom">
+        <item
+            android:id="@+id/drawer_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/settings" />
+    </group>
 
 </menu>

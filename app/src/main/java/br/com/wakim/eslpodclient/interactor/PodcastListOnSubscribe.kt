@@ -41,8 +41,8 @@ class PodcastListOnSubscribe(val url: String): Single.OnSubscribe<PodcastList> {
                     podcastList.list.add(item!!)
                 }
 
-        podcastList.currentPageUrl = url
-        podcastList.nextPageUrl = getNextPage(document)
+        podcastList.currentPageToken = url
+        podcastList.nextPageToken = getNextPage(document)
 
         subscriber?.let {
             if (!it.isUnsubscribed)

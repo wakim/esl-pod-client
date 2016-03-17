@@ -9,6 +9,7 @@ import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.IBinder
+import android.support.annotation.RawRes
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
@@ -18,6 +19,8 @@ import br.com.wakim.eslpodclient.service.TypedBinder
 import br.com.wakim.eslpodclient.view.BasePresenterActivity
 import rx.Observable
 import rx.Subscriber
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 inline fun <reified T: Activity> Context.startActivity(noinline callback : ((Intent) -> Unit)? = null) {
     val intent = Intent(this, T::class.java)
@@ -108,3 +111,11 @@ fun Intent.view(string: String): Intent {
 
     return this
 }
+
+fun Context.readRawString(@RawRes rawResId: Int): String =
+        BufferedReader(InputStreamReader(resources.openRawResource(rawResId))).use {
+            return it.lineSequence().joinToString("\n")
+        }
+
+fun Context.resolveRawResIdentifier(name: String): Int =
+        resources.getIdentifier(name, "raw", packageName)

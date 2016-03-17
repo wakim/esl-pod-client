@@ -1,0 +1,15 @@
+{
+    "rxjava": "RxJava"
+    ,"rxandroid": "RxAndroid"
+    ,"support_libraries": "Support Libraries"
+    ,"kotlin_stdlib": "Kotlin Standard Library"
+    ,"anko": "Anko"
+    ,"dagger2": "Dagger 2"
+    ,"kotterknife": "Kotternife"
+    ,"jsoup": "jsoup"
+    ,"threetenabp": "ThreeTen Android Backport"
+    ,"calligraphy": "Calligraphy"
+    ,"filepicker": "NoNonsense-FilePicker"
+    ,"stetho": "Stetho"
+    ,"androidtagview": "android-tagview"
+}

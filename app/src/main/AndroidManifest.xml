@@ -5,6 +5,7 @@
     package="br.com.wakim.eslpodclient">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -32,6 +33,11 @@
         </activity>
 
         <activity
+            android:name=".podcastlist.favorites.view.FavoriteListActivity"
+            android:label="@string/favorites"
+            android:parentActivityName=".podcastlist.view.PodcastListActivity" />
+
+        <activity
             android:name=".settings.view.SettingsActivity"
             android:label="@string/settings"
             android:parentActivityName=".podcastlist.view.PodcastListActivity" />
@@ -40,6 +46,11 @@
             android:name=".filepicker.CustomFilePickerActivity"
             android:label="@string/app_name"
             android:theme="@style/FilePickerTheme" />
+
+        <activity
+            android:name=".settings.view.LicensesActivity"
+            android:label="@string/oss_licenses"
+            android:parentActivityName=".settings.view.SettingsActivity" />
         
         <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
             <intent-filter>
@@ -51,6 +62,12 @@
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receiver.ConnectivityBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
 

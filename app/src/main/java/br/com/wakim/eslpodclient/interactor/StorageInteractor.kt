@@ -95,4 +95,11 @@ class StorageInteractor(private var downloadManager: DownloadManager,
     fun handleDownloadFailed(downloadId: Long) {
         downloadDbInteractor.deleteDownloadByDownloadId(downloadId)
     }
+
+    fun cancelDownload(downloadStatus: DownloadStatus) {
+        downloadStatus.downloadId.let {
+            downloadManager.remove(it)
+            downloadDbInteractor.deleteDownloadByDownloadId(it)
+        }
+    }
 }

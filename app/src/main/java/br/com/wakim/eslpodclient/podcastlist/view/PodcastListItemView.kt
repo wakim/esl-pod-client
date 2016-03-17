@@ -6,6 +6,7 @@ import android.support.v7.widget.CardView
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import br.com.wakim.eslpodclient.R
@@ -22,12 +23,27 @@ class PodcastListItemView : CardView {
     val tvTitle: TextView by bindView(R.id.tv_title)
     val tvSubtitle: TextView by bindView(R.id.tv_subtitle)
     val tvTags: TagView by bindView(R.id.tv_tags)
+    val btnOverflow: ImageButton by bindView(R.id.ib_overflow)
+
+    var overflowMenuClickListener : ((PodcastItem, View) -> Unit)? = null
+
+    var podcastItem: PodcastItem? = null
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?) : super(context)
 
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+
+        btnOverflow.setOnClickListener {
+            overflowMenuClickListener?.invoke(podcastItem!!, btnOverflow)
+        }
+    }
+
     fun bind(podcastItem : PodcastItem) {
+        this.podcastItem = podcastItem
+
         with (podcastItem) {
             tvTitle.text = userFriendlyTitle
 

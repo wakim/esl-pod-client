@@ -26,22 +26,24 @@ class DownloadDbInteractor(private val app: Application) {
     fun getDownloadByRemoteId(remoteId: Long): Download? {
         return app
                 .database
-                .readableDatabase
-                .select(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "remote_id", "download_id", "status")
-                .where("remote_id = {remote_id}", "remote_id" to remoteId)
-                .exec {
-                    parseOpt(DownloadParser())
+                .use {
+                    select(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "remote_id", "download_id", "status")
+                    .where("remote_id = {remote_id}", "remote_id" to remoteId)
+                    .exec {
+                        parseOpt(DownloadParser())
+                    }
                 }
     }
 
     fun getDownloadByDownloadId(downloadId: Long): Download? {
         return app
                 .database
-                .readableDatabase
-                .select(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "remote_id", "download_id", "status")
-                .where("download_id = {download_id}", "download_id" to downloadId)
-                .exec {
-                    parseOpt(DownloadParser())
+                .use {
+                    select(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "remote_id", "download_id", "status")
+                    .where("download_id = {download_id}", "download_id" to downloadId)
+                    .exec {
+                        parseOpt(DownloadParser())
+                    }
                 }
     }
 

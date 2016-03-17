@@ -15,8 +15,9 @@ import org.jetbrains.anko.db.select
 import rx.Single
 
 open class PodcastInteractor(private val app: Application) {
-    open fun getPodcasts(nextPageUrl: String?) : Single<PodcastList> =
-            Single.create(PodcastListOnSubscribe(nextPageUrl ?: BuildConfig.BASE_URL))
+
+    open fun getPodcasts(nextPageToken: String?) : Single<PodcastList> =
+            Single.create(PodcastListOnSubscribe(nextPageToken ?: BuildConfig.BASE_URL))
 
     open fun getPodcastDetail(podcastItem : PodcastItem) : Single<PodcastItemDetail> =
             Single.create(PodcastDetailOnSubscribe(podcastItem, BuildConfig.DETAIL_URL.format(podcastItem.remoteId.toString())))
@@ -40,11 +41,12 @@ open class PodcastInteractor(private val app: Application) {
             Single.create { subscriber ->
                 val lastSeekPos =
                         app.database
-                                .readableDatabase
-                                .select(DatabaseOpenHelper.SEEK_POSITIONS_TABLE_NAME, "last_seek_pos")
-                                .where("remote_id={remote_id}", "remote_id" to remoteId)
-                                .exec {
-                                    parseOpt(IntParser)
+                                .use {
+                                    select(DatabaseOpenHelper.SEEK_POSITIONS_TABLE_NAME, "last_seek_pos")
+                                    .where("remote_id={remote_id}", "remote_id" to remoteId)
+                                    .exec {
+                                        parseOpt(IntParser)
+                                    }
                                 }
 
                 if (!subscriber.isUnsubscribed) {

@@ -28,7 +28,6 @@ class PickFolderPreference: Preference {
 
     override fun onClick() {
         super.onClick()
-
         openFolderPicker()
     }
 

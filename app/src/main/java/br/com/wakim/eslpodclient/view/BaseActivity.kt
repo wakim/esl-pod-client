@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.NavUtils
 import android.support.v4.app.TaskStackBuilder
@@ -18,6 +19,7 @@ import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.dagger.module.ActivityModule
 import br.com.wakim.eslpodclient.extensions.snack
 import br.com.wakim.eslpodclient.extensions.startActivity
+import br.com.wakim.eslpodclient.podcastlist.favorites.view.FavoriteListActivity
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.settings.view.SettingsActivity
 import butterknife.bindOptionalView
@@ -56,12 +58,15 @@ open class BaseActivity: AppCompatActivity(), PermissionRequester {
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp)
 
                 (navigationView as NavigationView).setNavigationItemSelectedListener { item ->
-                    if (item.itemId == R.id.drawer_settings) {
-                        startActivity<SettingsActivity>()
-                        true
-                    } else {
-                        false
+                    when (item.itemId) {
+                        R.id.drawer_settings -> startActivity<SettingsActivity>()
+                        R.id.drawer_favorites -> startActivity<FavoriteListActivity>()
+                        else -> return@setNavigationItemSelectedListener false
                     }
+
+                    drawerLayout?.closeDrawers()
+
+                    true
                 }
             } else {
                 actionBar.setDisplayShowHomeEnabled(true)
@@ -124,10 +129,16 @@ open class BaseActivity: AppCompatActivity(), PermissionRequester {
         ab.setDisplayHomeAsUpEnabled(true)
     }
 
-    open fun showMessage(messageResId: Int) {
+    open fun showMessage(messageResId: Int): Snackbar {
         val view = findOptional<CoordinatorLayout>(R.id.coordinator_layout) ?: find(android.R.id.content)
 
-        snack(view, message = messageResId)
+        return snack(view, message = messageResId)
+    }
+
+    open fun showMessage(messageResId: Int, action: String, clickListener: (() -> Unit)?) {
+        showMessage(messageResId).setAction(action) {
+            clickListener?.invoke()
+        }
     }
 
     override fun requestPermissions(requestCode: Int, vararg permissions: String) {

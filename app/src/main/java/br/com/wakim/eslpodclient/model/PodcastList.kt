@@ -4,21 +4,21 @@ import android.os.Parcel
 import android.os.Parcelable
 import java.util.*
 
-data class PodcastList(var currentPageUrl : String? = null, var nextPageUrl : String? = null) : Parcelable {
+data class PodcastList(var currentPageToken : String? = null, var nextPageToken : String? = null) : Parcelable {
 
     var list : ArrayList<PodcastItem> = ArrayList()
 
     constructor(source: Parcel) : this() {
         source.readList(list, PodcastList::class.java.classLoader)
 
-        currentPageUrl = source.readString()
-        nextPageUrl = source.readString()
+        currentPageToken = source.readString()
+        nextPageToken = source.readString()
     }
 
     override fun writeToParcel(p0: Parcel, p1: Int) {
         p0.writeTypedList(list)
-        p0.writeString(currentPageUrl)
-        p0.writeString(nextPageUrl)
+        p0.writeString(currentPageToken)
+        p0.writeString(nextPageToken)
     }
 
     override fun describeContents(): Int = 0

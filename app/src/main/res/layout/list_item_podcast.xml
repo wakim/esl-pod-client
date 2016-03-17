@@ -70,5 +70,16 @@
                 style="@style/TagView"
                 tools:text="Tags tags tags tags" />
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/ib_overflow"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/more_options"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_more_vert_grey_700_24dp"
+            tools:src="@drawable/ic_more_vert_grey_700_24dp"
+            tools:ignore="MissingPrefix" />
     </LinearLayout>
 </br.com.wakim.eslpodclient.podcastlist.view.PodcastListItemView>

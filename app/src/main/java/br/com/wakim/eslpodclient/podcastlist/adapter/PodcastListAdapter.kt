@@ -11,7 +11,7 @@ import br.com.wakim.eslpodclient.podcastlist.view.PodcastListItemView
 import java.util.*
 
 class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>,
-        View.OnClickListener, View.OnLongClickListener {
+        View.OnClickListener {
 
     companion object {
         final const val LOADING_TYPE = 0
@@ -21,8 +21,8 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>,
     val list : MutableList<PodcastItem> = mutableListOf()
     val layoutInflater : LayoutInflater
 
-    var onClickListener : ((PodcastItem) -> Unit)? = null
-    var onLongClickListener : ((PodcastItem) -> Unit)? = null
+    var clickListener : ((PodcastItem) -> Unit)? = null
+    var overflowMenuClickListener : ((PodcastItem, View) -> Unit)? = null
 
     var loading : Boolean = false
         set(value) {
@@ -49,10 +49,10 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>,
 
     override fun onCreateViewHolder(viewGroup: ViewGroup?, viewType: Int): PodcastListAdapter.ViewHolder? {
         return if (viewType == ITEM_TYPE) {
-            val view = layoutInflater.inflate(R.layout.list_item_podcast, viewGroup, false)
+            val view = layoutInflater.inflate(R.layout.list_item_podcast, viewGroup, false) as PodcastListItemView
 
             view.setOnClickListener(this)
-            view.setOnLongClickListener(this)
+            view.overflowMenuClickListener = overflowMenuClickListener
 
             ViewHolder(view)
         } else ViewHolder(layoutInflater.inflate(R.layout.list_item_loading, viewGroup, false))
@@ -66,7 +66,6 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>,
             val item = list[position]
 
             viewHolder.view()?.bind(item)
-            viewHolder.itemView.setTag(R.layout.list_item_podcast, item)
         }
     }
 
@@ -88,27 +87,23 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>,
         notifyItemRangeRemoved(0, size)
     }
 
-    override fun onClick(view: View) {
-        val item = view.getTag(R.layout.list_item_podcast) as? PodcastItem
+    fun remove(podcastItem: PodcastItem) {
+        val indexOf = list.indexOf(podcastItem)
 
-        item?.let {
-            onClickListener?.invoke(it)
+        if (indexOf > -1) {
+            list.removeAt(indexOf)
+            notifyItemRemoved(indexOf)
         }
     }
 
-    override fun onLongClick(view: View): Boolean {
-        val item = view.getTag(R.layout.list_item_podcast) as? PodcastItem
-
-        item?.let {
-            onLongClickListener?.invoke(it)
+    override fun onClick(view: View) {
+        if (view is PodcastListItemView) {
+            clickListener?.invoke(view.podcastItem!!)
         }
-
-        return true
     }
 
     class ViewHolder : RecyclerView.ViewHolder {
         constructor(view: View) : super(view)
-
         fun view() : PodcastListItemView? = itemView as? PodcastListItemView
     }
 }

@@ -3,9 +3,12 @@ package br.com.wakim.eslpodclient.podcastlist.view
 import android.os.Bundle
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.dp
 import br.com.wakim.eslpodclient.extensions.isVisible
@@ -23,11 +26,10 @@ import butterknife.bindView
 import java.util.*
 import javax.inject.Inject
 
-class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), PodcastListView {
+open class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), PodcastListView {
 
     companion object {
         final const val MINIMUM_THRESHOLD = 5
-        final const val BOTTOM_SHEET_TAG = "BOTTOM_SHEET"
     }
 
     private var _hasMore : Boolean = false
@@ -48,8 +50,6 @@ class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), Podca
     val pauseFab : FloatingActionButton by bindView(R.id.fab_pause)
     val loadingFab : LoadingFloatingActionButton by bindView(R.id.fab_loading)
 
-    var dialogFragment: PodcastItemBottomSheetDialogFragment? = null
-
     val bottomSpacingDecoration = BottomSpacingItemDecoration(0)
 
     lateinit var adapter : PodcastListAdapter
@@ -64,13 +64,12 @@ class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), Podca
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_podcastlist)
+        setupView()
 
-        activityComponent.inject(this)
+        inject()
 
         configureAdapter()
         configureRecyclerView()
-        setupBottomSheet()
 
         swipeRefresh.setOnRefreshListener {
             adapter.removeAll()
@@ -82,9 +81,12 @@ class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), Podca
         playerView.setControls(playFab, pauseFab, loadingFab)
     }
 
-    fun setupBottomSheet() {
-        dialogFragment = supportFragmentManager.findFragmentByTag(BOTTOM_SHEET_TAG) as PodcastItemBottomSheetDialogFragment?
-        setupBottomSheetCallback()
+    open fun inject() {
+        activityComponent.inject(this)
+    }
+
+    open fun setupView() {
+        setContentView(R.layout.activity_podcastlist)
     }
 
     fun share(podcastItem: PodcastItem) {
@@ -105,13 +107,13 @@ class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), Podca
 
     fun configureAdapter() {
         adapter = PodcastListAdapter(this)
-        adapter.onClickListener = { podcastItem : PodcastItem ->
+        adapter.clickListener = { podcastItem ->
             showPlayerViewIfNeeded()
             playerView.play(podcastItem)
         }
 
-        adapter.onLongClickListener = { podcastItem: PodcastItem ->
-            showBottomSheetFor(podcastItem)
+        adapter.overflowMenuClickListener = { podcastItem, anchor ->
+            showPopupMenuFor(podcastItem, anchor)
         }
     }
 
@@ -142,23 +144,23 @@ class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), Podca
         })
     }
 
-    fun showBottomSheetFor(podcastItem: PodcastItem) {
-        dialogFragment = PodcastItemBottomSheetDialogFragment(podcastItem)
+    open fun showPopupMenuFor(podcastItem: PodcastItem, anchor: View) {
+        val popupMenu = PopupMenu(this, anchor)
 
-        setupBottomSheetCallback()
+        popupMenu.inflate(R.menu.podcast_item_menu)
 
-        dialogFragment!!.show(supportFragmentManager, BOTTOM_SHEET_TAG)
-    }
-
-    fun setupBottomSheetCallback() {
-        dialogFragment?.callback = { id, podcastItem ->
-            when (id) {
-                R.id.bt_share     -> share(podcastItem)
-                R.id.bt_favorite  -> favorite(podcastItem)
-                R.id.bt_download  -> download(podcastItem)
-                R.id.bt_open_with -> openWith(podcastItem)
+        popupMenu.setOnMenuItemClickListener { menu ->
+            when (menu.itemId) {
+                R.id.share     -> share(podcastItem)
+                R.id.favorite  -> favorite(podcastItem)
+                R.id.download  -> download(podcastItem)
+                R.id.open_with -> openWith(podcastItem)
             }
+
+            true
         }
+
+        popupMenu.show()
     }
 
     fun showPlayerViewIfNeeded() {
@@ -174,6 +176,10 @@ class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), Podca
 
     override fun addItems(list: ArrayList<PodcastItem>) {
         adapter.addAll(list)
+    }
+
+    override fun remove(podcastItem: PodcastItem) {
+        adapter.remove(podcastItem)
     }
 
     override fun setLoading(loading: Boolean) {
@@ -196,7 +202,5 @@ class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), Podca
         super.onBackPressed()
     }
 
-    override fun showMessage(messageResId: Int) {
-        snack(coordinatorLayout, messageResId)
-    }
+    override fun showMessage(messageResId: Int): Snackbar = snack(coordinatorLayout, messageResId)
 }

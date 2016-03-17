@@ -6,22 +6,28 @@ import br.com.wakim.eslpodclient.db.database
 import br.com.wakim.eslpodclient.extensions.insertIgnoringConflict
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastItemRowParser
-import org.jetbrains.anko.db.parseOpt
+import br.com.wakim.eslpodclient.model.PodcastList
+import org.jetbrains.anko.db.SqlOrderDirection
+import org.jetbrains.anko.db.parseList
 import org.jetbrains.anko.db.select
 import org.threeten.bp.ZonedDateTime
 import rx.Single
+import java.util.*
 
-class FavoritesInteractor(private val app: Application) {
+class PodcastItemFavoritesInteractor(private val app: Application): PodcastInteractor(app) {
+
+    companion object {
+        final const val ITEMS_PER_PAGE = 20
+    }
+
     fun addFavorite(podcastItem: PodcastItem): Single<Long> =
             Single.create<Long> { subscriber ->
                 app.database
                     .use {
-                        val db = this
-
                         val favoritedDate = ZonedDateTime.now().toEpochSecond()
 
                         with (podcastItem) {
-                            val id = db.insertIgnoringConflict(
+                            val id = insertIgnoringConflict(
                                     DatabaseOpenHelper.FAVORITES_PODCASTS_TABLE_NAME,
                                     "remote_id" to remoteId,
                                     "title" to title,
@@ -56,9 +62,9 @@ class FavoritesInteractor(private val app: Application) {
 
     fun getFavorites(page: Int, limit: Int): Single<List<PodcastItem>> =
             Single.create<List<PodcastItem>> { subscriber ->
-                app.database
-                        .readableDatabase
-                        .select(
+                val list = app.database
+                        .use {
+                            select(
                                 DatabaseOpenHelper.FAVORITES_PODCASTS_TABLE_NAME,
                                 "remote_id",
                                 "title",
@@ -67,10 +73,27 @@ class FavoritesInteractor(private val app: Application) {
                                 "date",
                                 "tags",
                                 "type"
-                        )
-                        .limit(page * limit, limit)
-                        .exec {
-                                parseOpt(PodcastItemRowParser())
+                            )
+                            .orderBy("date", SqlOrderDirection.DESC)
+                            .limit(page * limit, limit)
+                            .exec {
+                                parseList(PodcastItemRowParser())
+                            }
                         }
+
+                if (!subscriber.isUnsubscribed) {
+                    subscriber.onSuccess(list)
+                }
             }
+
+    override fun getPodcasts(nextPageToken: String?) : Single<PodcastList> =
+            getFavorites(nextPageToken?.toInt() ?: 0, ITEMS_PER_PAGE)
+                    .map { list ->
+                        val currentPageToken = nextPageToken?.toInt() ?: ITEMS_PER_PAGE
+                        val podcastList = PodcastList(currentPageToken.toString(), (currentPageToken + ITEMS_PER_PAGE).toString())
+
+                        podcastList.list = list as? ArrayList<PodcastItem> ?: ArrayList(list)
+
+                        podcastList
+                    }
 }

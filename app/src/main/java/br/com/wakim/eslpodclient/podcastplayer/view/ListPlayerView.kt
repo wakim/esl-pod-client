@@ -7,6 +7,7 @@ import android.support.annotation.StringRes
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.PopupMenu
 import android.text.Html
 import android.util.AttributeSet
@@ -102,7 +103,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
     private val popupMenu: PopupMenu by lazy {
         val menu = PopupMenu(context, overflowButton)
 
-        menu.inflate(R.menu.player_overflow)
+        menu.inflate(R.menu.player_overflow_menu)
         menu.setOnMenuItemClickListener(menuClickListener)
 
         menu
@@ -277,8 +278,11 @@ class ListPlayerView : AppBarLayout, PlayerView {
         seekBar.secondaryProgress = available
     }
 
-    override fun showMessage(@StringRes messageResId: Int) {
-        baseActivity.showMessage(messageResId)
+    override fun showMessage(@StringRes messageResId: Int): Snackbar =
+            baseActivity.showMessage(messageResId)
+
+    override fun showMessage(messageResId: Int, action: String, clickListener: (() -> Unit)?) {
+        baseActivity.showMessage(messageResId, action, clickListener)
     }
 
     fun hideFabs() {

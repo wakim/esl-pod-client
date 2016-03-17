@@ -113,6 +113,8 @@ class PlayerPresenter(private val app : Application,
                             } else {
                                 view!!.showMessage(R.string.write_external_storage_permission_needed_to_download)
                             }
+
+                            null
                         }
                     }
         }
@@ -234,7 +236,9 @@ class PlayerPresenter(private val app : Application,
                 .subscribe { downloadStatus ->
                     when (downloadStatus.status) {
                         DownloadStatus.DOWNLOADED -> view?.showMessage(R.string.podcast_already_downloaded)
-                        DownloadStatus.DOWNLOADING -> view?.showMessage(R.string.podcast_download_started)
+                        DownloadStatus.DOWNLOADING -> view?.showMessage(R.string.podcast_download_started, app.getString(R.string.cancel)) {
+                            storageService?.cancelDownload(downloadStatus)
+                        }
                     }
                 }
         }
