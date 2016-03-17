@@ -109,8 +109,13 @@ class TagView : TextView {
         val size = tags.size
 
         while (i < size) {
+            if (tags[i].isBlank()) {
+                continue
+            }
+
             val tag = prefix + tags[i]
             val tagContent = if (isUppercaseTags) tag.toUpperCase() else tag
+
 
             sb.append(tagContent).setSpan(
                     createSpan(tagContent, color),

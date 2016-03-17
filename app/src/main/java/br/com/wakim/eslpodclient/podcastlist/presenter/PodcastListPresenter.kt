@@ -101,9 +101,16 @@ open class PodcastListPresenter(private val app: Application,
                             } else {
                                 view!!.showMessage(R.string.write_external_storage_permission_needed_to_download)
                             }
+
+                            true
                         }
                     }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        playerSevice?.playlistManager?.setItems(items)
     }
 
     override fun onStop() {

@@ -13,6 +13,7 @@ import org.jetbrains.anko.db.select
 import org.threeten.bp.ZonedDateTime
 import rx.Single
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class PodcastItemFavoritesInteractor(private val app: Application): PodcastInteractor(app) {
 
@@ -88,11 +89,16 @@ class PodcastItemFavoritesInteractor(private val app: Application): PodcastInter
 
     override fun getPodcasts(nextPageToken: String?) : Single<PodcastList> =
             getFavorites(nextPageToken?.toInt() ?: 0, ITEMS_PER_PAGE)
+                    .delay(5, TimeUnit.SECONDS)
                     .map { list ->
-                        val currentPageToken = nextPageToken?.toInt() ?: ITEMS_PER_PAGE
-                        val podcastList = PodcastList(currentPageToken.toString(), (currentPageToken + ITEMS_PER_PAGE).toString())
+                        val currentPageToken = nextPageToken?.toInt()
+                        val podcastList = PodcastList(currentPageToken.toString(), ((currentPageToken ?: 0) + 1).toString())
 
                         podcastList.list = list as? ArrayList<PodcastItem> ?: ArrayList(list)
+
+                        if (podcastList.list.size < ITEMS_PER_PAGE) {
+                            podcastList.nextPageToken = null
+                        }
 
                         podcastList
                     }
