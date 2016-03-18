@@ -110,6 +110,7 @@ class TagView : TextView {
 
         while (i < size) {
             if (tags[i].isBlank()) {
+                ++i
                 continue
             }
 
