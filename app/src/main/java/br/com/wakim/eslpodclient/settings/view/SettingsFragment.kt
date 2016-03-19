@@ -42,8 +42,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        PermissionPublishSubject.INSTANCE
-                .publishSubject
+        PermissionPublishSubject
+                .INSTANCE
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe { permission ->
                     pickFolderPreference?.onPermissionResult(permission)

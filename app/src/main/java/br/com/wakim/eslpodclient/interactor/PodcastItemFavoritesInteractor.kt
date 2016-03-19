@@ -45,7 +45,9 @@ class PodcastItemFavoritesInteractor(private val app: Application): PodcastInter
                         .use {
                             val updated = update(DatabaseOpenHelper.PODCASTS_TABLE_NAME,
                                     arrayOf("favorited_date" to null).toContentValues(),
-                                    "remote_id = ?", arrayOf(podcastItem.remoteId.toString()))> 0
+                                    "remote_id = ?",
+                                    arrayOf(podcastItem.remoteId.toString())
+                            ) > 0
 
                             if (!subscriber.isUnsubscribed) {
                                 subscriber.onSuccess(updated)

@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.widget.Toast
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.dp
 import br.com.wakim.eslpodclient.extensions.isVisible
@@ -32,23 +33,19 @@ open class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), 
         final const val MINIMUM_THRESHOLD = 5
     }
 
-    private var _hasMore : Boolean = false
+    override var hasMore: Boolean = false
 
-    override var hasMore: Boolean
-        get() = _hasMore
-        set(value) {
-            _hasMore = value
-        }
-
-    val coordinatorLayout : CoordinatorLayout by bindView(R.id.coordinator_layout)
-    val recyclerView : RecyclerView by bindView(R.id.recycler_view)
+    val coordinatorLayout: CoordinatorLayout by bindView(R.id.coordinator_layout)
+    val recyclerView: RecyclerView by bindView(R.id.recycler_view)
     val swipeRefresh: SwipeRefreshLayout by bindView(R.id.swipe_refresh)
 
     val playerView: ListPlayerView by bindView(R.id.player_view)
 
-    val playFab : FloatingActionButton by bindView(R.id.fab_play)
-    val pauseFab : FloatingActionButton by bindView(R.id.fab_pause)
-    val loadingFab : LoadingFloatingActionButton by bindView(R.id.fab_loading)
+    val playFab: FloatingActionButton by bindView(R.id.fab_play)
+    val pauseFab: FloatingActionButton by bindView(R.id.fab_pause)
+    val loadingFab: LoadingFloatingActionButton by bindView(R.id.fab_loading)
+
+    var toast: Toast? = null
 
     val bottomSpacingDecoration = BottomSpacingItemDecoration(0)
 
@@ -137,7 +134,7 @@ open class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), 
 
                 val mustLoadMore = totalItemCount <= (lastVisible + MINIMUM_THRESHOLD)
 
-                if (mustLoadMore && _hasMore && !adapter.loading) {
+                if (mustLoadMore && hasMore && !adapter.loading) {
                     presenter.loadNextPage()
                 }
             }
@@ -197,9 +194,26 @@ open class PodcastListActivity : BasePresenterActivity<PodcastListPresenter>(), 
             return
         }
 
-        playerView.explicitlyStop()
+        if (playerView.isPlaying()) {
+            if (!(toast?.isVisible() ?: false)) {
+                toast = Toast.makeText(this, R.string.press_back_again_to_leave, Toast.LENGTH_LONG);
+                toast!!.show()
 
+                return
+            }
+        }
+
+        disposePlayer()
         super.onBackPressed()
+    }
+
+    override fun finish() {
+        disposePlayer()
+        super.finish()
+    }
+
+    open fun disposePlayer() {
+        playerView.explicitlyStop()
     }
 
     override fun showMessage(messageResId: Int): Snackbar = snack(coordinatorLayout, messageResId)

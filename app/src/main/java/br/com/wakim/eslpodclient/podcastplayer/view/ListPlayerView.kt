@@ -381,6 +381,10 @@ class ListPlayerView : AppBarLayout, PlayerView {
         presenter.explicitlyStop()
     }
 
+    fun stop() {
+        presenter.onStopClicked()
+    }
+
     override fun setLoading(loading: Boolean) {
         this.loading.visibility = if (loading) View.VISIBLE else View.GONE
     }
@@ -402,4 +406,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
             bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
+
+    fun isPlaying(): Boolean =
+            presenter.isPlaying()
 }

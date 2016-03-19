@@ -17,69 +17,74 @@
         tools:visibility="visible">
 
         <LinearLayout
-            android:id="@+id/player_fragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             tools:ignore="MissingPrefix">
 
-            <LinearLayout
-                android:id="@+id/ll_title"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@color/player_background"
-                android:clickable="true">
+                android:background="@color/player_background">
 
-                <TextView
-                    android:id="@+id/tv_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:paddingRight="72dp"
-                    android:paddingStart="16dp"
-                    android:paddingLeft="16dp"
-                    android:paddingEnd="72dp"
-                    android:ellipsize="end"
-                    android:textColor="#FFF"
-                    android:maxLines="2"
-                    android:gravity="center_vertical"
-                    style="@style/TextAppearance.AppCompat.Title"
-                    tools:text="Musica com titulo muito grande para ver como o meu layout se comporta"
-                    tools:ignore="MissingPrefix" />
-
-                <TextView
-                    android:id="@+id/tv_subtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:paddingRight="16dp"
-                    android:paddingStart="16dp"
-                    android:paddingLeft="16dp"
-                    android:paddingEnd="16dp"
-                    android:textColor="#B3FFFFFF"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    tools:text="Musica com titulo muito grande para ver como o meu layout se comporta"
-                    tools:ignore="MissingPrefix" />
-
-                <pl.charmas.android.tagview.TagView
-                    android:id="@+id/tv_tags"
+                <LinearLayout
+                    android:id="@+id/ll_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:paddingRight="16dp"
-                    android:paddingStart="16dp"
-                    android:paddingLeft="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="4dp"
-                    android:textColor="@color/player_background"
-                    style="@style/TagView"
-                    app:tagColor="#B3FFFFFF"
-                    tools:text="Tags tags tags tags" />
+                    android:orientation="vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true">
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/tv_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:paddingRight="72dp"
+                        android:paddingStart="16dp"
+                        android:paddingLeft="16dp"
+                        android:paddingEnd="72dp"
+                        android:ellipsize="end"
+                        android:textColor="#FFF"
+                        android:maxLines="2"
+                        android:gravity="center_vertical"
+                        style="@style/TextAppearance.AppCompat.Title"
+                        tools:text="Musica com titulo muito grande para ver como o meu layout se comporta"
+                        tools:ignore="MissingPrefix" />
+
+                    <TextView
+                        android:id="@+id/tv_subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:paddingRight="16dp"
+                        android:paddingStart="16dp"
+                        android:paddingLeft="16dp"
+                        android:paddingEnd="16dp"
+                        android:textColor="#B3FFFFFF"
+                        style="@style/TextAppearance.AppCompat.Body1"
+                        tools:text="Musica com titulo muito grande para ver como o meu layout se comporta"
+                        tools:ignore="MissingPrefix" />
+
+                    <pl.charmas.android.tagview.TagView
+                        android:id="@+id/tv_tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:paddingRight="16dp"
+                        android:paddingStart="16dp"
+                        android:paddingLeft="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="4dp"
+                        android:textColor="@color/player_background"
+                        style="@style/TagView"
+                        app:tagColor="#B3FFFFFF"
+                        tools:text="Tags tags tags tags" />
+
+                </LinearLayout>
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -148,8 +148,8 @@ open class BaseActivity: AppCompatActivity(), PermissionRequester {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        PermissionPublishSubject.INSTANCE
-                .publishSubject
+        PermissionPublishSubject
+                .INSTANCE
                 .onNext(PermissionPublishSubject.Permission(requestCode, permissions, grantResults))
     }
 }

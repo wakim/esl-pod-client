@@ -88,7 +88,7 @@ class StorageInteractor(private var downloadManager: DownloadManager,
 
             downloadDbInteractor.deleteDownloadByDownloadId(downloadId)
 
-            DownloadPublishSubject.INSTANCE.publishSubject.onNext(remoteId)
+            DownloadPublishSubject.INSTANCE.onNext(remoteId)
         }
     }
 

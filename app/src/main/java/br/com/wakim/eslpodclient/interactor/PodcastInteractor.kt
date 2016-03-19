@@ -21,13 +21,16 @@ open class PodcastInteractor(private val app: Application) {
 
     open fun getPodcasts(nextPageToken: String?) : Single<PodcastList> =
             Single .create(PodcastListOnSubscribe(nextPageToken ?: BuildConfig.BASE_URL))
-                    .connected()
                     .doOnSuccess { podcastList ->
                         insertPodcasts(podcastList.list)
                     }
+                    .connected()
 
     open fun getPodcastDetail(podcastItem : PodcastItem) : Single<PodcastItemDetail> =
             Single  .create(PodcastDetailOnSubscribe(podcastItem, BuildConfig.DETAIL_URL.format(podcastItem.remoteId.toString())))
+                    .doOnSuccess { podcastItemDetail ->
+                        complementPodcast(podcastItemDetail)
+                    }
                     .connected()
 
     fun insertPodcasts(podcasts: List<PodcastItem>) {
@@ -51,6 +54,29 @@ open class PodcastInteractor(private val app: Application) {
                         }
                     }
                 }
+    }
+
+    fun complementPodcast(podcastItemDetail: PodcastItemDetail) {
+        Single.create<Boolean> { subscriber ->
+            app.database
+                    .use {
+                        with (podcastItemDetail) {
+                            val updated = update(
+                                    DatabaseOpenHelper.PODCASTS_TABLE_NAME,
+                                    arrayOf(
+                                            "script" to script,
+                                            "slow_index" to podcastItemDetail.seekPos?.slow,
+                                            "explanation_index" to podcastItemDetail.seekPos?.explanation,
+                                            "normal_index" to podcastItemDetail.seekPos?.normal
+                                    ).toContentValues(),
+                                    "remote_id = ?",
+                                    arrayOf(remoteId.toString())
+                            ) > 0
+
+                            subscriber.onSuccess(updated)
+                        }
+                    }
+        }.ofIOToMainThread().subscribe()
     }
 
     fun insertLastSeekPos(remoteId: Long, seekPos: Int) {

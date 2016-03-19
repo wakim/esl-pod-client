@@ -44,21 +44,22 @@ class CustomFilePickerActivity: FilePickerActivity() {
     }
 
     override fun onBackPressed() {
-        if (fragment == null) {
-            super.onBackPressed()
-            return
-        }
+        fragment?.let {
+            if (!it.onBackPressed()) {
+                return
+            }
 
-        if (fragment!!.onBackPressed()) {
             if (toast?.isVisible() ?: false) {
                 toast!!.cancel()
                 super.onBackPressed()
-
-                return
+            } else {
+                toast = Toast.makeText(this, R.string.press_back_again_to_leave, Toast.LENGTH_LONG)
+                toast!!.show()
             }
+
+            return
         }
 
-        toast = Toast.makeText(this, R.string.press_back_again_to_leave, Toast.LENGTH_LONG)
-        toast!!.show()
+        super.onBackPressed()
     }
 }

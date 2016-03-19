@@ -23,6 +23,7 @@ import br.com.wakim.eslpodclient.model.PodcastList
 import br.com.wakim.eslpodclient.podcastlist.view.PodcastListView
 import br.com.wakim.eslpodclient.presenter.Presenter
 import br.com.wakim.eslpodclient.receiver.ConnectivityException
+import br.com.wakim.eslpodclient.rx.ConnectivityPublishSubject
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.service.PlayerService
 import br.com.wakim.eslpodclient.service.TypedBinder
@@ -92,8 +93,8 @@ open class PodcastListPresenter(private val app: Application,
         app.bindService<PlayerService>(serviceConnection)
 
         addSubscription {
-            PermissionPublishSubject.INSTANCE
-                    .publishSubject
+            PermissionPublishSubject
+                    .INSTANCE
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe { permission ->
                         (permission.requestCode == Application.LIST_WRITE_STORAGE_PERMISSION).let {
@@ -104,6 +105,16 @@ open class PodcastListPresenter(private val app: Application,
                             }
 
                             true
+                        }
+                    }
+        }
+
+        addSubscription {
+            ConnectivityPublishSubject
+                    .INSTANCE
+                    .subscribe { connected ->
+                        if (connected) {
+                            loadFirstPageIfNeeded()
                         }
                     }
         }
@@ -131,7 +142,7 @@ open class PodcastListPresenter(private val app: Application,
         addSubscription {
             interactor.getPodcasts(nextPageToken)
                     .ofIOToMainThread()
-                    .subscribe(object : SingleSubscriber<PodcastList>(){
+                    .subscribe(object : SingleSubscriber<PodcastList>() {
                         override fun onSuccess(podcastList: PodcastList) {
                             items.addAll(podcastList.list)
                             nextPageToken = podcastList.nextPageToken

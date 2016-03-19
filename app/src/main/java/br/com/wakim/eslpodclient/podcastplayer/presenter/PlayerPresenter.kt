@@ -108,8 +108,8 @@ class PlayerPresenter(private val app : Application,
         super.onStart()
 
         addSubscription {
-            PermissionPublishSubject.INSTANCE
-                    .publishSubject
+            PermissionPublishSubject
+                    .INSTANCE
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe { permission ->
                         (permission.requestCode == Application.PLAYER_WRITE_STORAGE_PERMISSION).let {

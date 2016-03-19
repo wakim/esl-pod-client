@@ -6,6 +6,7 @@ import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.dagger.DaggerAppComponent
 import br.com.wakim.eslpodclient.dagger.module.AppModule
 import br.com.wakim.eslpodclient.receiver.ConnectivityBroadcastReceiver
+import br.com.wakim.eslpodclient.rx.ConnectivityPublishSubject
 import com.jakewharton.threetenabp.AndroidThreeTen
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import javax.inject.Inject
@@ -18,6 +19,10 @@ open class Application : android.app.Application() {
     lateinit var connectivityManager: ConnectivityManager
 
     var connected: Boolean = false
+        set(value) {
+            field = value
+            ConnectivityPublishSubject.INSTANCE.onNext(value)
+        }
 
     override fun onCreate() {
         super.onCreate()

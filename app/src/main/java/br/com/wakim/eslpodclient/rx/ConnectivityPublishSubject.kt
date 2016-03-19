@@ -2,9 +2,9 @@ package br.com.wakim.eslpodclient.rx
 
 import rx.subjects.PublishSubject
 
-class DownloadPublishSubject {
+class ConnectivityPublishSubject {
 
     companion object {
-        val INSTANCE = PublishSubject.create<Long>()
+        val INSTANCE = PublishSubject.create<Boolean>()
     }
 }

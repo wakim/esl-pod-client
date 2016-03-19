@@ -44,6 +44,10 @@ class FavoriteListActivity: PodcastListActivity() {
     }
 
     fun removeFavorite(podcastItem: PodcastItem) {
-        presenter!!.removeFavorite(podcastItem)
+        presenter.removeFavorite(podcastItem)
+    }
+
+    override fun disposePlayer() {
+        playerView.stop()
     }
 }
