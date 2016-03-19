@@ -146,6 +146,7 @@ open class PodcastListPresenter(private val app: Application,
                         }
 
                         override fun onError(e: Throwable?) {
+                            view?.setLoading(false)
                         }
                     })
         }

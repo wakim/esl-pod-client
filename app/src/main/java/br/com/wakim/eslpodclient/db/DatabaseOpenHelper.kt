@@ -9,8 +9,7 @@ class DatabaseOpenHelper(context: Context): ManagedSQLiteOpenHelper(context, DB_
     companion object {
         const val DB_NAME = "Database"
         const val DOWNLOADS_TABLE_NAME = "downloads"
-        const val FAVORITES_PODCASTS_TABLE_NAME = "favorite_podcasts"
-        const val SEEK_POSITIONS_TABLE_NAME = "seek_positions"
+        const val PODCASTS_TABLE_NAME = "podcasts"
     }
 
     override fun onCreate(database: SQLiteDatabase) {
@@ -25,7 +24,7 @@ class DatabaseOpenHelper(context: Context): ManagedSQLiteOpenHelper(context, DB_
 
         database
                 .createTable(
-                        FAVORITES_PODCASTS_TABLE_NAME,
+                        PODCASTS_TABLE_NAME,
                         true,
                         "remote_id" to INTEGER + PRIMARY_KEY + UNIQUE,
                         "title" to TEXT,
@@ -34,15 +33,12 @@ class DatabaseOpenHelper(context: Context): ManagedSQLiteOpenHelper(context, DB_
                         "date" to INTEGER,
                         "tags" to TEXT,
                         "type" to INTEGER,
+                        "last_seek_pos" to INTEGER,
+                        "script" to TEXT,
+                        "slow_index" to INTEGER,
+                        "explanation_index" to INTEGER,
+                        "normal_index" to INTEGER,
                         "favorited_date" to INTEGER
-                )
-
-        database
-                .createTable(
-                        SEEK_POSITIONS_TABLE_NAME,
-                        true,
-                        "remote_id" to INTEGER + PRIMARY_KEY + UNIQUE,
-                        "last_seek_pos" to INTEGER
                 )
     }
 
