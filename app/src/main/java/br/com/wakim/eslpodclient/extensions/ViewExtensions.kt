@@ -5,6 +5,7 @@ import android.support.v4.view.ViewCompat
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter
 import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.view.View
+import android.widget.Toast
 
 private val interpolator = FastOutSlowInInterpolator()
 
@@ -56,4 +57,16 @@ fun BottomSheetBehavior<*>.toggleState(@BottomSheetBehavior.State state1 : Int, 
         state1 -> state = state2
         state2 -> state = state1
     }
+}
+
+fun Toast.isVisible(): Boolean {
+    if (view == null) {
+        return false
+    }
+
+    if (view.getWindowToken() == null) {
+        return false
+    }
+
+    return true;
 }

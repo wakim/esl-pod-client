@@ -19,6 +19,7 @@ import android.support.v4.media.session.MediaButtonReceiver
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.view.KeyEvent
+import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
@@ -199,6 +200,11 @@ class PlayerService : Service() {
     }
 
     fun play(podcastItem: PodcastItem, position: Int) {
+        if (!((Application.INSTANCE?.connected) ?: false)) {
+            callback?.onConnectivityError()
+            return
+        }
+
         if (initalized || preparing) {
             reset()
         }
@@ -563,6 +569,8 @@ interface PlayerCallback {
 
     fun onSkippedToPrevious(podcastItem: PodcastItem)
     fun onSkippedToNext(podcastItem: PodcastItem)
+
+    fun onConnectivityError()
 }
 
 abstract class SmartReceiver : BroadcastReceiver() {

@@ -6,6 +6,7 @@ import br.com.wakim.eslpodclient.BuildConfig
 import br.com.wakim.eslpodclient.db.DatabaseOpenHelper
 import br.com.wakim.eslpodclient.db.database
 import br.com.wakim.eslpodclient.extensions.LongAnyParser
+import br.com.wakim.eslpodclient.extensions.connected
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.extensions.toContentValues
 import br.com.wakim.eslpodclient.model.PodcastItem
@@ -20,12 +21,14 @@ open class PodcastInteractor(private val app: Application) {
 
     open fun getPodcasts(nextPageToken: String?) : Single<PodcastList> =
             Single .create(PodcastListOnSubscribe(nextPageToken ?: BuildConfig.BASE_URL))
+                    .connected()
                     .doOnSuccess { podcastList ->
                         insertPodcasts(podcastList.list)
                     }
 
     open fun getPodcastDetail(podcastItem : PodcastItem) : Single<PodcastItemDetail> =
-            Single.create(PodcastDetailOnSubscribe(podcastItem, BuildConfig.DETAIL_URL.format(podcastItem.remoteId.toString())))
+            Single  .create(PodcastDetailOnSubscribe(podcastItem, BuildConfig.DETAIL_URL.format(podcastItem.remoteId.toString())))
+                    .connected()
 
     fun insertPodcasts(podcasts: List<PodcastItem>) {
         app.database

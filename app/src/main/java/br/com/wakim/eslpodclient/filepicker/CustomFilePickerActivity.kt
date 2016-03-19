@@ -3,11 +3,17 @@ package br.com.wakim.eslpodclient.filepicker
 import android.os.Environment
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import android.widget.Toast
+import br.com.wakim.eslpodclient.R
+import br.com.wakim.eslpodclient.extensions.isVisible
 import com.nononsenseapps.filepicker.AbstractFilePickerFragment
 import com.nononsenseapps.filepicker.FilePickerActivity
 import java.io.File
 
 class CustomFilePickerActivity: FilePickerActivity() {
+
+    var fragment: CustomFilePickerFragment? = null
+    var toast: Toast? = null
 
     override fun setSupportActionBar(toolbar: Toolbar?) {
         super.setSupportActionBar(toolbar)
@@ -32,6 +38,27 @@ class CustomFilePickerActivity: FilePickerActivity() {
         fragment.setArgs(startPath ?: Environment.getExternalStorageDirectory().path, mode, allowMultiple, allowCreateDir)
         fragment.rootDir = Environment.getExternalStorageDirectory()
 
+        this.fragment = fragment
+
         return fragment
+    }
+
+    override fun onBackPressed() {
+        if (fragment == null) {
+            super.onBackPressed()
+            return
+        }
+
+        if (fragment!!.onBackPressed()) {
+            if (toast?.isVisible() ?: false) {
+                toast!!.cancel()
+                super.onBackPressed()
+
+                return
+            }
+        }
+
+        toast = Toast.makeText(this, R.string.press_back_again_to_leave, Toast.LENGTH_LONG)
+        toast!!.show()
     }
 }

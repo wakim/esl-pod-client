@@ -38,6 +38,8 @@
     <string name="download_folder">Download Folder</string>
     <string name="select_folder_to_store_downloads">Select a folder to store your downloads</string>
 
+    <string name="press_back_again_to_leave">Press back again to leave</string>
+
     <string name="there_are_no_podcasts">There are no podcasts available</string>
     <string name="there_are_no_favorites_yet">There are no favorites yet!</string>
 

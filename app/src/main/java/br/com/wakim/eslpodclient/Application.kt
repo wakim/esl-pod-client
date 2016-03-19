@@ -22,6 +22,8 @@ open class Application : android.app.Application() {
     override fun onCreate() {
         super.onCreate()
 
+        INSTANCE = this
+
         AndroidThreeTen.init(this)
 
         CalligraphyConfig.initDefault(CalligraphyConfig.Builder()
@@ -54,5 +56,8 @@ open class Application : android.app.Application() {
         final val PLAYER_WRITE_STORAGE_PERMISSION = 12
         final val LIST_WRITE_STORAGE_PERMISSION = 13
         final val PICK_FOLDER_READ_STORAGE_PERMISSION = 14
+
+        var INSTANCE: Application? = null
+            private set
     }
 }

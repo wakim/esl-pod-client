@@ -12,6 +12,7 @@ import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastItemDetail
 import br.com.wakim.eslpodclient.podcastplayer.view.PlayerView
 import br.com.wakim.eslpodclient.presenter.Presenter
+import br.com.wakim.eslpodclient.receiver.ConnectivityException
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.service.PlayerCallback
 import br.com.wakim.eslpodclient.service.PlayerService
@@ -79,6 +80,10 @@ class PlayerPresenter(private val app : Application,
         override fun onSkippedToNext(podcastItem: PodcastItem) {
             view?.setPodcastItem(podcastItem)
             loadDetail(podcastItem)
+        }
+
+        override fun onConnectivityError() {
+            view?.showMessage(R.string.no_connectivity)
         }
     }
 
@@ -278,6 +283,9 @@ class PlayerPresenter(private val app : Application,
                         }
 
                         override fun onError(e: Throwable?) {
+                            if (e is ConnectivityException) {
+                                view?.showMessage(R.string.no_connectivity)
+                            }
                         }
                     })
         }

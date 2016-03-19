@@ -27,4 +27,17 @@ class CustomFilePickerFragment: FilePickerFragment() {
     override fun getRoot(): File? {
         return rootDir ?: super.getRoot()
     }
+
+    fun onBackPressed(): Boolean {
+        if (mCurrentPath == null) {
+            return true
+        }
+
+        if (!mCurrentPath.path.equals(rootDir?.path)) {
+            goUp()
+            return false
+        }
+
+        return true
+    }
 }
