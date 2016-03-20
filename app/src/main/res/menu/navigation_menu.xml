@@ -4,13 +4,18 @@
 
     <item
         android:id="@+id/drawer_favorites"
-        android:icon="@drawable/ic_favorite_black_24dp"
+        android:icon="@drawable/ic_favorite_grey_600_24dp"
         android:title="@string/favorites" />
+
+    <item
+        android:id="@+id/drawer_downloaded"
+        android:icon="@drawable/ic_file_download_grey_600_24dp"
+        android:title="@string/downloaded" />
 
     <group android:id="@+id/bottom">
         <item
             android:id="@+id/drawer_settings"
-            android:icon="@drawable/ic_settings_black_24dp"
+            android:icon="@drawable/ic_settings_grey_600_24dp"
             android:title="@string/settings" />
     </group>
 
