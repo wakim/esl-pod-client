@@ -2,6 +2,7 @@ package br.com.wakim.eslpodclient.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import org.jetbrains.anko.db.RowParser
 
 data class PodcastItemDetail(var remoteId : Long = 0, var title : String? = null, var script: String? = null, @PodcastItem.Type val type: Long, var seekPos : SeekPos? = null) : Parcelable {
     constructor(source: Parcel): this(source.readLong(), source.readString(), source.readString(), source.readLong(), source.readParcelable(SeekPos::class.java.classLoader))
@@ -60,5 +61,18 @@ data class SeekPos(val slow : Int = PodcastItemDetail.INVALID_SEEK_POS, val expl
                 return arrayOfNulls(size)
             }
         }
+    }
+}
+
+class PodcastItemDetailRowParser: RowParser<PodcastItemDetail> {
+    override fun parseRow(columns: Array<Any>): PodcastItemDetail {
+        // "remote_id", "title", "script", "type", "slow_index", "explanation_index", "normal_index"
+        var seekPos: SeekPos? = null
+
+        if (columns[4] is Int) {
+            seekPos = SeekPos(columns[4] as Int, columns[5] as Int, columns[6] as Int)
+        }
+
+        return PodcastItemDetail(columns[0] as Long, columns[1] as String, columns[2] as String, columns[3] as Long, seekPos)
     }
 }

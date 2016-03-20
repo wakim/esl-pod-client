@@ -14,24 +14,17 @@ import javax.inject.Singleton
 class AppModule(private val app: Application) {
 
     @Provides @Singleton
-    fun providesApplication(): Application {
-        return app
-    }
+    fun providesApplication() = app
 
     @Provides @Singleton
-    fun providesPreferenceManager(): PreferenceInteractor {
-        return PreferenceInteractor(app)
-    }
+    fun providesPreferenceManager() = PreferenceInteractor(app)
 
     @Provides @Singleton
-    fun providesAudioManager(): AudioManager =
-            app.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    fun providesAudioManager() = app.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     @Provides @Singleton
-    fun providesDownloadManager(): DownloadManager =
-            app.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    fun providesDownloadManager() = app.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
     @Provides @Singleton
-    fun providesConnectivityManager(): ConnectivityManager =
-            app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    fun providesConnectivityManager() = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 }

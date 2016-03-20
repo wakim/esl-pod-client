@@ -15,7 +15,7 @@ import org.threeten.bp.ZonedDateTime
 import rx.Single
 import java.util.*
 
-class PodcastItemFavoritesInteractor(private val app: Application): PodcastInteractor(app) {
+class PodcastItemFavoritesInteractor(private val podcastDbInteractor: PodcastDbInteractor, private val app: Application): PodcastInteractor(podcastDbInteractor, app) {
 
     companion object {
         final const val ITEMS_PER_PAGE = 20
@@ -59,22 +59,22 @@ class PodcastItemFavoritesInteractor(private val app: Application): PodcastInter
             Single.create<List<PodcastItem>> { subscriber ->
                 val list = app.database
                         .use {
-                            select(
-                                DatabaseOpenHelper.PODCASTS_TABLE_NAME,
-                                "remote_id",
-                                "title",
-                                "blurb",
-                                "mp3_url",
-                                "date",
-                                "tags",
-                                "type"
-                            )
-                            .where("favorited_date IS NOT NULL")
-                            .orderBy("date", SqlOrderDirection.DESC)
-                            .limit(page * limit, limit)
-                            .exec {
-                                parseList(PodcastItemRowParser())
-                            }
+                            select(DatabaseOpenHelper.PODCASTS_TABLE_NAME)
+                                    .columns(
+                                        "remote_id",
+                                        "title",
+                                        "blurb",
+                                        "mp3_url",
+                                        "date",
+                                        "tags",
+                                        "type"
+                                    )
+                                    .where("favorited_date IS NOT NULL")
+                                    .orderBy("date", SqlOrderDirection.DESC)
+                                    .limit(page * limit, limit)
+                                    .exec {
+                                        parseList(PodcastItemRowParser())
+                                    }
                         }
 
                 if (!subscriber.isUnsubscribed) {

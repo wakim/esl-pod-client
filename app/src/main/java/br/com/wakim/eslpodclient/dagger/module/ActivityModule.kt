@@ -11,7 +11,7 @@ import dagger.Provides
 class ActivityModule(private val presenterActivity: BaseActivity) {
 
     @Provides @ActivityScope
-    fun providesBaseActivity(): BaseActivity = presenterActivity
+    fun providesBaseActivity() = presenterActivity
 
     @Provides @ActivityScope
     fun providesActivity(): Activity = presenterActivity

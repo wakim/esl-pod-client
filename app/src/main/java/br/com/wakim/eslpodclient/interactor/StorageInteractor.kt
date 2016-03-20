@@ -8,7 +8,6 @@ import br.com.wakim.eslpodclient.extensions.getFileName
 import br.com.wakim.eslpodclient.extensions.hasPermission
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
-import br.com.wakim.eslpodclient.rx.DownloadPublishSubject
 import br.com.wakim.eslpodclient.service.StorageService
 import rx.Single
 import java.io.File
@@ -55,7 +54,7 @@ class StorageInteractor(private var downloadManager: DownloadManager,
             }
     }
 
-    fun insertIntoDb(remoteId: Long, downloadId: Long) {
+    private fun insertIntoDb(remoteId: Long, downloadId: Long) {
         downloadDbInteractor.insertDownload(remoteId = remoteId, downloadId = downloadId, status = DownloadStatus.DOWNLOADING)
     }
 
@@ -80,16 +79,8 @@ class StorageInteractor(private var downloadManager: DownloadManager,
         return downloadManager.enqueue(request)
     }
 
-    fun publishDownloadCompletion(downloadId: Long) {
-        val download = downloadDbInteractor.getDownloadByDownloadId(downloadId)
-
-        download?.let {
-            val remoteId = it.remoteId
-
-            downloadDbInteractor.deleteDownloadByDownloadId(downloadId)
-
-            DownloadPublishSubject.INSTANCE.onNext(remoteId)
-        }
+    fun handleDownloadCompletion(downloadId: Long) {
+        downloadDbInteractor.updateDownloadStatusByDownloadId(downloadId, DownloadStatus.DOWNLOADED)
     }
 
     fun handleDownloadFailed(downloadId: Long) {
@@ -102,4 +93,7 @@ class StorageInteractor(private var downloadManager: DownloadManager,
             downloadDbInteractor.deleteDownloadByDownloadId(it)
         }
     }
+
+//    fun getDownloadedPodcasts(page: Int, limit: Int): Single<PodcastList> {
+//    }
 }

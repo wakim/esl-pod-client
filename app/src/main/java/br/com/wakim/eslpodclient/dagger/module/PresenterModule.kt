@@ -22,11 +22,11 @@ class PresenterModule() {
                                      storageInteractor: StorageInteractor,
                                      podcastInteractor: PodcastInteractor,
                                      podcastItemFavoritesInteractor: PodcastItemFavoritesInteractor,
-                                     activity: Activity) : PodcastListPresenter =
+                                     activity: Activity) =
             PodcastListPresenter(app, podcastInteractor, permissionRequester, storageInteractor, podcastItemFavoritesInteractor, activity)
 
     @Provides @ActivityScope
-    fun providesPlayerPresenter(app: Application, permissionRequester: PermissionRequester, podcastInteractor: PodcastInteractor) : PlayerPresenter =
+    fun providesPlayerPresenter(app: Application, permissionRequester: PermissionRequester, podcastInteractor: PodcastInteractor) =
             PlayerPresenter(app, permissionRequester, podcastInteractor)
 
     @Provides @ActivityScope

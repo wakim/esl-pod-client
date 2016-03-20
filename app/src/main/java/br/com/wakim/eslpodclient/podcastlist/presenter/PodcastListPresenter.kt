@@ -19,7 +19,6 @@ import br.com.wakim.eslpodclient.interactor.PodcastItemFavoritesInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
-import br.com.wakim.eslpodclient.model.PodcastList
 import br.com.wakim.eslpodclient.podcastlist.view.PodcastListView
 import br.com.wakim.eslpodclient.presenter.Presenter
 import br.com.wakim.eslpodclient.receiver.ConnectivityException
@@ -28,7 +27,6 @@ import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.service.PlayerService
 import br.com.wakim.eslpodclient.service.TypedBinder
 import br.com.wakim.eslpodclient.view.PermissionRequester
-import rx.SingleSubscriber
 import rx.android.schedulers.AndroidSchedulers
 import java.util.*
 
@@ -142,29 +140,28 @@ open class PodcastListPresenter(private val app: Application,
         addSubscription {
             interactor.getPodcasts(nextPageToken)
                     .ofIOToMainThread()
-                    .subscribe(object : SingleSubscriber<PodcastList>() {
-                        override fun onSuccess(podcastList: PodcastList) {
-                            items.addAll(podcastList.list)
-                            nextPageToken = podcastList.nextPageToken
+                    .subscribe (
+                            { podcastList ->
+                                items.addAll(podcastList.list)
+                                nextPageToken = podcastList.nextPageToken
 
-                            view?.let {
-                                it.setLoading(false)
-                                it.addItems(podcastList.list)
+                                view?.let {
+                                    it.setLoading(false)
+                                    it.addItems(podcastList.list)
 
-                                it.hasMore = podcastList.nextPageToken != null
+                                    it.hasMore = podcastList.nextPageToken != null
 
-                                playerSevice?.playlistManager?.setItems(items)
+                                    playerSevice?.playlistManager?.setItems(items)
+                                }
+                            },
+                            { e: Throwable ->
+                                if (e is ConnectivityException) {
+                                    view?.showMessage(R.string.no_connectivity)
+                                }
+
+                                view?.setLoading(false)
                             }
-                        }
-
-                        override fun onError(e: Throwable?) {
-                            if (e is ConnectivityException) {
-                                view?.showMessage(R.string.no_connectivity)
-                            }
-
-                            view?.setLoading(false)
-                        }
-                    })
+                    )
         }
     }
 

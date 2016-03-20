@@ -20,7 +20,6 @@ import br.com.wakim.eslpodclient.service.StorageService
 import br.com.wakim.eslpodclient.service.TypedBinder
 import br.com.wakim.eslpodclient.view.PermissionRequester
 import rx.Observable
-import rx.SingleSubscriber
 import rx.android.schedulers.AndroidSchedulers
 
 class PlayerPresenter(private val app : Application,
@@ -276,18 +275,16 @@ class PlayerPresenter(private val app : Application,
         addSubscription() {
             podcastInteractor.getPodcastDetail(podcastItem)
                     .ofIOToMainThread()
-                    .subscribe(object : SingleSubscriber<PodcastItemDetail>(){
-                        override fun onSuccess(detail: PodcastItemDetail) {
-                            podcastDetail = detail
-                            bindDetail()
-                        }
-
-                        override fun onError(e: Throwable?) {
-                            if (e is ConnectivityException) {
-                                view?.showMessage(R.string.no_connectivity)
+                    .subscribe (
+                            { detail ->
+                                podcastDetail = detail
+                                bindDetail()
+                            },
+                            { e: Throwable ->
+                                if (e is ConnectivityException)
+                                    view?.showMessage(R.string.no_connectivity)
                             }
-                        }
-                    })
+                    )
         }
     }
 

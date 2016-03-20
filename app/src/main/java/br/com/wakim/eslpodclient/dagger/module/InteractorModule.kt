@@ -11,18 +11,21 @@ import javax.inject.Singleton
 open class InteractorModule {
 
     @Provides @Singleton
-    open fun providesPodcastListInteractor(app: Application) : PodcastInteractor = PodcastInteractor(app)
+    open fun providesPodcastListInteractor(podcastDbInteractor: PodcastDbInteractor, app: Application) = PodcastInteractor(podcastDbInteractor, app)
 
     @Provides @Singleton
     open fun providesStorageInteractor(downloadManager: DownloadManager,
                                        downloadDbInteractor: DownloadDbInteractor,
                                        preferenceInteractor: PreferenceInteractor,
-                                       app: Application) : StorageInteractor =
+                                       app: Application) =
             StorageInteractor(downloadManager, downloadDbInteractor, preferenceInteractor, app)
 
     @Provides @Singleton
-    open fun providesFavoritesInteractor(app: Application): PodcastItemFavoritesInteractor = PodcastItemFavoritesInteractor(app)
+    open fun providesFavoritesInteractor(podcastDbInteractor: PodcastDbInteractor, app: Application) = PodcastItemFavoritesInteractor(podcastDbInteractor, app)
 
     @Provides @Singleton
     open fun providesDownloadDbInteractor(app: Application) = DownloadDbInteractor(app)
+
+    @Provides @Singleton
+    open fun providesPodcastDbInteractor(app: Application) = PodcastDbInteractor(app)
 }

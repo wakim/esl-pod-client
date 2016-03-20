@@ -1,6 +1,7 @@
 package br.com.wakim.eslpodclient.interactor
 
 import br.com.wakim.eslpodclient.extensions.monthOfYear
+import br.com.wakim.eslpodclient.extensions.onSuccessIfSubscribed
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastList
 import org.jsoup.Jsoup
@@ -25,7 +26,7 @@ class PodcastListOnSubscribe(val url: String): Single.OnSubscribe<PodcastList> {
         final val ENGLISH_CAFE_TYPE_PREFIX = "EC"
     }
 
-    override fun call(subscriber: SingleSubscriber<in PodcastList>?) {
+    override fun call(subscriber: SingleSubscriber<in PodcastList>) {
         val document = Jsoup.connect(url).get()
         val elements = document.select(PodcastListOnSubscribe.Companion.PODCAST_TABLE_HOME_CLASS)
         val podcastList = PodcastList()
@@ -44,10 +45,7 @@ class PodcastListOnSubscribe(val url: String): Single.OnSubscribe<PodcastList> {
         podcastList.currentPageToken = url
         podcastList.nextPageToken = getNextPage(document)
 
-        subscriber?.let {
-            if (!it.isUnsubscribed)
-                it.onSuccess(podcastList)
-        }
+        subscriber.onSuccessIfSubscribed(podcastList)
     }
 
     fun buildPodcastItem(rootElement: Element) : PodcastItem? {

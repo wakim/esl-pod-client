@@ -56,7 +56,7 @@ class DownloadManagerReceiver: BroadcastReceiver() {
                 status = cursor.getInt(statusIndex)
 
                 if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                    storageInteractor.publishDownloadCompletion(id)
+                    storageInteractor.handleDownloadCompletion(id)
                 } else {
                     storageInteractor.handleDownloadFailed(id)
                 }

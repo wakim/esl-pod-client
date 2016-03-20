@@ -4,19 +4,21 @@ import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.receiver.ConnectivityException
 import rx.Observable
 import rx.Single
+import rx.SingleSubscriber
+import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 
-fun <T> Observable<T>.ofIOToMainThread() : Observable<T> =
+fun <T> Observable<T>.ofIOToMainThread(): Observable<T> =
     subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
-fun <T> Single<T>.ofIOToMainThread() : Single<T> =
+fun <T> Single<T>.ofIOToMainThread(): Single<T> =
         subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
-fun <T> Single<T>.ofComputationToMainThread() : Single<T> =
+fun <T> Single<T>.ofComputationToMainThread(): Single<T> =
     subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread())
 
-fun <T> Observable<T>.ofComputationToMainThread() : Observable<T> =
+fun <T> Observable<T>.ofComputationToMainThread(): Observable<T> =
     subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread())
 
 fun <T> Single<T>.connected(): Single<T> {
@@ -26,5 +28,17 @@ fun <T> Single<T>.connected(): Single<T> {
         }
 
         return@defer Single.error<T>(ConnectivityException.INSTANCE)
+    }
+}
+
+fun <T> SingleSubscriber<T>.onSuccessIfSubscribed(t: T) {
+    if (!isUnsubscribed) {
+        onSuccess(t)
+    }
+}
+
+fun <T> Subscriber<T>.onNextIfSubscribed(t: T) {
+    if (!isUnsubscribed) {
+        onNext(t)
     }
 }

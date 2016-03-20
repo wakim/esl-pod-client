@@ -8,6 +8,7 @@ import br.com.wakim.eslpodclient.model.DownloadParser
 import org.jetbrains.anko.db.insert
 import org.jetbrains.anko.db.parseOpt
 import org.jetbrains.anko.db.select
+import org.jetbrains.anko.db.update
 
 class DownloadDbInteractor(private val app: Application) {
 
@@ -23,34 +24,32 @@ class DownloadDbInteractor(private val app: Application) {
                 }
     }
 
-    fun getDownloadByRemoteId(remoteId: Long): Download? {
-        return app
+    fun getDownloadByRemoteId(remoteId: Long): Download? =
+        app
                 .database
                 .use {
-                    select(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "remote_id", "download_id", "status")
-                    .where("remote_id = {remote_id}", "remote_id" to remoteId)
-                    .exec {
-                        parseOpt(DownloadParser())
-                    }
+                    select(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME)
+                            .columns("remote_id", "download_id", "status")
+                            .where("remote_id = {remote_id}", "remote_id" to remoteId)
+                            .exec {
+                                parseOpt(DownloadParser())
+                            }
                 }
-    }
 
-    fun getDownloadByDownloadId(downloadId: Long): Download? {
-        return app
-                .database
-                .use {
-                    select(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "remote_id", "download_id", "status")
-                    .where("download_id = {download_id}", "download_id" to downloadId)
-                    .exec {
-                        parseOpt(DownloadParser())
+    fun updateDownloadStatusByDownloadId(remoteId: Long, status: Long): Boolean =
+            app
+                    .database
+                    .use {
+                        update(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "status" to status)
+                        .where("remote_id = {remoteId}", "remoteId" to remoteId)
+                        .exec() > 0
                     }
-                }
-    }
 
     fun deleteDownloadByDownloadId(downloadId: Long) {
-        app.database
-            .use {
-                delete(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "download_id = ?", arrayOf(downloadId.toString()))
-            }
+        app
+                .database
+                .use {
+                    delete(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "download_id = ?", arrayOf(downloadId.toString()))
+                }
     }
 }
