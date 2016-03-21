@@ -1,31 +1,27 @@
-package br.com.wakim.eslpodclient.podcastlist.favorites.view
+package br.com.wakim.eslpodclient.podcastlist.favorited.view
 
 import android.support.v7.widget.PopupMenu
 import android.view.View
 import br.com.wakim.eslpodclient.R
+import br.com.wakim.eslpodclient.dagger.PodcastPlayerComponent
 import br.com.wakim.eslpodclient.model.PodcastItem
-import br.com.wakim.eslpodclient.podcastlist.favorites.presenter.FavoriteListPresenter
-import br.com.wakim.eslpodclient.podcastlist.view.PodcastListActivity
+import br.com.wakim.eslpodclient.podcastlist.favorited.presenter.FavoritedListPresenter
+import br.com.wakim.eslpodclient.podcastlist.view.PodcastListFragment
 import javax.inject.Inject
 
-class FavoriteListActivity: PodcastListActivity() {
-
-    override fun setupView() {
-        setContentView(R.layout.activity_podcastfavoritelist)
-    }
+class FavoritedListFragment: PodcastListFragment() {
 
     @Inject
-    fun injectPresenter(presenter : FavoriteListPresenter) {
+    fun injectPresenter(presenter : FavoritedListPresenter) {
         presenter.view = this
         this.presenter = presenter
     }
 
-    override fun inject() {
-        activityComponent.inject(this)
-    }
+    override fun inject() =
+            (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
 
     override fun showPopupMenuFor(podcastItem: PodcastItem, anchor: View) {
-        val popupMenu = PopupMenu(this, anchor)
+        val popupMenu = PopupMenu(context, anchor)
 
         popupMenu.inflate(R.menu.favorited_podcast_item_menu)
 
@@ -45,9 +41,5 @@ class FavoriteListActivity: PodcastListActivity() {
 
     fun removeFavorite(podcastItem: PodcastItem) {
         presenter.removeFavorite(podcastItem)
-    }
-
-    override fun disposePlayer() {
-        playerView.stop()
     }
 }

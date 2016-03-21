@@ -8,6 +8,8 @@
     <string name="favorites">Favorites</string>
     <string name="downloaded">Downloaded</string>
 
+    <string name="synchronize_database">Synchronize database</string>
+
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
@@ -18,6 +20,7 @@
     <string name="player_subtitle">%1$s • %2$s</string>
 
     <string name="download">Download</string>
+    <string name="remove_download">Remove Download</string>
     <string name="open_with">Open With&#8230;</string>
     <string name="share">Share</string>
     <string name="favorite">Favorite</string>
@@ -54,4 +57,5 @@
     <string name="version">Version</string>
 
     <string name="write_external_storage_permission_needed_to_download">Write External Storage permission is needed to download any podcast</string>
+    <string name="write_external_storage_permission_needed_to_remove_download">Write External Storage permission is needed to remove any downloaded podcast</string>
 </resources>

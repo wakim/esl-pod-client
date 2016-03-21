@@ -59,8 +59,9 @@ open class Application : android.app.Application() {
 
     companion object {
         final val PLAYER_WRITE_STORAGE_PERMISSION = 12
-        final val LIST_WRITE_STORAGE_PERMISSION = 13
-        final val PICK_FOLDER_READ_STORAGE_PERMISSION = 14
+        final val LIST_DOWNLOAD_WRITE_STORAGE_PERMISSION = 13
+        final val LIST_REMOVE_DOWNLOAD_WRITE_STORAGE_PERMISSION = 14
+        final val PICK_FOLDER_READ_STORAGE_PERMISSION = 15
 
         var INSTANCE: Application? = null
             private set

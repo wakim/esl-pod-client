@@ -21,7 +21,10 @@ open class InteractorModule {
             StorageInteractor(downloadManager, downloadDbInteractor, preferenceInteractor, app)
 
     @Provides @Singleton
-    open fun providesFavoritesInteractor(podcastDbInteractor: PodcastDbInteractor, app: Application) = PodcastItemFavoritesInteractor(podcastDbInteractor, app)
+    open fun providesFavoritedInteractor(podcastDbInteractor: PodcastDbInteractor, app: Application) = FavoritedPodcastItemInteractor(podcastDbInteractor, app)
+
+    @Provides @Singleton
+    open fun providesDownloadedInteractor(podcastDbInteractor: PodcastDbInteractor, app: Application) = DownloadedPodcastItemInteractor(podcastDbInteractor, app)
 
     @Provides @Singleton
     open fun providesDownloadDbInteractor(app: Application) = DownloadDbInteractor(app)

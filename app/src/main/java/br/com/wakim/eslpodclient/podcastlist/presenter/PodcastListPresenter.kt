@@ -14,8 +14,8 @@ import br.com.wakim.eslpodclient.extensions.bindService
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.extensions.startActivity
 import br.com.wakim.eslpodclient.extensions.view
+import br.com.wakim.eslpodclient.interactor.FavoritedPodcastItemInteractor
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
-import br.com.wakim.eslpodclient.interactor.PodcastItemFavoritesInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
@@ -30,12 +30,12 @@ import br.com.wakim.eslpodclient.view.PermissionRequester
 import rx.android.schedulers.AndroidSchedulers
 import java.util.*
 
-open class PodcastListPresenter(private val app: Application,
-                                private val interactor: PodcastInteractor,
-                                private val permissionRequester: PermissionRequester,
-                                private val storageInteractor: StorageInteractor,
-                                private val podcastItemFavoritesInteractor: PodcastItemFavoritesInteractor,
-                                private val baseActivity: Activity) : Presenter<PodcastListView>() {
+open class PodcastListPresenter(private   val app: Application,
+                                private   val interactor: PodcastInteractor,
+                                private   val permissionRequester: PermissionRequester,
+                                protected val storageInteractor: StorageInteractor,
+                                private   val favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
+                                private   val baseActivity: Activity) : Presenter<PodcastListView>() {
 
     companion object {
         private final val ITEMS_EXTRA = "ITEMS"
@@ -95,14 +95,20 @@ open class PodcastListPresenter(private val app: Application,
                     .INSTANCE
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe { permission ->
-                        (permission.requestCode == Application.LIST_WRITE_STORAGE_PERMISSION).let {
+                        if (permission.requestCode == Application.LIST_DOWNLOAD_WRITE_STORAGE_PERMISSION) {
                             if (downloadPodcastItem != null && permission.isGranted()) {
                                 download(downloadPodcastItem!!)
                             } else {
                                 view!!.showMessage(R.string.write_external_storage_permission_needed_to_download)
                             }
+                        }
 
-                            true
+                        if (permission.requestCode == Application.LIST_REMOVE_DOWNLOAD_WRITE_STORAGE_PERMISSION) {
+                            if (downloadPodcastItem != null && permission.isGranted()) {
+                                removeDownload(downloadPodcastItem!!)
+                            } else {
+                                view!!.showMessage(R.string.write_external_storage_permission_needed_to_remove_download)
+                            }
                         }
                     }
         }
@@ -176,7 +182,7 @@ open class PodcastListPresenter(private val app: Application,
 
     fun download(podcastItem: PodcastItem) {
         if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            permissionRequester.requestPermissions(Application.LIST_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            permissionRequester.requestPermissions(Application.LIST_DOWNLOAD_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
             downloadPodcastItem = podcastItem
 
@@ -195,6 +201,30 @@ open class PodcastListPresenter(private val app: Application,
                     }
                 }
             }
+        }
+    }
+
+    fun removeDownload(podcastItem: PodcastItem) {
+        if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            permissionRequester.requestPermissions(Application.LIST_REMOVE_DOWNLOAD_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+
+            downloadPodcastItem = podcastItem
+
+            return
+        }
+
+        val downloadStatus = storageInteractor.startDownloadIfNeeded(podcastItem)
+
+        addSubscription {
+            downloadStatus.ofIOToMainThread()
+                    .subscribe{ downloadStatus ->
+                        when (downloadStatus.status) {
+                            DownloadStatus.DOWNLOADED -> view?.showMessage(R.string.podcast_already_downloaded)
+                            DownloadStatus.DOWNLOADING -> view?.showMessage(R.string.podcast_download_started, app.getString(R.string.cancel)) {
+                                storageInteractor.cancelDownload(downloadStatus)
+                            }
+                        }
+                    }
         }
     }
 
@@ -217,7 +247,7 @@ open class PodcastListPresenter(private val app: Application,
 
     fun favorite(podcastItem: PodcastItem) {
         addSubscription {
-            podcastItemFavoritesInteractor.addFavorite(podcastItem)
+            favoritedPodcastItemInteractor.addFavorite(podcastItem)
                     .ofIOToMainThread()
                     .subscribe {
                         view?.showMessage(R.string.podcast_favorited)
@@ -227,7 +257,7 @@ open class PodcastListPresenter(private val app: Application,
 
     fun removeFavorite(podcastItem: PodcastItem) {
         addSubscription {
-            podcastItemFavoritesInteractor.removeFavorite(podcastItem)
+            favoritedPodcastItemInteractor.removeFavorite(podcastItem)
                     .ofIOToMainThread()
                     .subscribe { removed ->
                         items.remove(podcastItem)

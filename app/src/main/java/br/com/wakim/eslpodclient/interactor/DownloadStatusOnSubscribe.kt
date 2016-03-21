@@ -15,6 +15,11 @@ class DownloadStatusOnSubscribe(private val remoteId: Long, private val localPat
         }
 
         if (!file.exists()) {
+            // File was deleted and not synchronized
+            if (download != null) {
+                downloadDbInteractor.deleteDownloadByRemoteId(remoteId)
+            }
+
             subscriber.onSuccess(DownloadStatus(localPath = localPath, remoteId = remoteId, downloadId = 0, status = DownloadStatus.NOT_DOWNLOADED))
         }
 

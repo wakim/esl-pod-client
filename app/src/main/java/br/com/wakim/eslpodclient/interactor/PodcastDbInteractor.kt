@@ -6,12 +6,9 @@ import br.com.wakim.eslpodclient.db.DatabaseOpenHelper
 import br.com.wakim.eslpodclient.db.database
 import br.com.wakim.eslpodclient.extensions.LongAnyParser
 import br.com.wakim.eslpodclient.extensions.toContentValues
-import br.com.wakim.eslpodclient.model.PodcastItem
-import br.com.wakim.eslpodclient.model.PodcastItemDetail
-import br.com.wakim.eslpodclient.model.PodcastItemDetailRowParser
-import org.jetbrains.anko.db.parseOpt
-import org.jetbrains.anko.db.select
-import org.jetbrains.anko.db.update
+import br.com.wakim.eslpodclient.model.*
+import org.jetbrains.anko.db.*
+import org.threeten.bp.ZonedDateTime
 
 class PodcastDbInteractor(private val app: Application) {
 
@@ -39,12 +36,12 @@ class PodcastDbInteractor(private val app: Application) {
     }
 
     fun insertLastSeekPos(remoteId: Long, seekPos: Int): Boolean =
-        app.database
-                .use {
-                    update(DatabaseOpenHelper.PODCASTS_TABLE_NAME, "last_seek_pos" to seekPos)
-                            .where("remote_id = {remoteId}", "remoteId" to remoteId)
-                            .exec() > 0
-                }
+            app.database
+                    .use {
+                        update(DatabaseOpenHelper.PODCASTS_TABLE_NAME, "last_seek_pos" to seekPos)
+                                .where("remote_id = {remoteId}", "remoteId" to remoteId)
+                                .exec() > 0
+                    }
 
     fun getLastSeekPos(remoteId: Long): Any? =
             app.database
@@ -69,20 +66,84 @@ class PodcastDbInteractor(private val app: Application) {
                     }
 
     fun insertPodcastDetail(podcastItemDetail: PodcastItemDetail): Boolean =
-        app.database
-                .use {
-                    with (podcastItemDetail) {
-                        update(
-                                DatabaseOpenHelper.PODCASTS_TABLE_NAME,
-                                arrayOf(
-                                        "script" to script,
-                                        "slow_index" to podcastItemDetail.seekPos?.slow,
-                                        "explanation_index" to podcastItemDetail.seekPos?.explanation,
-                                        "normal_index" to podcastItemDetail.seekPos?.normal
-                                ).toContentValues(),
+            app.database
+                    .use {
+                        with (podcastItemDetail) {
+                            update(
+                                    DatabaseOpenHelper.PODCASTS_TABLE_NAME,
+                                    arrayOf(
+                                            "script" to script,
+                                            "slow_index" to podcastItemDetail.seekPos?.slow,
+                                            "explanation_index" to podcastItemDetail.seekPos?.explanation,
+                                            "normal_index" to podcastItemDetail.seekPos?.normal
+                                    ).toContentValues(),
+                                    "remote_id = ?",
+                                    arrayOf(remoteId.toString())
+                            ) > 0
+                        }
+                    }
+
+    fun addFavorite(podcastItem: PodcastItem): Boolean =
+            app.database
+                    .use {
+                        val favoritedDate = ZonedDateTime.now().toEpochSecond()
+
+                        with (podcastItem) {
+                            update(DatabaseOpenHelper.PODCASTS_TABLE_NAME, "favorited_date" to favoritedDate)
+                                    .where("remote_id = {remoteId}", "remoteId" to remoteId)
+                                    .exec() > 0
+                        }
+                    }
+
+    fun removeFavorite(podcastItem: PodcastItem): Boolean =
+            app.database
+                    .use {
+                        update(DatabaseOpenHelper.PODCASTS_TABLE_NAME,
+                                arrayOf("favorited_date" to null).toContentValues(),
                                 "remote_id = ?",
-                                arrayOf(remoteId.toString())
+                                arrayOf(podcastItem.remoteId.toString())
                         ) > 0
                     }
-                }
+
+    fun getFavorites(page: Int, limit: Int): List<PodcastItem> =
+                app.database
+                        .use {
+                            select(DatabaseOpenHelper.PODCASTS_TABLE_NAME)
+                                    .columns(
+                                            "remote_id",
+                                            "title",
+                                            "blurb",
+                                            "mp3_url",
+                                            "date",
+                                            "tags",
+                                            "type"
+                                    )
+                                    .where("favorited_date IS NOT NULL")
+                                    .orderBy("date", SqlOrderDirection.DESC)
+                                    .limit(page * limit, limit)
+                                    .exec {
+                                        parseList(PodcastItemRowParser())
+                                    }
+                        }
+
+    fun getDownloaded(page: Int, limit: Int): List<PodcastItem> =
+            app.database
+                    .use {
+                        select("${DatabaseOpenHelper.PODCASTS_TABLE_NAME} p")
+                                .columns(
+                                        "remote_id",
+                                        "title",
+                                        "blurb",
+                                        "mp3_url",
+                                        "date",
+                                        "tags",
+                                        "type"
+                                )
+                                .where("EXISTS (SELECT 1 FROM ${DatabaseOpenHelper.DOWNLOADS_TABLE_NAME} d WHERE d.remote_id = p.remote_id AND d.status = ${DownloadStatus.DOWNLOADED})")
+                                .orderBy("date", SqlOrderDirection.DESC)
+                                .limit(page * limit, limit)
+                                .exec {
+                                    parseList(PodcastItemRowParser())
+                                }
+                    }
 }

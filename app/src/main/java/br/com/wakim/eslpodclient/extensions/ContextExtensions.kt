@@ -12,6 +12,7 @@ import android.os.IBinder
 import android.support.annotation.RawRes
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.util.TypedValue
 import android.view.View
@@ -78,8 +79,12 @@ inline fun <reified T: Service> Context.stopService() {
     stopService(intent)
 }
 
-fun Context.dp(dpValue : Float) : Float =
+fun Fragment.dp(dpValue: Float): Float = context.dp(dpValue)
+
+fun Context.dp(dpValue : Float): Float =
     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, resources.displayMetrics)
+
+fun Fragment.dp(dpValue: Int): Int = context.dp(dpValue)
 
 fun Context.dp(dpValue : Int) : Int =
         TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue.toFloat(), resources.displayMetrics).toInt()

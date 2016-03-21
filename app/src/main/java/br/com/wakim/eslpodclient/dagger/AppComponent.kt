@@ -15,7 +15,6 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = arrayOf(InteractorModule::class, AppModule::class))
 interface AppComponent {
-
     fun inject(app: Application)
 
     fun inject(playerService: PlayerService)

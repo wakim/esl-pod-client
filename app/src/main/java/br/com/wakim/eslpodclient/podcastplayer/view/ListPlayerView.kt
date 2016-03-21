@@ -20,6 +20,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.ActivityComponent
+import br.com.wakim.eslpodclient.dagger.PodcastPlayerComponent
 import br.com.wakim.eslpodclient.extensions.*
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastItemDetail
@@ -40,10 +41,6 @@ class ListPlayerView : AppBarLayout, PlayerView {
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?) : super(context)
-
-    init {
-        (context.getSystemService(ActivityComponent::class.java.simpleName) as ActivityComponent).inject(this)
-    }
 
     val callback = object : BottomSheetBehavior.BottomSheetCallback() {
         override fun onSlide(bottomSheet: View, slideOffset: Float) {
@@ -109,17 +106,18 @@ class ListPlayerView : AppBarLayout, PlayerView {
         menu
     }
 
-    private var playFab : FloatingActionButton? = null
-    private var pauseFab : FloatingActionButton? = null
+    var playFab : FloatingActionButton? = null
 
-    private var loadingFab : LoadingFloatingActionButton? = null
+    var pauseFab : FloatingActionButton? = null
+
+    var loadingFab : LoadingFloatingActionButton? = null
+
+    @Inject
+    lateinit var baseActivity: BaseActivity
 
     private var bottomSheetBehavior : BottomSheetBehavior<*>? = null
 
     lateinit var presenter: PlayerPresenter
-
-    @Inject
-    lateinit var baseActivity: BaseActivity
 
     @Inject
     fun injectPlayerPresenter(presenter : PlayerPresenter) {
@@ -129,6 +127,8 @@ class ListPlayerView : AppBarLayout, PlayerView {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+
+        (context.getSystemService(ActivityComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
 
         setupBehaviorCallback()
 
@@ -196,6 +196,21 @@ class ListPlayerView : AppBarLayout, PlayerView {
         overflowButton.setOnClickListener(clickListener)
     }
 
+    fun setControls(playFab: FloatingActionButton, pauseFab: FloatingActionButton, loadingFab: LoadingFloatingActionButton) {
+        this.playFab = playFab
+        this.pauseFab = pauseFab
+        this.loadingFab = loadingFab
+
+        playFab.setOnClickListener {
+            showLoadingButton()
+            presenter.onPlayClicked()
+        }
+
+        pauseFab.setOnClickListener {
+            presenter.onPauseClicked()
+        }
+    }
+
     fun setupBehaviorCallback() {
         bottomSheetBehavior = BottomSheetBehavior.from(this)
         bottomSheetBehavior?.setBottomSheetCallback(callback)
@@ -214,7 +229,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
         nextButton.isEnabled = false
         previousButton.isEnabled = false
 
-        this.loadingFab?.let {
+        loadingFab?.let {
             it.showAnimated()
             it.startAnimation()
         }
@@ -343,6 +358,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
         stopButton.isEnabled = true
         pauseButton.isEnabled = true
         nextButton.isEnabled = true
+
         previousButton.isEnabled = true
     }
 
@@ -360,21 +376,6 @@ class ListPlayerView : AppBarLayout, PlayerView {
         playButton.isEnabled = false
         stopButton.isEnabled = false
         pauseButton.isEnabled = false
-    }
-
-    fun setControls(playFab: FloatingActionButton, pauseFab: FloatingActionButton, loadingFab: LoadingFloatingActionButton) {
-        this.playFab = playFab
-        this.pauseFab = pauseFab
-        this.loadingFab = loadingFab
-
-        playFab.setOnClickListener {
-            showLoadingButton()
-            presenter.onPlayClicked()
-        }
-
-        pauseFab.setOnClickListener {
-            presenter.onPauseClicked()
-        }
     }
 
     fun explicitlyStop() {

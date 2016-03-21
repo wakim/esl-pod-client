@@ -33,11 +33,6 @@
         </activity>
 
         <activity
-            android:name=".podcastlist.favorites.view.FavoriteListActivity"
-            android:label="@string/favorites"
-            android:parentActivityName=".podcastlist.view.PodcastListActivity" />
-
-        <activity
             android:name=".settings.view.SettingsActivity"
             android:label="@string/settings"
             android:parentActivityName=".podcastlist.view.PodcastListActivity" />

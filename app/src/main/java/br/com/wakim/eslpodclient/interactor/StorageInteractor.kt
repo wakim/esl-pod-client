@@ -94,6 +94,6 @@ class StorageInteractor(private var downloadManager: DownloadManager,
         }
     }
 
-//    fun getDownloadedPodcasts(page: Int, limit: Int): Single<PodcastList> {
-//    }
+    fun synchronizeDownloads(): Single<Boolean> =
+            Single.just(true)
 }

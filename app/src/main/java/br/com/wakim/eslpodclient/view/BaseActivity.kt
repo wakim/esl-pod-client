@@ -19,7 +19,6 @@ import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.dagger.module.ActivityModule
 import br.com.wakim.eslpodclient.extensions.snack
 import br.com.wakim.eslpodclient.extensions.startActivity
-import br.com.wakim.eslpodclient.podcastlist.favorites.view.FavoriteListActivity
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.settings.view.SettingsActivity
 import butterknife.bindOptionalView
@@ -27,7 +26,7 @@ import org.jetbrains.anko.find
 import org.jetbrains.anko.findOptional
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
-open class BaseActivity: AppCompatActivity(), PermissionRequester {
+abstract class BaseActivity: AppCompatActivity(), PermissionRequester {
 
     val toolbar : Toolbar? by bindOptionalView(R.id.toolbar)
     val drawerLayout : DrawerLayout? by bindOptionalView(R.id.drawer_layout)
@@ -57,10 +56,11 @@ open class BaseActivity: AppCompatActivity(), PermissionRequester {
             if (navigationView != null) {
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp)
 
-                (navigationView as NavigationView).setNavigationItemSelectedListener { item ->
+                navigationView!!.setNavigationItemSelectedListener { item ->
                     when (item.itemId) {
-                        R.id.drawer_settings -> startActivity<SettingsActivity>()
-                        R.id.drawer_favorites -> startActivity<FavoriteListActivity>()
+                        R.id.drawer_settings   -> startActivity<SettingsActivity>()
+                        R.id.drawer_favorites  -> onNavigationMenuItemSelected(R.id.drawer_favorites)
+                        R.id.drawer_downloaded -> onNavigationMenuItemSelected(R.id.drawer_downloaded)
                         else -> return@setNavigationItemSelectedListener false
                     }
 
@@ -73,6 +73,8 @@ open class BaseActivity: AppCompatActivity(), PermissionRequester {
             }
         }
     }
+
+    open fun onNavigationMenuItemSelected(itemId: Int) { }
 
     override fun onSupportNavigateUp(): Boolean {
         if (intent.hasExtra(BasePresenterActivity.PARENT_EXTRA)) {
