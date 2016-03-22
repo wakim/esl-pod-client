@@ -67,16 +67,11 @@ open class PodcastListPresenter(private   val app: Application,
         }
     }
 
-    override fun onRestoreInstanceState(savedInstanceState : Bundle?) {
+    override fun onViewCreated(savedInstanceState : Bundle?) {
         savedInstanceState?.let {
             items = it.getParcelableArrayList(ITEMS_EXTRA)
             nextPageToken = it.getString(NEXT_PAGE_TOKEN_EXTRA)
             downloadPodcastItem = it.getParcelable(DOWNLOAD_PODCAST_EXTRA)
-        }
-
-        view?.let {
-            it.addItems(items)
-            it.hasMore = nextPageToken != null
         }
     }
 
@@ -137,6 +132,11 @@ open class PodcastListPresenter(private   val app: Application,
     fun loadFirstPageIfNeeded() {
         if (items.isEmpty()) {
             loadNextPage()
+        } else {
+            view?.let {
+                it.setItems(items)
+                it.hasMore = nextPageToken != null
+            }
         }
     }
 

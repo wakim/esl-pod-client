@@ -71,6 +71,13 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>,
 
     override fun getItemCount(): Int = list.size + if (loading) 1 else 0
 
+    fun setItems(list: ArrayList<PodcastItem>) {
+        this.list.clear()
+        this.list.addAll(list)
+
+        notifyDataSetChanged()
+    }
+
     fun addAll(addition: ArrayList<PodcastItem>) {
         val previousSize = list.size
 

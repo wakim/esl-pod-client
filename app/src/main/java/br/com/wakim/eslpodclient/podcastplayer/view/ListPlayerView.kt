@@ -19,7 +19,6 @@ import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.TextView
 import br.com.wakim.eslpodclient.R
-import br.com.wakim.eslpodclient.dagger.ActivityComponent
 import br.com.wakim.eslpodclient.dagger.PodcastPlayerComponent
 import br.com.wakim.eslpodclient.extensions.*
 import br.com.wakim.eslpodclient.model.PodcastItem
@@ -128,7 +127,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        (context.getSystemService(ActivityComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
+        (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
 
         setupBehaviorCallback()
 

@@ -21,7 +21,7 @@ abstract class Presenter<T : View>() {
             return field
         }
 
-    fun onDestroy() {
+    open fun onDestroy() {
         view = null
     }
 
@@ -29,6 +29,9 @@ abstract class Presenter<T : View>() {
     }
 
     open fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+    }
+
+    open fun onViewCreated(savedInstanceState: Bundle?) {
     }
 
     open fun onStart() {

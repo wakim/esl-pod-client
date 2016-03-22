@@ -44,14 +44,14 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
     lateinit var playerView: ListPlayerView
 
     @Inject
-    fun injectPresenter(presenter : PodcastListPresenter) {
+    fun injectPresenter(presenter: PodcastListPresenter) {
         presenter.view = this
         this.presenter = presenter
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         inject()
+        super.onCreate(savedInstanceState)
     }
 
     open fun inject() =
@@ -61,8 +61,6 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
         inflater?.inflate(R.layout.fragment_podcastlist, container, false)
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         configureAdapter()
         configureRecyclerView()
 
@@ -72,6 +70,8 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
 
             swipeRefresh.isRefreshing = false
         }
+
+        super.onViewCreated(view, savedInstanceState)
     }
 
     fun share(podcastItem: PodcastItem) {
@@ -163,6 +163,10 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
         adapter.addAll(list)
     }
 
+    override fun setItems(list: ArrayList<PodcastItem>) {
+        adapter.setItems(list)
+    }
+
     override fun remove(podcastItem: PodcastItem) {
         adapter.remove(podcastItem)
     }
@@ -175,4 +179,10 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
 
     override fun showMessage(messageResId: Int, action: String, clickListener: (() -> Unit)?) =
             baseActivity.showMessage(messageResId, action, clickListener)
+
+    fun isSwipeRefreshEnabled() = swipeRefresh.isEnabled
+
+    fun setSwipeRefreshEnabled(enabled: Boolean) {
+        swipeRefresh.isEnabled = enabled
+    }
 }

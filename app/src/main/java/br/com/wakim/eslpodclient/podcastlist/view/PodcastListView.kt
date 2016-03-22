@@ -11,4 +11,6 @@ interface PodcastListView : View {
     fun setLoading(loading : Boolean)
 
     fun remove(podcastItem: PodcastItem)
+
+    fun setItems(list: ArrayList<PodcastItem>)
 }

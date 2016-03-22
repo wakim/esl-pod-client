@@ -6,6 +6,7 @@ def final appConfig = [
         versions: [
                 "support_library": "23.2.1",
                 "kotlin_version": "$kotlin_version",
+                "dagger": "2.0.2",
                 "support_test": "0.4.1",
                 "espresso": "2.2.1"
         ],
@@ -100,8 +101,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$appConfig.versions.kotlin_version"
     compile 'org.jetbrains.anko:anko-sqlite:0.8.3'
 
-    compile 'com.google.dagger:dagger:2.0.1'
-    kapt 'com.google.dagger:dagger-compiler:2.0'
+    compile "com.google.dagger:dagger:$appConfig.versions.dagger"
+    kapt "com.google.dagger:dagger-compiler:$appConfig.versions.dagger"
 
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'io.reactivex:rxjava:1.1.1'
@@ -113,6 +114,8 @@ dependencies {
 
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'com.nononsenseapps:filepicker:2.5.2'
+
+    compile 'com.aurelhubert:ahbottomnavigation:0.1.4'
 
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
