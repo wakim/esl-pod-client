@@ -12,10 +12,10 @@ It uses a combination of MediaPlayer and MediaPlayback for streaming audio and D
 
 # Some Screenshots
 
-![Screenshot 1] (art/home.jpg)
-![Screenshot 2] (art/player_collapsed.jpg)
-![Screenshot 3] (art/player_full_screen.jpg)
-![Screenshot 4] (art/media_playback.jpg)
+<img src="art/home.jpg" width="180" height="320" alt="Home" />
+<img src="art/player_collapsed.jpg" width="180" height="320" alt="Media Player Collapsed" />
+<img src="art/player_full_screen.jpg" width="180" height="320" alt="Medial Player FullScreen" />
+<img src="art/media_playback.jpg" width="180" height="320" alt="Media Playback with Notifications" />
 
 # TODO
 
