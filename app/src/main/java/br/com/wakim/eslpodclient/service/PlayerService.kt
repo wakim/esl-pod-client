@@ -361,7 +361,6 @@ class PlayerService : Service() {
 
     fun dispose() {
         stopForeground(true)
-        release()
     }
 
     fun stop() {
@@ -374,6 +373,8 @@ class PlayerService : Service() {
         initialPosition = 0
 
         mediaPlayer.stop()
+        mediaPlayer.reset()
+
         session?.isActive = false
 
         unregisterNoisyReceiver()
@@ -391,6 +392,7 @@ class PlayerService : Service() {
             podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, initialPosition)
 
             mediaPlayer.pause()
+            mediaPlayer.reset()
 
             session?.isActive = false
 
@@ -442,8 +444,10 @@ class PlayerService : Service() {
     private fun release() {
         if (isPlaying()) {
             innerStop()
-            mediaPlayer.release()
         }
+
+        mediaPlayer.reset()
+        mediaPlayer.release()
 
         initalized = false
         preparing = false
@@ -473,6 +477,7 @@ class PlayerService : Service() {
                 .setDeleteIntent(stopIntent)
                 .setContentTitle(mediaTitle)
                 .setAutoCancel(true)
+                .setOngoing(false)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setLargeIcon((ContextCompat.getDrawable(this, R.mipmap.ic_launcher) as BitmapDrawable).bitmap)
                 .setSmallIcon(R.mipmap.ic_launcher)

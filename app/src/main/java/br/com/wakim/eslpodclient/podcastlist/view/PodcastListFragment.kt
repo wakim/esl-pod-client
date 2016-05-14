@@ -64,11 +64,13 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
         configureAdapter()
         configureRecyclerView()
 
-        swipeRefresh.setOnRefreshListener {
-            adapter.removeAll()
-            presenter.onRefresh()
+        swipeRefresh.apply {
+            this.setOnRefreshListener {
+                adapter.removeAll()
+                presenter.onRefresh()
 
-            swipeRefresh.isRefreshing = false
+                isRefreshing = false
+            }
         }
 
         super.onViewCreated(view, savedInstanceState)
@@ -180,9 +182,11 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
     override fun showMessage(messageResId: Int, action: String, clickListener: (() -> Unit)?) =
             baseActivity.showMessage(messageResId, action, clickListener)
 
-    fun isSwipeRefreshEnabled() = swipeRefresh.isEnabled
+    fun isSwipeRefreshEnabled() = if (view == null) false else swipeRefresh.isEnabled
 
     fun setSwipeRefreshEnabled(enabled: Boolean) {
-        swipeRefresh.isEnabled = enabled
+        if (view != null) {
+            swipeRefresh.isEnabled = enabled
+        }
     }
 }

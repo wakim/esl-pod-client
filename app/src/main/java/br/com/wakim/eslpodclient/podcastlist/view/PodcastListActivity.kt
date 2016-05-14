@@ -83,15 +83,21 @@ open class PodcastListActivity : BaseActivity() {
         val fragmentManager = supportFragmentManager
 
         podcastListFragment?.let {
-            fragmentManager.putFragment(outState!!, "PODCAST_LIST", it)
+            if (it.isAdded) {
+                fragmentManager.putFragment(outState!!, "PODCAST_LIST", it)
+            }
         }
 
         favoritedListFragment?.let {
-            fragmentManager.putFragment(outState!!, "FAVORITED_LIST", it)
+            if (it.isAdded) {
+                fragmentManager.putFragment(outState!!, "FAVORITED_LIST", it)
+            }
         }
 
         downloadedListFragment?.let {
-            fragmentManager.putFragment(outState!!, "DOWNLOADED_LIST", it)
+            if (it.isAdded) {
+                fragmentManager.putFragment(outState!!, "DOWNLOADED_LIST", it)
+            }
         }
     }
 
