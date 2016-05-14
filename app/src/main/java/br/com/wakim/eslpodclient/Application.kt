@@ -1,5 +1,6 @@
 package br.com.wakim.eslpodclient
 
+import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.support.annotation.VisibleForTesting
 import br.com.wakim.eslpodclient.dagger.AppComponent
@@ -17,6 +18,8 @@ open class Application : android.app.Application() {
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
+
+    val connectivityReceiver = ConnectivityBroadcastReceiver()
 
     var connected: Boolean = false
         set(value) {
@@ -42,6 +45,14 @@ open class Application : android.app.Application() {
         appComponent.inject(this)
 
         connected = ConnectivityBroadcastReceiver.isNetworkConnected(connectivityManager)
+
+        registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+
+        unregisterReceiver(connectivityReceiver)
     }
 
     @VisibleForTesting

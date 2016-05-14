@@ -10,13 +10,13 @@ interface PlayerView : View {
 
     fun setMaxProgress(duration: Int)
 
-    fun setMaxAvailableProgress(available: Int)
-
     fun getProgressValue(): Int
     fun setProgressValue(position: Int)
 
     fun setLoading(loading: Boolean)
 
-    fun setPodcastItem(podcastItem: PodcastItem)
-    fun setPodcastDetail(podcastItemDetail: PodcastItemDetail)
+    fun bindPodcastItem(podcastItem: PodcastItem)
+    fun bindPodcastDetail(podcastItemDetail: PodcastItemDetail)
+
+    fun setVisible()
 }

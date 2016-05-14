@@ -8,6 +8,7 @@ import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.podcastlist.downloaded.view.DownloadedListView
 import br.com.wakim.eslpodclient.podcastlist.presenter.PodcastListPresenter
+import br.com.wakim.eslpodclient.service.PlaylistManager
 import br.com.wakim.eslpodclient.view.PermissionRequester
 
 class DownloadedListPresenter: PodcastListPresenter {
@@ -15,10 +16,11 @@ class DownloadedListPresenter: PodcastListPresenter {
     constructor(app: Application,
                 interactor: PodcastInteractor,
                 permissionRequester: PermissionRequester,
+                playlistManager: PlaylistManager,
                 storageInteractor: StorageInteractor,
                 favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
                 baseActivity: Activity) :
-    super(app, interactor, permissionRequester, storageInteractor, favoritedPodcastItemInteractor, baseActivity)
+    super(app, interactor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor, baseActivity)
 
     var downloadListView: DownloadedListView? = null
 

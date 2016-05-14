@@ -1,16 +1,12 @@
 package br.com.wakim.eslpodclient.podcastlist.presenter
 
 import android.app.Activity
-import android.content.ComponentName
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.support.v4.app.ShareCompat
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.BuildConfig
 import br.com.wakim.eslpodclient.R
-import br.com.wakim.eslpodclient.extensions.bindService
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.extensions.startActivity
 import br.com.wakim.eslpodclient.extensions.view
@@ -24,8 +20,7 @@ import br.com.wakim.eslpodclient.presenter.Presenter
 import br.com.wakim.eslpodclient.receiver.ConnectivityException
 import br.com.wakim.eslpodclient.rx.ConnectivityPublishSubject
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
-import br.com.wakim.eslpodclient.service.PlayerService
-import br.com.wakim.eslpodclient.service.TypedBinder
+import br.com.wakim.eslpodclient.service.PlaylistManager
 import br.com.wakim.eslpodclient.view.PermissionRequester
 import rx.android.schedulers.AndroidSchedulers
 import java.util.*
@@ -33,6 +28,7 @@ import java.util.*
 open class PodcastListPresenter(private   val app: Application,
                                 private   val interactor: PodcastInteractor,
                                 private   val permissionRequester: PermissionRequester,
+                                private   val playlistManager: PlaylistManager,
                                 protected val storageInteractor: StorageInteractor,
                                 private   val favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
                                 private   val baseActivity: Activity) : Presenter<PodcastListView>() {
@@ -46,26 +42,8 @@ open class PodcastListPresenter(private   val app: Application,
     var items : ArrayList<PodcastItem> = ArrayList()
 
     var nextPageToken : String? = null
-    var playerSevice: PlayerService? = null
 
     var downloadPodcastItem: PodcastItem? = null
-
-    val serviceConnection = object : ServiceConnection {
-        override fun onServiceDisconnected(componentName: ComponentName?) {
-            playerSevice = null
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        override fun onServiceConnected(componentName: ComponentName?, binder: IBinder?) {
-            playerSevice = (binder as? TypedBinder<PlayerService>)?.getService()
-
-            if (items.isNotEmpty()) {
-                playerSevice!!.playlistManager.setItems(items)
-            }
-
-            loadFirstPageIfNeeded()
-        }
-    }
 
     override fun onViewCreated(savedInstanceState : Bundle?) {
         savedInstanceState?.let {
@@ -83,7 +61,12 @@ open class PodcastListPresenter(private   val app: Application,
 
     override fun onStart() {
         super.onStart()
-        app.bindService<PlayerService>(serviceConnection)
+
+        if (items.isNotEmpty()) {
+            playlistManager.setItems(items)
+        }
+
+        loadFirstPageIfNeeded()
 
         addSubscription {
             PermissionPublishSubject
@@ -121,12 +104,11 @@ open class PodcastListPresenter(private   val app: Application,
 
     override fun onResume() {
         super.onResume()
-        playerSevice?.playlistManager?.setItems(items)
+        playlistManager.setItems(items)
     }
 
     override fun onStop() {
         super.onStop()
-        app.unbindService(serviceConnection)
     }
 
     fun loadFirstPageIfNeeded() {
@@ -157,7 +139,7 @@ open class PodcastListPresenter(private   val app: Application,
 
                                     it.hasMore = podcastList.nextPageToken != null
 
-                                    playerSevice?.playlistManager?.setItems(items)
+                                    playlistManager.setItems(items)
                                 }
                             },
                             { e: Throwable ->
@@ -173,7 +155,7 @@ open class PodcastListPresenter(private   val app: Application,
 
     fun onRefresh() {
         items.clear()
-        playerSevice?.playlistManager?.clearItems()
+        playlistManager.clearItems()
 
         nextPageToken = null
 

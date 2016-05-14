@@ -48,9 +48,7 @@ class PlayerPresenter(private val app : Application,
             view?.setMaxProgress(duration)
         }
 
-        override fun onDurationAvailabilityChanged(durationAvailable: Int) {
-            view?.setMaxAvailableProgress(durationAvailable)
-        }
+        override fun onDurationAvailabilityChanged(durationAvailable: Int) { }
 
         override fun onPositionChanged(position: Int) {
             view?.setProgressValue(position)
@@ -72,12 +70,12 @@ class PlayerPresenter(private val app : Application,
         }
 
         override fun onSkippedToPrevious(podcastItem: PodcastItem) {
-            view?.setPodcastItem(podcastItem)
+            view?.bindPodcastItem(podcastItem)
             loadDetail(podcastItem)
         }
 
         override fun onSkippedToNext(podcastItem: PodcastItem) {
-            view?.setPodcastItem(podcastItem)
+            view?.bindPodcastItem(podcastItem)
             loadDetail(podcastItem)
         }
 
@@ -105,6 +103,8 @@ class PlayerPresenter(private val app : Application,
 
     override fun onStart() {
         super.onStart()
+
+        bindServiceIfNeeded()
 
         addSubscription {
             PermissionPublishSubject
@@ -159,7 +159,7 @@ class PlayerPresenter(private val app : Application,
         }
 
         if (storageService == null) {
-            storageObservable = app.bindService<StorageService>()
+            storageObservable = app.bindService<StorageService>(false)
 
             storageObservable = storageObservable
                 .doOnNext { pair ->
@@ -179,8 +179,27 @@ class PlayerPresenter(private val app : Application,
     }
 
     fun setupInitialState() {
-        if (playerService?.isPlaying() ?: false) {
-            view!!.showPauseButton()
+        playerService?.apply {
+            if (isPlaying()) {
+                view!!.showPauseButton()
+            }
+
+            getPodcastItem()?.let {
+                podcastItem = it
+
+                view?.let {
+                    it.bindPodcastItem(podcastItem!!)
+                    it.setVisible()
+
+                    if (!isPlaying()) {
+                        it.showPlayButton()
+                    } else {
+                        it.setMaxProgress(getDuration().toInt())
+                    }
+                }
+
+                loadDetail(it)
+            }
         }
     }
 
@@ -193,9 +212,7 @@ class PlayerPresenter(private val app : Application,
     }
 
     fun onPlayClicked() {
-        bindServiceIfNeeded()
         playPending = true
-
         doPlay()
     }
 
@@ -270,6 +287,10 @@ class PlayerPresenter(private val app : Application,
     fun loadDetail(podcastItem: PodcastItem) {
         view!!.setLoading(true)
 
+        if (podcastDetail?.remoteId == podcastItem.remoteId) {
+            return
+        }
+
         addSubscription() {
             podcastInteractor.getPodcastDetail(podcastItem)
                     .ofIOToMainThread()
@@ -289,7 +310,7 @@ class PlayerPresenter(private val app : Application,
     fun bindDetail() {
         view?.let {
             it.setLoading(false)
-            it.setPodcastDetail(podcastDetail!!)
+            it.bindPodcastDetail(podcastDetail!!)
         }
     }
 

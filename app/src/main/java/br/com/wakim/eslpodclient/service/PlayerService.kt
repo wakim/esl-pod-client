@@ -28,9 +28,9 @@ import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
+import br.com.wakim.eslpodclient.notification.NotificationActivity
 import rx.Subscription
 import java.lang.ref.WeakReference
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -91,7 +91,7 @@ class PlayerService : Service() {
 
         override fun onStop() {
             super.onStop()
-            stop()
+            stop(true)
         }
 
         override fun onSeekTo(pos: Long) {
@@ -125,6 +125,9 @@ class PlayerService : Service() {
     @Inject
     lateinit var notificationManagerCompat: NotificationManagerCompat
 
+    @Inject
+    lateinit var playlistManager: PlaylistManager
+
     private var session: MediaSessionCompat? = null
     private var controller: MediaControllerCompat? = null
 
@@ -134,10 +137,6 @@ class PlayerService : Service() {
     private var task: DurationUpdatesTask? = null
 
     private var downloadStatusSubscription: Subscription? = null
-
-    val playlistManager: PlaylistManager by lazy {
-        PlaylistManager()
-    }
 
     var callback: PlayerCallback? = null
         set(value) {
@@ -184,6 +183,7 @@ class PlayerService : Service() {
                 KeyEvent.KEYCODE_MEDIA_PLAY     -> it.transportControls.play()
                 KeyEvent.KEYCODE_MEDIA_PAUSE    -> it.transportControls.pause()
                 KeyEvent.KEYCODE_MEDIA_STOP     -> it.transportControls.stop()
+                KeyEvent.KEYCODE_ESCAPE         -> stop(false)
                 KeyEvent.KEYCODE_MEDIA_NEXT     -> it.transportControls.skipToNext()
                 KeyEvent.KEYCODE_MEDIA_PREVIOUS -> it.transportControls.skipToPrevious()
             }
@@ -367,27 +367,33 @@ class PlayerService : Service() {
         stopSelf()
     }
 
-    fun stop() {
+    fun stop(fromUser: Boolean = true) {
         innerStop()
 
         if (podcastItem != null) {
             podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, 0)
         }
+
+        if (fromUser) {
+            startForeground(podcastItem!!.title, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
+        }
     }
 
     private fun innerStop() {
-        downloadStatusSubscription?.unsubscribe()
-        initialPosition = 0
+        if (isPlaying()) {
+            downloadStatusSubscription?.unsubscribe()
+            initialPosition = 0
 
-        mediaPlayer.stop()
-        mediaPlayer.reset()
+            mediaPlayer.stop()
+            mediaPlayer.reset()
 
-        session?.isActive = false
+            session?.isActive = false
 
-        unregisterNoisyReceiver()
+            unregisterNoisyReceiver()
 
-        callback?.onPlayerStopped()
-        task?.cancel(true)
+            callback?.onPlayerStopped()
+            task?.cancel(true)
+        }
     }
 
     fun pause() {
@@ -433,7 +439,9 @@ class PlayerService : Service() {
 
     fun isPlaying() = initalized && mediaPlayer.isPlaying
 
-    private fun getDuration() : Float {
+    fun getPodcastItem() = podcastItem
+
+    fun getDuration() : Float {
         if (isPlaying()) {
             return mediaPlayer.duration.toFloat()
         }
@@ -468,7 +476,7 @@ class PlayerService : Service() {
         val builder = android.support.v7.app.NotificationCompat.Builder(this)
         val style = android.support.v7.app.NotificationCompat.MediaStyle()
 
-        val stopIntent = getActionIntent(KeyEvent.KEYCODE_MEDIA_STOP)
+        val stopIntent = getActionIntent(KeyEvent.KEYCODE_ESCAPE)
 
         style   .setMediaSession(session!!.sessionToken)
                 .setShowActionsInCompactView(0, 1, 2, 3)
@@ -480,10 +488,9 @@ class PlayerService : Service() {
         builder
                 .setUsesChronometer(isPlaying())
                 .setWhen(whenFromPosition())
-                .setContentIntent(controller!!.sessionActivity)
+                .setContentIntent(generatePendingIntent())
                 .setDeleteIntent(stopIntent)
                 .setContentTitle(mediaTitle)
-                .setAutoCancel(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setLargeIcon((ContextCompat.getDrawable(this, R.mipmap.ic_launcher) as BitmapDrawable).bitmap)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -492,7 +499,17 @@ class PlayerService : Service() {
                 .addAction(generateAction(R.drawable.ic_stop_white_36dp, R.string.stop, KeyEvent.KEYCODE_MEDIA_STOP))
                 .addAction(generateAction(R.drawable.ic_skip_next_white_36dp, R.string.next, KeyEvent.KEYCODE_MEDIA_NEXT))
 
-        notificationManagerCompat.notify(ID, builder.build())
+        val notification = builder.build()
+
+        notificationManagerCompat.notify(ID, notification)
+    }
+
+    private fun generatePendingIntent(): PendingIntent {
+        val intent = Intent(this, NotificationActivity::class.java)
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     private fun generateAction(@DrawableRes icon : Int, @StringRes titleResId : Int, intentAction : Int) : NotificationCompat.Action =
@@ -541,30 +558,6 @@ class DurationUpdatesTask(var service: PlayerService) : AsyncTask<Void , Int, Vo
         values[0]?.let {
             service.callback?.onPositionChanged(it)
         }
-    }
-}
-
-class PlaylistManager {
-    private var items : List<PodcastItem> = listOf()
-
-    fun setItems(items: ArrayList<PodcastItem>) {
-        this.items = items
-    }
-
-    fun nextOrNull(podcastItem: PodcastItem) : PodcastItem? {
-        val indexOf = items.indexOf(podcastItem)
-
-        return if (indexOf == -1) null else items.getOrNull(indexOf + 1)
-    }
-
-    fun previousOrNull(podcastItem: PodcastItem) : PodcastItem? {
-        val indexOf = items.indexOf(podcastItem)
-
-        return if (indexOf == -1) null else items.getOrNull(indexOf - 1)
-    }
-
-    fun clearItems() {
-        items = listOf()
     }
 }
 

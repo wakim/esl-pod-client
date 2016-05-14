@@ -9,11 +9,9 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.PodcastPlayerComponent
 import br.com.wakim.eslpodclient.dagger.module.PodcastPlayerModule
-import br.com.wakim.eslpodclient.extensions.isVisible
 import br.com.wakim.eslpodclient.extensions.snack
 import br.com.wakim.eslpodclient.extensions.startActivity
 import br.com.wakim.eslpodclient.podcastlist.downloaded.view.DownloadedListFragment
@@ -47,8 +45,6 @@ open class PodcastListActivity : BaseActivity() {
     val loadingFab: LoadingFloatingActionButton by bindView(R.id.fab_loading)
 
     val bottomBar: AHBottomNavigation by bindView(R.id.bottom_navigation)
-
-    var toast: Toast? = null
 
     var podcastListFragment: PodcastListFragment? = null
     var downloadedListFragment: DownloadedListFragment? = null
@@ -227,15 +223,6 @@ open class PodcastListActivity : BaseActivity() {
             if (isExpanded()) {
                 collapse()
                 return
-            }
-
-            if (isPlaying()) {
-                if (!(toast?.isVisible() ?: false)) {
-                    toast = Toast.makeText(this@PodcastListActivity, R.string.press_back_again_to_leave, Toast.LENGTH_LONG)
-                    toast!!.show()
-
-                    return
-                }
             }
 
             if (isVisible()) {

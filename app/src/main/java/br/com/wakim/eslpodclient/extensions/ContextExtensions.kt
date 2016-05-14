@@ -41,7 +41,7 @@ inline fun <reified T: Service> Context.bindService(connection : ServiceConnecti
     bindService(intent, connection, Context.BIND_AUTO_CREATE)
 }
 
-inline fun <reified T: Service> Context.bindService(noinline callback : ((Intent) -> Unit)? = null) : Observable<Pair<ServiceConnection, TypedBinder<T>?>> {
+inline fun <reified T: Service> Context.bindService(startBefore: Boolean = true, noinline callback: ((Intent) -> Unit)? = null) : Observable<Pair<ServiceConnection, TypedBinder<T>?>> {
     val intent = Intent(this, T::class.java)
 
     callback?.invoke(intent)
@@ -60,6 +60,10 @@ inline fun <reified T: Service> Context.bindService(noinline callback : ((Intent
                     subscriber!!.onNext(this to (binder as? TypedBinder<T>))
                 }
             }
+        }
+
+        if (startBefore) {
+            startService(intent)
         }
 
         bindService(intent, connection, Context.BIND_AUTO_CREATE)

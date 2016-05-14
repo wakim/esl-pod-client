@@ -22,9 +22,9 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
         <activity
-            android:name=".podcastlist.view.PodcastListActivity"
             android:launchMode="singleTop"
-            android:theme="@style/LauncherAppTheme" >
+            android:theme="@style/LauncherAppTheme"
+            android:name=".podcastlist.view.PodcastListActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,9 +33,9 @@
         </activity>
 
         <activity
-            android:name=".settings.view.SettingsActivity"
+            android:parentActivityName=".podcastlist.view.PodcastListActivity"
             android:label="@string/settings"
-            android:parentActivityName=".podcastlist.view.PodcastListActivity" />
+            android:name=".settings.view.SettingsActivity" />
 
         <activity
             android:name=".filepicker.CustomFilePickerActivity"
@@ -43,10 +43,16 @@
             android:theme="@style/FilePickerTheme" />
 
         <activity
-            android:name=".settings.view.LicensesActivity"
+            android:parentActivityName=".settings.view.SettingsActivity"
             android:label="@string/oss_licenses"
-            android:parentActivityName=".settings.view.SettingsActivity" />
-        
+            android:name=".settings.view.LicensesActivity" />
+
+        <activity
+            android:documentLaunchMode="none"
+            android:noHistory="true"
+            android:name=".notification.NotificationActivity"
+            tools:ignore="UnusedAttribute" />
+
         <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
@@ -57,12 +63,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".receiver.ConnectivityBroadcastReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
 

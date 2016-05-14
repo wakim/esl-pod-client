@@ -106,11 +106,13 @@ class ListPlayerView : AppBarLayout, PlayerView {
         menu
     }
 
-    var playFab : FloatingActionButton? = null
+    var playFab: FloatingActionButton? = null
 
-    var pauseFab : FloatingActionButton? = null
+    var pauseFab: FloatingActionButton? = null
 
-    var loadingFab : LoadingFloatingActionButton? = null
+    var loadingFab: LoadingFloatingActionButton? = null
+
+    var podcastItem: PodcastItem? = null
 
     @Inject
     lateinit var baseActivity: BaseActivity
@@ -223,19 +225,18 @@ class ListPlayerView : AppBarLayout, PlayerView {
     }
 
     fun play(podcastItem: PodcastItem) {
+        if (this.podcastItem == podcastItem) {
+            return
+        }
+
         bindPodcastInfo(podcastItem)
         presenter.play(podcastItem)
 
         hideFabs()
+        setVisible()
 
         nextButton.isEnabled = false
         previousButton.isEnabled = false
-
-        visibility = View.VISIBLE
-
-        if (bottomSheetBehavior!!.state == BottomSheetBehavior.STATE_HIDDEN) {
-            bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
-        }
 
         loadingFab?.let {
             it.showAnimated()
@@ -243,9 +244,19 @@ class ListPlayerView : AppBarLayout, PlayerView {
         }
     }
 
+    override fun setVisible() {
+        visibility = View.VISIBLE
+
+        if (bottomSheetBehavior!!.state == BottomSheetBehavior.STATE_HIDDEN) {
+            bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+    }
+
     fun bindPodcastInfo(podcastItem: PodcastItem) {
         val formattedDate = podcastItem.date?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
         val titleText = podcastItem.userFriendlyTitle
+
+        this.podcastItem = podcastItem
 
         if (podcastItem.isEnglishCafe()) {
             title.text = podcastItem.title
@@ -295,10 +306,6 @@ class ListPlayerView : AppBarLayout, PlayerView {
     override fun setMaxProgress(duration: Int) {
         seekBar.max = duration
         this.duration.text = duration.millisToElapsedTime()
-    }
-
-    override fun setMaxAvailableProgress(available: Int) {
-        seekBar.secondaryProgress = available
     }
 
     override fun showMessage(@StringRes messageResId: Int): Snackbar =
@@ -398,11 +405,12 @@ class ListPlayerView : AppBarLayout, PlayerView {
         this.loading.visibility = if (loading) View.VISIBLE else View.GONE
     }
 
-    override fun setPodcastItem(podcastItem: PodcastItem) {
-        bindPodcastInfo(podcastItem)
+    override fun bindPodcastItem(podcastItem: PodcastItem) {
+        if (this.podcastItem != podcastItem)
+            bindPodcastInfo(podcastItem)
     }
 
-    override fun setPodcastDetail(podcastItemDetail: PodcastItemDetail) {
+    override fun bindPodcastDetail(podcastItemDetail: PodcastItemDetail) {
         script.text = Html.fromHtml(podcastItemDetail.script)
         setupOverflowMenu(podcastItemDetail)
     }

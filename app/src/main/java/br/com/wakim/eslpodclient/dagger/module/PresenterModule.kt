@@ -11,6 +11,7 @@ import br.com.wakim.eslpodclient.podcastlist.downloaded.presenter.DownloadedList
 import br.com.wakim.eslpodclient.podcastlist.favorited.presenter.FavoritedListPresenter
 import br.com.wakim.eslpodclient.podcastlist.presenter.PodcastListPresenter
 import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
+import br.com.wakim.eslpodclient.service.PlaylistManager
 import br.com.wakim.eslpodclient.view.PermissionRequester
 import dagger.Module
 import dagger.Provides
@@ -21,11 +22,12 @@ class PresenterModule() {
     @Provides @ActivityScope
     fun providesPodcastListPresenter(app: Application,
                                      permissionRequester: PermissionRequester,
+                                     playlistManager: PlaylistManager,
                                      storageInteractor: StorageInteractor,
                                      podcastInteractor: PodcastInteractor,
                                      favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
                                      activity: Activity) =
-            PodcastListPresenter(app, podcastInteractor, permissionRequester, storageInteractor, favoritedPodcastItemInteractor, activity)
+            PodcastListPresenter(app, podcastInteractor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor, activity)
 
     @Provides @ActivityScope
     fun providesPlayerPresenter(app: Application, permissionRequester: PermissionRequester, podcastInteractor: PodcastInteractor) =
@@ -34,17 +36,19 @@ class PresenterModule() {
     @Provides @ActivityScope
     fun providesFavoritedListPresenter(app: Application,
                                        permissionRequester: PermissionRequester,
+                                       playlistManager: PlaylistManager,
                                        storageInteractor: StorageInteractor,
                                        favoritesInteractor: FavoritedPodcastItemInteractor,
                                        activity: Activity) =
-            FavoritedListPresenter(app, permissionRequester, storageInteractor, favoritesInteractor, activity)
+            FavoritedListPresenter(app, permissionRequester, playlistManager, storageInteractor, favoritesInteractor, activity)
 
     @Provides @ActivityScope
     fun providesDownloadedListPresenter(app: Application,
                                         permissionRequester: PermissionRequester,
+                                        playlistManager: PlaylistManager,
                                         storageInteractor: StorageInteractor,
                                         interactor: DownloadedPodcastItemInteractor,
                                         favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
                                         activity: Activity) =
-            DownloadedListPresenter(app, interactor, permissionRequester, storageInteractor, favoritedPodcastItemInteractor, activity)
+            DownloadedListPresenter(app, interactor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor, activity)
 }

@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.PodcastPlayerComponent
 import br.com.wakim.eslpodclient.extensions.dp
-import br.com.wakim.eslpodclient.extensions.isVisible
 import br.com.wakim.eslpodclient.extensions.makeVisible
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.podcastlist.adapter.PodcastListAdapter
