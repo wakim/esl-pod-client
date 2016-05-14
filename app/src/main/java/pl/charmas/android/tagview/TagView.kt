@@ -88,7 +88,8 @@ class TagView : TextView {
         if (text == null) {
             super.setText(null, type)
         } else {
-            setTags(text.toString().split(tagSeparator ?: DEFAULT_SEPARATOR))
+            if (!isInEditMode)
+                setTags(text.toString().split(tagSeparator ?: DEFAULT_SEPARATOR))
         }
     }
 
@@ -114,9 +115,8 @@ class TagView : TextView {
                 continue
             }
 
-            val tag = prefix + tags[i]
+            val tag = prefix + tags[i].trim()
             val tagContent = if (isUppercaseTags) tag.toUpperCase() else tag
-
 
             sb.append(tagContent).setSpan(
                     createSpan(tagContent, color),

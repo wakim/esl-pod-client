@@ -47,8 +47,9 @@ class ListPlayerView : AppBarLayout, PlayerView {
 
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             when (newState) {
-                BottomSheetBehavior.STATE_EXPANDED  -> hideFabs()
                 BottomSheetBehavior.STATE_COLLAPSED -> showFabs()
+                BottomSheetBehavior.STATE_EXPANDED  -> hideFabs()
+                BottomSheetBehavior.STATE_HIDDEN    -> hideFabs()
             }
         }
     }
@@ -127,12 +128,14 @@ class ListPlayerView : AppBarLayout, PlayerView {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
+        if (!isInEditMode) {
+            (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
 
-        setupBehaviorCallback()
+            setupBehaviorCallback()
 
-        presenter.onStart()
-        presenter.onResume()
+            presenter.onStart()
+            presenter.onResume()
+        }
     }
 
     override fun onDetachedFromWindow() {
@@ -227,6 +230,12 @@ class ListPlayerView : AppBarLayout, PlayerView {
 
         nextButton.isEnabled = false
         previousButton.isEnabled = false
+
+        visibility = View.VISIBLE
+
+        if (bottomSheetBehavior!!.state == BottomSheetBehavior.STATE_HIDDEN) {
+            bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
 
         loadingFab?.let {
             it.showAnimated()
@@ -395,11 +404,15 @@ class ListPlayerView : AppBarLayout, PlayerView {
 
     override fun setPodcastDetail(podcastItemDetail: PodcastItemDetail) {
         script.text = Html.fromHtml(podcastItemDetail.script)
-
         setupOverflowMenu(podcastItemDetail)
     }
 
-    fun isExpanded(): Boolean = bottomSheetBehavior?.state == BottomSheetBehavior.STATE_EXPANDED
+    fun isExpanded() = bottomSheetBehavior?.state == BottomSheetBehavior.STATE_EXPANDED
+
+    fun isVisible() =
+            bottomSheetBehavior?.state.let {
+                it == BottomSheetBehavior.STATE_COLLAPSED || it == BottomSheetBehavior.STATE_COLLAPSED
+            }
 
     fun collapse() {
         if (isExpanded()) {
@@ -407,6 +420,9 @@ class ListPlayerView : AppBarLayout, PlayerView {
         }
     }
 
-    fun isPlaying(): Boolean =
-            presenter.isPlaying()
+    fun hide() {
+        bottomSheetBehavior?.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
+    fun isPlaying() = presenter.isPlaying()
 }

@@ -19,11 +19,16 @@ class LicensesActivity: BaseActivity() {
     var adapter: LicenseListAdapter? = null
     var licenses: MutableList<Pair<String, String>>? = mutableListOf()
 
+    // Keeping reference to prevent being stripped by Proguard
+    val licensesRes = arrayOf(R.raw.androidtagview, R.raw.anko, R.raw.ahbottomnavigation, R.raw.calligraphy,
+            R.raw.dagger2, R.raw.rxandroid, R.raw.rxjava, R.raw.filepicker, R.raw.threetenabp,
+            R.raw.stetho, R.raw.support_libraries, R.raw.kotlin_stdlib, R.raw.kotterknife)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        showNavigationArrow()
 
         setContentView(R.layout.activity_licenses)
+        showNavigationArrow()
 
         adapter = LicenseListAdapter(this)
 

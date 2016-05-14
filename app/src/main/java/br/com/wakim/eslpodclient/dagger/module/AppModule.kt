@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.media.AudioManager
 import android.net.ConnectivityManager
+import android.support.v4.app.NotificationManagerCompat
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.interactor.PreferenceInteractor
 import dagger.Module
@@ -27,4 +28,7 @@ class AppModule(private val app: Application) {
 
     @Provides @Singleton
     fun providesConnectivityManager() = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    @Provides @Singleton
+    fun providesNotificationManagerCompat() = NotificationManagerCompat.from(app)
 }

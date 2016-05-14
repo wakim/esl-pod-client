@@ -14,6 +14,7 @@ import android.os.IBinder
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.media.session.MediaButtonReceiver
 import android.support.v4.media.session.MediaControllerCompat
@@ -120,6 +121,9 @@ class PlayerService : Service() {
 
     @Inject
     lateinit var podcastInteractor: PodcastInteractor
+
+    @Inject
+    lateinit var notificationManagerCompat: NotificationManagerCompat
 
     private var session: MediaSessionCompat? = null
     private var controller: MediaControllerCompat? = null
@@ -351,7 +355,7 @@ class PlayerService : Service() {
     }
 
     fun skipToPrevious() {
-        var previousItem = playlistManager.previousOrNull(podcastItem!!)
+        val previousItem = playlistManager.previousOrNull(podcastItem!!)
 
         previousItem?.let {
             play(it, 0)
@@ -360,12 +364,15 @@ class PlayerService : Service() {
     }
 
     fun dispose() {
-        stopForeground(true)
+        stopSelf()
     }
 
     fun stop() {
         innerStop()
-        podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, 0)
+
+        if (podcastItem != null) {
+            podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, 0)
+        }
     }
 
     private fun innerStop() {
@@ -381,8 +388,6 @@ class PlayerService : Service() {
 
         callback?.onPlayerStopped()
         task?.cancel(true)
-
-        startForeground(podcastItem!!.title, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
     }
 
     fun pause() {
@@ -426,7 +431,7 @@ class PlayerService : Service() {
         return now
     }
 
-    fun isPlaying() : Boolean = initalized && mediaPlayer.isPlaying
+    fun isPlaying() = initalized && mediaPlayer.isPlaying
 
     private fun getDuration() : Float {
         if (isPlaying()) {
@@ -438,7 +443,9 @@ class PlayerService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+
         release()
+        notificationManagerCompat.cancel(ID)
     }
 
     private fun release() {
@@ -477,7 +484,6 @@ class PlayerService : Service() {
                 .setDeleteIntent(stopIntent)
                 .setContentTitle(mediaTitle)
                 .setAutoCancel(true)
-                .setOngoing(false)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setLargeIcon((ContextCompat.getDrawable(this, R.mipmap.ic_launcher) as BitmapDrawable).bitmap)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -486,7 +492,7 @@ class PlayerService : Service() {
                 .addAction(generateAction(R.drawable.ic_stop_white_36dp, R.string.stop, KeyEvent.KEYCODE_MEDIA_STOP))
                 .addAction(generateAction(R.drawable.ic_skip_next_white_36dp, R.string.next, KeyEvent.KEYCODE_MEDIA_NEXT))
 
-        startForeground(ID, builder.build())
+        notificationManagerCompat.notify(ID, builder.build())
     }
 
     private fun generateAction(@DrawableRes icon : Int, @StringRes titleResId : Int, intentAction : Int) : NotificationCompat.Action =

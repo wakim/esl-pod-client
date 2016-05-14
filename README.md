@@ -10,10 +10,20 @@ The app uses jsoup to gather the podcasts of ESL Podcast website and allowing th
 
 It uses a combination of MediaPlayer and MediaPlayback for streaming audio and DownloadManager to handle the download complexity.
 
+# Some Screenshots
+
+![Screenshot 1] (art/home.jpg)
+![Screenshot 2] (art/player_collapsed.jpg)
+![Screenshot 3] (art/player_full_screen.jpg)
+![Screenshot 4] (art/media_playback.jpg)
+
 # TODO
 
  - Find a way to proxy the MediaPlayer with a local webserver (NanoHTTPD) and store the content of the podcast while it is being played.
      - The implementation may be hard because the user can seek to any position of audio. So the proxy must handle gaps in the downloaded file and must be able to request correctly.
+     
+ - Store parsed podcasts from web on database
+ - Sync folder and update database
 
 ----
 

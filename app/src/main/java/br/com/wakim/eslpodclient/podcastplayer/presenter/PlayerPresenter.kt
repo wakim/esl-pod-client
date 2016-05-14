@@ -261,9 +261,7 @@ class PlayerPresenter(private val app : Application,
         loadDetail(podcastItem)
     }
 
-    fun isPlaying(): Boolean {
-        return playerService?.isPlaying() ?: false
-    }
+    fun isPlaying() = playerService?.isPlaying() ?: false
 
     fun isPrepared() : Boolean = playerService?.initalized ?: false
 

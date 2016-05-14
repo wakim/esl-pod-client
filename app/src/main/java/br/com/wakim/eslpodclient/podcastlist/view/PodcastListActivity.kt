@@ -222,37 +222,42 @@ open class PodcastListActivity : BaseActivity() {
         podcastPlayerComponent = activityComponent.plus(PodcastPlayerModule(playerView))
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        playerView.explicitlyStop()
-        return super.onSupportNavigateUp()
-    }
-
     override fun onBackPressed() {
-        if (playerView.isExpanded()) {
-            playerView.collapse()
-            return
-        }
+        with (playerView) {
+            if (isExpanded()) {
+                collapse()
+                return
+            }
 
-        if (playerView.isPlaying()) {
-            if (!(toast?.isVisible() ?: false)) {
-                toast = Toast.makeText(this, R.string.press_back_again_to_leave, Toast.LENGTH_LONG);
-                toast!!.show()
+            if (isPlaying()) {
+                if (!(toast?.isVisible() ?: false)) {
+                    toast = Toast.makeText(this@PodcastListActivity, R.string.press_back_again_to_leave, Toast.LENGTH_LONG)
+                    toast!!.show()
 
+                    return
+                }
+            }
+
+            if (isVisible()) {
+                hide()
                 return
             }
         }
 
-        disposePlayer()
+        disposePlayerIfNeeded()
+
         super.onBackPressed()
     }
 
     override fun finish() {
-        disposePlayer()
+        disposePlayerIfNeeded()
         super.finish()
     }
 
-    open fun disposePlayer() {
-        playerView.explicitlyStop()
+    open fun disposePlayerIfNeeded() {
+        if (!playerView.isPlaying()) {
+            playerView.explicitlyStop()
+        }
     }
 
     override fun showMessage(messageResId: Int): Snackbar = snack(coordinatorLayout, messageResId)

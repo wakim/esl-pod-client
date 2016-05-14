@@ -7,6 +7,7 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="preferenceTheme">@style/CustomPreferenceThemeOverlay</item>
+        <item name="tagViewStyle">@style/TagView</item>
     </style>
     
     <style name="CustomPreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay">
