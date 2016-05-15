@@ -1,5 +1,6 @@
-package br.com.wakim.eslpodclient.interactor
+package br.com.wakim.eslpodclient.interactor.rx
 
+import br.com.wakim.eslpodclient.interactor.DownloadDbInteractor
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import rx.Single
 import rx.SingleSubscriber

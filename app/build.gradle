@@ -36,7 +36,7 @@ def generateVersionName() {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "24.0.0 rc1"
+    buildToolsVersion "24.0.0 rc3"
 
     defaultConfig {
         applicationId "br.com.wakim.eslpodclient"

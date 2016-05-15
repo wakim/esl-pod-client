@@ -6,6 +6,8 @@ import br.com.wakim.eslpodclient.extensions.connected
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.extensions.onNextIfSubscribed
 import br.com.wakim.eslpodclient.extensions.onSuccessIfSubscribed
+import br.com.wakim.eslpodclient.interactor.rx.PodcastDetailOnSubscribe
+import br.com.wakim.eslpodclient.interactor.rx.PodcastListOnSubscribe
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastItemDetail
 import br.com.wakim.eslpodclient.model.PodcastList

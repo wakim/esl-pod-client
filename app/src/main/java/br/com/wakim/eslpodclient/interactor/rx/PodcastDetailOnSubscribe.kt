@@ -1,4 +1,4 @@
-package br.com.wakim.eslpodclient.interactor
+package br.com.wakim.eslpodclient.interactor.rx
 
 import br.com.wakim.eslpodclient.extensions.secondsFromHourMinute
 import br.com.wakim.eslpodclient.model.PodcastItem

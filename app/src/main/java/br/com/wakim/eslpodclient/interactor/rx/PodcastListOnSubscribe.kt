@@ -1,4 +1,4 @@
-package br.com.wakim.eslpodclient.interactor
+package br.com.wakim.eslpodclient.interactor.rx
 
 import br.com.wakim.eslpodclient.extensions.monthOfYear
 import br.com.wakim.eslpodclient.extensions.onSuccessIfSubscribed
@@ -28,7 +28,7 @@ class PodcastListOnSubscribe(val url: String): Single.OnSubscribe<PodcastList> {
 
     override fun call(subscriber: SingleSubscriber<in PodcastList>) {
         val document = Jsoup.connect(url).get()
-        val elements = document.select(PodcastListOnSubscribe.Companion.PODCAST_TABLE_HOME_CLASS)
+        val elements = document.select(PODCAST_TABLE_HOME_CLASS)
         val podcastList = PodcastList()
         val size = elements.size
 

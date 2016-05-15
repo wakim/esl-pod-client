@@ -39,34 +39,43 @@ class PlayerService : Service() {
     companion object {
         final const val ID = 42
         final const val TAG = "PlayerService Session"
+
+        final const val CONTENT_INTENT_ACTION = "CONTENT_INTENT"
     }
 
     val localBinder = PlayerLocalBinder(this)
 
-    val mediaPlayer : MediaPlayer by lazy {
-        val mp = MediaPlayer()
+    internal var mediaPlayer : MediaPlayer? = null
+        get() {
+            if (released || field == null) {
+                val mp = MediaPlayer()
 
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC)
-        mp.setOnPreparedListener {
-            initalized = true
-            preparing = false
+                mp.setAudioStreamType(AudioManager.STREAM_MUSIC)
+                mp.setOnPreparedListener {
+                    initalized = true
+                    preparing = false
 
-            play()
-        }
+                    play()
+                }
 
-        mp.setOnBufferingUpdateListener { mediaPlayer, buffer ->
-            if (isPlaying()) {
-                callback?.onDurationAvailabilityChanged(((buffer.toFloat() * getDuration()) / 100F).toInt())
+                mp.setOnBufferingUpdateListener { mediaPlayer, buffer ->
+                    if (isPlaying()) {
+                        callback?.onDurationAvailabilityChanged(((buffer.toFloat() * getDuration()) / 100F).toInt())
+                    }
+                }
+
+                mp.setOnCompletionListener {
+                    mp.stop()
+                    mp.reset()
+                }
+
+                released = false
+
+                field = mp
             }
-        }
 
-        mp.setOnCompletionListener {
-            mp.stop()
-            mp.reset()
+            return field
         }
-
-        mp
-    }
 
     val mediaSessionCallback = object : MediaSessionCompat.Callback() {
         override fun onPlay() {
@@ -140,10 +149,14 @@ class PlayerService : Service() {
             startTaskIfNeeded()
         }
 
-    var initalized: Boolean = false
+    var initalized = false
         private set
 
-    private var preparing: Boolean = false
+    private var released = false
+
+    private var preparing = false
+
+    private var stopped = false
 
     override fun onCreate() {
         super.onCreate()
@@ -168,7 +181,9 @@ class PlayerService : Service() {
     fun handleIntent(intent : Intent) {
         val action = intent.action
 
-        if (Intent.ACTION_MEDIA_BUTTON != action) {
+        if (CONTENT_INTENT_ACTION == action) {
+            openNotificationActivity()
+        } else if (Intent.ACTION_MEDIA_BUTTON != action) {
             return
         }
 
@@ -183,6 +198,21 @@ class PlayerService : Service() {
                 KeyEvent.KEYCODE_MEDIA_NEXT     -> it.transportControls.skipToNext()
                 KeyEvent.KEYCODE_MEDIA_PREVIOUS -> it.transportControls.skipToPrevious()
             }
+        }
+    }
+
+    private fun openNotificationActivity() {
+        val intent = Intent(this, NotificationActivity::class.java)
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        startActivity(intent)
+
+        if (isPlaying()) {
+            notifyPlaying()
+        } else {
+            notifyStopped()
         }
     }
 
@@ -224,7 +254,7 @@ class PlayerService : Service() {
             pause()
         }
 
-        mediaPlayer.reset()
+        mediaPlayer!!.reset()
 
         initialPosition = 0
 
@@ -233,6 +263,11 @@ class PlayerService : Service() {
     }
 
     private fun play() {
+        if (stopped) {
+            startService(Intent(this, PlayerService::class.java))
+            stopped = false
+        }
+
         if (isPlaying()) {
             return
         }
@@ -258,11 +293,15 @@ class PlayerService : Service() {
         setupSessionState(true)
 
         callback?.let {
-            it.onDurationChanged(mediaPlayer.duration)
+            it.onDurationChanged(mediaPlayer!!.duration)
             it.onPlayerStarted()
         }
 
-        startForeground(podcastItem!!.title, generateAction(R.drawable.ic_pause_white_36dp, R.string.pause, KeyEvent.KEYCODE_MEDIA_PAUSE))
+        notifyPlaying()
+    }
+
+    fun notifyPlaying() {
+        notify(podcastItem!!.title, generateAction(R.drawable.ic_pause_white_36dp, R.string.pause, KeyEvent.KEYCODE_MEDIA_PAUSE))
     }
 
     private fun setupSessionState(playing: Boolean) {
@@ -301,13 +340,13 @@ class PlayerService : Service() {
             callback?.onStreamTypeResolved(PodcastItem.REMOTE)
         }
 
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
+        mediaPlayer!!.setDataSource(url)
+        mediaPlayer!!.prepareAsync()
     }
 
     private fun startAndSeek() {
-        mediaPlayer.start()
-        mediaPlayer.seekTo(initialPosition)
+        mediaPlayer!!.start()
+        mediaPlayer!!.seekTo(initialPosition)
     }
 
     private fun startTaskIfNeeded() {
@@ -317,7 +356,7 @@ class PlayerService : Service() {
             return
         }
 
-        callback?.let{
+        callback?.let {
             task = DurationUpdatesTask(this).execute() as DurationUpdatesTask
         }
     }
@@ -366,17 +405,19 @@ class PlayerService : Service() {
     }
 
     fun dispose() {
+        release()
+
         stopSelf()
+        stopped = true
     }
 
     fun stop() {
         innerStop()
+        notifyStopped()
+    }
 
-        if (podcastItem != null) {
-            podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, 0)
-        }
-
-        startForeground(podcastItem!!.title, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
+    fun notifyStopped() {
+        notify(podcastItem!!.title, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
     }
 
     private fun innerStop() {
@@ -384,7 +425,7 @@ class PlayerService : Service() {
             downloadStatusSubscription?.unsubscribe()
             initialPosition = 0
 
-            mediaPlayer.stop()
+            mediaPlayer!!.stop()
             reset()
 
             session?.isActive = false
@@ -394,15 +435,19 @@ class PlayerService : Service() {
             callback?.onPlayerStopped()
             task?.cancel(true)
         }
+
+        if (podcastItem != null) {
+            podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, 0)
+        }
     }
 
     fun pause() {
         if (isPlaying()) {
-            initialPosition = mediaPlayer.currentPosition
+            initialPosition = mediaPlayer!!.currentPosition
 
             podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, initialPosition)
 
-            mediaPlayer.pause()
+            mediaPlayer!!.pause()
             reset()
 
             session?.isActive = false
@@ -412,7 +457,7 @@ class PlayerService : Service() {
             callback?.onPlayerPaused()
             task?.cancel(true)
 
-            startForeground(podcastItem!!.title, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
+            notifyStopped()
         }
     }
 
@@ -422,7 +467,7 @@ class PlayerService : Service() {
         podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, pos)
 
         if (isPlaying()) {
-            mediaPlayer.seekTo(pos)
+            mediaPlayer!!.seekTo(pos)
         }
 
         callback?.onPositionChanged(pos)
@@ -432,12 +477,12 @@ class PlayerService : Service() {
         var now = System.currentTimeMillis()
 
         if (isPlaying())
-            now -= mediaPlayer.currentPosition
+            now -= mediaPlayer!!.currentPosition
 
         return now
     }
 
-    fun isPlaying() = initalized && mediaPlayer.isPlaying
+    fun isPlaying() = initalized && mediaPlayer!!.isPlaying
 
     fun getPodcastItem() = podcastItem
 
@@ -446,17 +491,14 @@ class PlayerService : Service() {
 
     fun getDuration() : Float {
         if (isPlaying()) {
-            return mediaPlayer.duration.toFloat()
+            return mediaPlayer!!.duration.toFloat()
         }
 
         return 0F
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
         release()
-        notificationManagerCompat.cancel(ID)
     }
 
     private fun release() {
@@ -464,18 +506,23 @@ class PlayerService : Service() {
             innerStop()
         }
 
-        mediaPlayer.reset()
-        mediaPlayer.release()
+        if (!released) {
+            mediaPlayer!!.reset()
+            mediaPlayer!!.release()
 
-        initalized = false
-        preparing = false
+            initalized = false
+            preparing = false
 
-        audioManager.abandonAudioFocus(audioFocusChangeListener)
+            audioManager.abandonAudioFocus(audioFocusChangeListener)
 
-        session?.release()
+            session?.release()
+        }
+
+        released = true
+        notificationManagerCompat.cancel(ID)
     }
 
-    private fun startForeground(mediaTitle: String, action: NotificationCompat.Action) {
+    private fun notify(mediaTitle: String, action: NotificationCompat.Action) {
         val builder = android.support.v7.app.NotificationCompat.Builder(this)
         val style = android.support.v7.app.NotificationCompat.MediaStyle()
 
@@ -494,6 +541,7 @@ class PlayerService : Service() {
                 .setContentIntent(generatePendingIntent())
                 .setDeleteIntent(stopIntent)
                 .setContentTitle(mediaTitle)
+                .setAutoCancel(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setLargeIcon((ContextCompat.getDrawable(this, R.mipmap.ic_launcher) as BitmapDrawable).bitmap)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -508,11 +556,11 @@ class PlayerService : Service() {
     }
 
     private fun generatePendingIntent(): PendingIntent {
-        val intent = Intent(this, NotificationActivity::class.java)
+        val intent = Intent(this, PlayerService::class.java)
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        intent.action = CONTENT_INTENT_ACTION
 
-        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     private fun generateAction(@DrawableRes icon : Int, @StringRes titleResId : Int, intentAction : Int) : NotificationCompat.Action =
@@ -545,7 +593,7 @@ class DurationUpdatesTask(var service: PlayerService) : AsyncTask<Void , Int, Vo
 
     override fun doInBackground(vararg p0: Void): Void? {
         while (!isCancelled) {
-            publishProgress(service.mediaPlayer.currentPosition)
+            publishProgress(service.mediaPlayer!!.currentPosition)
 
             try {
                 Thread.sleep(interval)

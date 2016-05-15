@@ -6,6 +6,7 @@ import android.support.annotation.RequiresPermission
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.extensions.getFileName
 import br.com.wakim.eslpodclient.extensions.hasPermission
+import br.com.wakim.eslpodclient.interactor.rx.DownloadStatusOnSubscribe
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.service.StorageService
