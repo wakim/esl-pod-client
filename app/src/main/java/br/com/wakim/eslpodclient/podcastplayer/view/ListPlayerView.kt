@@ -96,6 +96,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
     private val nextButton: ImageButton by bindView(R.id.ib_next)
     private val previousButton: ImageButton by bindView(R.id.ib_previous)
     private val overflowButton: ImageButton by bindView(R.id.ib_overflow)
+    private val streamTypeText: TextView by bindView(R.id.tv_stream_type)
 
     private val popupMenu: PopupMenu by lazy {
         val menu = PopupMenu(context, overflowButton)
@@ -301,6 +302,13 @@ class ListPlayerView : AppBarLayout, PlayerView {
         this.timer.text = position.millisToElapsedTime()
     }
 
+    override fun setStreamType(@PodcastItem.StreamType streamType: Long) {
+        when (streamType) {
+            PodcastItem.LOCAL  -> streamTypeText.text = context.getString(R.string.local)
+            PodcastItem.REMOTE -> streamTypeText.text = context.getString(R.string.remote)
+        }
+    }
+
     override fun getProgressValue(): Int = seekBar.progress
 
     override fun setMaxProgress(duration: Int) {
@@ -377,7 +385,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
         previousButton.isEnabled = true
     }
 
-    fun showLoadingButton() {
+    override fun showLoadingButton() {
         if (bottomSheetBehavior?.state == BottomSheetBehavior.STATE_COLLAPSED) {
             playFab?.hideAnimated()
             pauseFab?.hideAnimated()

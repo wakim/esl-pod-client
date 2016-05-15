@@ -12,6 +12,10 @@ data class PodcastItem(val remoteId: Long, val title: String, val blurb: String,
     @Retention(AnnotationRetention.SOURCE)
     annotation class Type()
 
+    @IntDef(LOCAL, REMOTE)
+    @Retention(AnnotationRetention.SOURCE)
+    annotation class StreamType()
+
     val userFriendlyTitle: String by lazy {
         if (type == ENGLISH_CAFE) {
             return@lazy title
@@ -77,6 +81,9 @@ data class PodcastItem(val remoteId: Long, val title: String, val blurb: String,
     companion object {
         const val ENGLISH_CAFE = 0L
         const val PODCAST = 1L
+
+        const val LOCAL = 0L
+        const val REMOTE = 1L
 
         @JvmField final val CREATOR: Parcelable.Creator<PodcastItem> = object : Parcelable.Creator<PodcastItem> {
             override fun createFromParcel(source: Parcel): PodcastItem {

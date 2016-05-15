@@ -54,6 +54,10 @@ class PlayerPresenter(private val app : Application,
             view?.setProgressValue(position)
         }
 
+        override fun onPlayerPreparing() {
+            view?.showLoadingButton()
+        }
+
         override fun onPlayerStarted() {
             view?.showPauseButton()
         }
@@ -67,6 +71,10 @@ class PlayerPresenter(private val app : Application,
                 it.setProgressValue(0)
                 it.showPlayButton()
             }
+        }
+
+        override fun onStreamTypeResolved(streamType: Long) {
+            view?.setStreamType(streamType)
         }
 
         override fun onSkippedToPrevious(podcastItem: PodcastItem) {
@@ -196,6 +204,8 @@ class PlayerPresenter(private val app : Application,
                     } else {
                         it.setMaxProgress(getDuration().toInt())
                     }
+
+                    it.setStreamType(getStreamType())
                 }
 
                 loadDetail(it)
@@ -237,7 +247,7 @@ class PlayerPresenter(private val app : Application,
 
         val item = podcastItem as PodcastItem
 
-        playerService!!.let {
+        playerService?.let {
             it.reset()
             it.play(item, view?.getProgressValue() ?: 0)
 

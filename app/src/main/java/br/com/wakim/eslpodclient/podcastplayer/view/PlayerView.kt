@@ -6,12 +6,15 @@ import br.com.wakim.eslpodclient.view.View
 
 interface PlayerView : View {
     fun showPlayButton()
+    fun showLoadingButton()
     fun showPauseButton()
 
     fun setMaxProgress(duration: Int)
 
     fun getProgressValue(): Int
     fun setProgressValue(position: Int)
+
+    fun setStreamType(@PodcastItem.StreamType streamType: Long)
 
     fun setLoading(loading: Boolean)
 

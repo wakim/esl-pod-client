@@ -70,32 +70,26 @@ class PlayerService : Service() {
 
     val mediaSessionCallback = object : MediaSessionCompat.Callback() {
         override fun onPlay() {
-            super.onPlay()
             play()
         }
 
         override fun onSkipToNext() {
-            super.onSkipToNext()
             skipToNext()
         }
 
         override fun onSkipToPrevious() {
-            super.onSkipToPrevious()
             skipToPrevious()
         }
 
         override fun onPause() {
-            super.onPause()
             pause()
         }
 
         override fun onStop() {
-            super.onStop()
-            stop(true)
+            stop()
         }
 
         override fun onSeekTo(pos: Long) {
-            super.onSeekTo(pos)
             seek(pos.toInt())
         }
     }
@@ -132,6 +126,8 @@ class PlayerService : Service() {
     private var controller: MediaControllerCompat? = null
 
     private var podcastItem: PodcastItem? = null
+    private var downloadStatus: DownloadStatus? = null
+
     private var initialPosition: Int = 0
 
     private var task: DurationUpdatesTask? = null
@@ -183,7 +179,7 @@ class PlayerService : Service() {
                 KeyEvent.KEYCODE_MEDIA_PLAY     -> it.transportControls.play()
                 KeyEvent.KEYCODE_MEDIA_PAUSE    -> it.transportControls.pause()
                 KeyEvent.KEYCODE_MEDIA_STOP     -> it.transportControls.stop()
-                KeyEvent.KEYCODE_ESCAPE         -> stop(false)
+                KeyEvent.KEYCODE_ESCAPE         -> dispose()
                 KeyEvent.KEYCODE_MEDIA_NEXT     -> it.transportControls.skipToNext()
                 KeyEvent.KEYCODE_MEDIA_PREVIOUS -> it.transportControls.skipToPrevious()
             }
@@ -274,6 +270,8 @@ class PlayerService : Service() {
     }
 
     private fun prepareMediaPlayer() {
+        callback?.onPlayerPreparing()
+
         podcastItem?.let {
             downloadStatusSubscription?.unsubscribe()
 
@@ -293,10 +291,14 @@ class PlayerService : Service() {
     private fun prepare(downloadStatus: DownloadStatus, podcastItem: PodcastItem) {
         val url: String
 
+        this.downloadStatus = downloadStatus
+
         if (downloadStatus.status == DownloadStatus.DOWNLOADED) {
             url = downloadStatus.localPath!!
+            callback?.onStreamTypeResolved(PodcastItem.LOCAL)
         } else {
             url = podcastItem.mp3Url
+            callback?.onStreamTypeResolved(PodcastItem.REMOTE)
         }
 
         mediaPlayer.setDataSource(url)
@@ -367,16 +369,14 @@ class PlayerService : Service() {
         stopSelf()
     }
 
-    fun stop(fromUser: Boolean = true) {
+    fun stop() {
         innerStop()
 
         if (podcastItem != null) {
             podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, 0)
         }
 
-        if (fromUser) {
-            startForeground(podcastItem!!.title, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
-        }
+        startForeground(podcastItem!!.title, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
     }
 
     private fun innerStop() {
@@ -385,7 +385,7 @@ class PlayerService : Service() {
             initialPosition = 0
 
             mediaPlayer.stop()
-            mediaPlayer.reset()
+            reset()
 
             session?.isActive = false
 
@@ -403,7 +403,7 @@ class PlayerService : Service() {
             podcastInteractor.insertLastSeekPos(podcastItem!!.remoteId, initialPosition)
 
             mediaPlayer.pause()
-            mediaPlayer.reset()
+            reset()
 
             session?.isActive = false
 
@@ -440,6 +440,9 @@ class PlayerService : Service() {
     fun isPlaying() = initalized && mediaPlayer.isPlaying
 
     fun getPodcastItem() = podcastItem
+
+    fun getStreamType() =
+            if (downloadStatus?.status == DownloadStatus.DOWNLOADED) PodcastItem.LOCAL else PodcastItem.REMOTE
 
     fun getDuration() : Float {
         if (isPlaying()) {
@@ -562,14 +565,18 @@ class DurationUpdatesTask(var service: PlayerService) : AsyncTask<Void , Int, Vo
 }
 
 interface PlayerCallback {
+
     fun onDurationChanged(duration : Int)
     fun onDurationAvailabilityChanged(durationAvailable: Int)
     fun onPositionChanged(position : Int)
     fun onAudioFocusFailed()
 
+    fun onPlayerPreparing()
     fun onPlayerStarted()
     fun onPlayerPaused()
     fun onPlayerStopped()
+
+    fun onStreamTypeResolved(@PodcastItem.StreamType streamType: Long)
 
     fun onSkippedToPrevious(podcastItem: PodcastItem)
     fun onSkippedToNext(podcastItem: PodcastItem)
