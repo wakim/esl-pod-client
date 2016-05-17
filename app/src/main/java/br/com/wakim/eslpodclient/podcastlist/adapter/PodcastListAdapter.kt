@@ -78,6 +78,11 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>,
         notifyDataSetChanged()
     }
 
+    fun add(podcastItem: PodcastItem) {
+        list.add(podcastItem)
+        notifyItemInserted(list.size - 1)
+    }
+
     fun addAll(addition: ArrayList<PodcastItem>) {
         val previousSize = list.size
 

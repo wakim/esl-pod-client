@@ -19,7 +19,7 @@ class FileServer(private val baseDir : String) : NanoHTTPD(BuildConfig.SERVER_PO
      * ignores all headers and HTTP parameters.
      */
     fun serveFile(uri : String, header: Map<String, String>, file : File, mime: String) : Response {
-        var res: Response? = null
+        val res: Response?
 
         try {
             // Calculate etag

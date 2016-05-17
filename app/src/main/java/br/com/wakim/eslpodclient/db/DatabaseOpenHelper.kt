@@ -18,6 +18,7 @@ class DatabaseOpenHelper(context: Context): ManagedSQLiteOpenHelper(context, DB_
                         DOWNLOADS_TABLE_NAME,
                         true,
                         "remote_id" to INTEGER + PRIMARY_KEY + UNIQUE,
+                        "filename" to TEXT,
                         "download_id" to INTEGER,
                         "status" to INTEGER
                 )

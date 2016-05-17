@@ -168,6 +168,10 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
         adapter.setItems(list)
     }
 
+    override fun addItem(podcastItem: PodcastItem) {
+        adapter.add(podcastItem)
+    }
+
     override fun remove(podcastItem: PodcastItem) {
         adapter.remove(podcastItem)
     }

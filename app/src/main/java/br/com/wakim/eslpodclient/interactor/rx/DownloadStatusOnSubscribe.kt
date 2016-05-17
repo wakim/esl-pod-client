@@ -1,5 +1,6 @@
 package br.com.wakim.eslpodclient.interactor.rx
 
+import br.com.wakim.eslpodclient.extensions.getFileName
 import br.com.wakim.eslpodclient.interactor.DownloadDbInteractor
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import rx.Single
@@ -26,6 +27,7 @@ class DownloadStatusOnSubscribe(private val remoteId: Long, private val localPat
 
         // Not managed by app or database was cleared
         if (download == null) {
+            downloadDbInteractor.insertDownload(remoteId = remoteId, filename = localPath.getFileName(), downloadId = 0, status = DownloadStatus.DOWNLOADED)
             subscriber.onSuccess(DownloadStatus(localPath = localPath, remoteId = remoteId, downloadId = 0, status = DownloadStatus.DOWNLOADED))
         } else {
             with (download) {

@@ -15,6 +15,7 @@ import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
+import br.com.wakim.eslpodclient.model.PublishSubjectItem
 import br.com.wakim.eslpodclient.podcastlist.view.PodcastListView
 import br.com.wakim.eslpodclient.presenter.Presenter
 import br.com.wakim.eslpodclient.receiver.ConnectivityException
@@ -23,9 +24,11 @@ import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.service.PlaylistManager
 import br.com.wakim.eslpodclient.view.PermissionRequester
 import rx.android.schedulers.AndroidSchedulers
+import rx.subjects.PublishSubject
 import java.util.*
 
-open class PodcastListPresenter(private   val app: Application,
+open class PodcastListPresenter(protected val app: Application,
+                                protected val publishSubject: PublishSubject<PublishSubjectItem<Any>>,
                                 private   val interactor: PodcastInteractor,
                                 private   val permissionRequester: PermissionRequester,
                                 private   val playlistManager: PlaylistManager,

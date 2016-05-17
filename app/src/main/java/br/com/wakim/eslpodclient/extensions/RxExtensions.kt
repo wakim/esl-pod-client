@@ -31,6 +31,16 @@ fun <T> Single<T>.connected(): Single<T> {
     }
 }
 
+fun <T> Observable<T>.connected(): Observable<T> {
+    return Observable.defer { ->
+        if (Application.INSTANCE?.connected ?: false) {
+            return@defer this
+        }
+
+        return@defer Observable.error<T>(ConnectivityException.INSTANCE)
+    }
+}
+
 fun <T> SingleSubscriber<T>.onSuccessIfSubscribed(t: T) {
     if (!isUnsubscribed) {
         onSuccess(t)

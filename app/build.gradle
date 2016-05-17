@@ -13,6 +13,7 @@ def final appConfig = [
 
         "base_url": "https://www.eslpod.com/website/show_all.php",
         "detail_url": "https://www.eslpod.com/website/show_podcast.php?issue_id=%s",
+        "search_url": "https://cse.google.com/cse?cx=001507075980805982280%3Auhqfa0ga0ry&q=",
         "server_port": 8089
 ];
 
@@ -51,6 +52,7 @@ android {
 
         buildConfigField("String", "BASE_URL", "\"$appConfig.base_url\"")
         buildConfigField("String", "DETAIL_URL", "\"$appConfig.detail_url\"")
+        buildConfigField("String", "SEARCH_URL", "\"$appConfig.search_url\"")
         buildConfigField("int", "SERVER_PORT", "$appConfig.server_port")
     }
 
@@ -117,7 +119,7 @@ dependencies {
     compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.3'
 
-    compile 'org.jsoup:jsoup:1.8.3'
+    compile 'org.jsoup:jsoup:1.9.1'
 
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'com.nononsenseapps:filepicker:2.5.2'

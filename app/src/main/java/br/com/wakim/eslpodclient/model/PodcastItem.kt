@@ -6,7 +6,7 @@ import android.support.annotation.IntDef
 import org.jetbrains.anko.db.RowParser
 import org.threeten.bp.LocalDate
 
-data class PodcastItem(val remoteId: Long, val title: String, val blurb: String, val mp3Url: String, val date: LocalDate?, val tags: String?, @Type val type : Long = PODCAST) : Parcelable {
+data class PodcastItem(val remoteId: Long, val title: String, val mp3Url: String, val blurb: String? = null, val date: LocalDate?, val tags: String?, @Type val type : Long = PODCAST) : Parcelable {
 
     @IntDef(ENGLISH_CAFE, PODCAST)
     @Retention(AnnotationRetention.SOURCE)
@@ -135,6 +135,6 @@ data class DownloadStatus(val remoteId: Long = -1, val localPath: String? = null
 class PodcastItemRowParser: RowParser<PodcastItem> {
     override fun parseRow(columns: Array<Any>): PodcastItem {
         val date = columns[4] as Long
-        return PodcastItem(columns[0] as Long, columns[1] as String, columns[2] as String, columns[3] as String, LocalDate.ofEpochDay(date), columns[5] as String, columns[6] as Long)
+        return PodcastItem(columns[0] as Long, columns[1] as String, columns[2] as String, columns[3] as? String, LocalDate.ofEpochDay(date), columns[5] as String, columns[6] as Long)
     }
 }

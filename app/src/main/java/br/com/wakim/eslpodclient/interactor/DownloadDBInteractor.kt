@@ -12,12 +12,13 @@ import org.jetbrains.anko.db.update
 
 class DownloadDbInteractor(private val app: Application) {
 
-    fun insertDownload(remoteId: Long, downloadId: Long, status: Long) {
+    fun insertDownload(filename: String, remoteId: Long, downloadId: Long, status: Long) {
         app.database
                 .use {
                     insert(
                             DatabaseOpenHelper.DOWNLOADS_TABLE_NAME,
                             "remote_id" to remoteId,
+                            "filename" to filename,
                             "download_id" to downloadId,
                             "status" to status
                     )
@@ -29,12 +30,24 @@ class DownloadDbInteractor(private val app: Application) {
                 .database
                 .use {
                     select(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME)
-                            .columns("remote_id", "download_id", "status")
+                            .columns("remote_id", "filename", "download_id", "status")
                             .where("remote_id = {remote_id}", "remote_id" to remoteId)
                             .exec {
                                 parseOpt(DownloadParser())
                             }
                 }
+
+    fun getDownloadByFilename(filename: String): Download? =
+            app
+                    .database
+                    .use {
+                        select(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME)
+                                .columns("remote_id", "filename", "download_id", "status")
+                                .where("filename = {filename}", "filename" to filename)
+                                .exec {
+                                    parseOpt(DownloadParser())
+                                }
+                    }
 
     fun updateDownloadStatusByDownloadId(remoteId: Long, status: Long): Boolean =
             app

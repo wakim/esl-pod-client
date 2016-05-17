@@ -3,13 +3,17 @@ package br.com.wakim.eslpodclient.interactor
 import android.app.DownloadManager
 import android.net.Uri
 import android.support.annotation.RequiresPermission
+import br.com.wakim.eslpodclient.extensions.connected
 import br.com.wakim.eslpodclient.Application
+import br.com.wakim.eslpodclient.BuildConfig
 import br.com.wakim.eslpodclient.extensions.getFileName
 import br.com.wakim.eslpodclient.extensions.hasPermission
 import br.com.wakim.eslpodclient.interactor.rx.DownloadStatusOnSubscribe
+import br.com.wakim.eslpodclient.interactor.rx.DownloadSyncOnSubscribe
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.service.StorageService
+import rx.Observable
 import rx.Single
 import java.io.File
 
@@ -49,14 +53,14 @@ class StorageInteractor(private var downloadManager: DownloadManager,
 
                 val id = downloadFile(podcastItem)
 
-                insertIntoDb(podcastItem.remoteId, id)
+                insertIntoDb(podcastItem.remoteId, getLocalPath(podcastItem).getFileName(), id)
 
                 return@map downloadStatus.copy(downloadId = id, status = DownloadStatus.DOWNLOADING)
             }
     }
 
-    private fun insertIntoDb(remoteId: Long, downloadId: Long) {
-        downloadDbInteractor.insertDownload(remoteId = remoteId, downloadId = downloadId, status = DownloadStatus.DOWNLOADING)
+    private fun insertIntoDb(remoteId: Long, filename: String, downloadId: Long) {
+        downloadDbInteractor.insertDownload(remoteId = remoteId, filename = filename, downloadId = downloadId, status = DownloadStatus.DOWNLOADING)
     }
 
     @RequiresPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -66,7 +70,6 @@ class StorageInteractor(private var downloadManager: DownloadManager,
         request
                 .setDestinationUri(getLocalUri(podcastItem))
                 .setMimeType(StorageService.MIME_TYPE)
-                .setDescription(podcastItem.blurb)
                 .setTitle(podcastItem.userFriendlyTitle)
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
                 .setVisibleInDownloadsUi(true)
@@ -95,6 +98,7 @@ class StorageInteractor(private var downloadManager: DownloadManager,
         }
     }
 
-    fun synchronizeDownloads(): Single<Boolean> =
-            Single.just(true)
+    fun synchronizeDownloads() =
+            Observable.create(DownloadSyncOnSubscribe(this, downloadDbInteractor, BuildConfig.SEARCH_URL))
+                    .connected()
 }

@@ -333,10 +333,8 @@ class ListPlayerView : AppBarLayout, PlayerView {
         with (presenter) {
             if (isPlaying()) {
                 showPauseButton()
-            } else if (isPrepared()) {
-                showPlayButton()
             } else {
-                showLoadingButton()
+                showPlayButton()
             }
         }
     }
@@ -426,8 +424,9 @@ class ListPlayerView : AppBarLayout, PlayerView {
     fun isExpanded() = bottomSheetBehavior?.state == BottomSheetBehavior.STATE_EXPANDED
 
     fun isVisible() =
+            visibility == View.VISIBLE &&
             bottomSheetBehavior?.state.let {
-                it == BottomSheetBehavior.STATE_COLLAPSED || it == BottomSheetBehavior.STATE_COLLAPSED
+                it == BottomSheetBehavior.STATE_COLLAPSED || it == BottomSheetBehavior.STATE_EXPANDED
             }
 
     fun collapse() {

@@ -13,4 +13,6 @@ interface PodcastListView : View {
     fun remove(podcastItem: PodcastItem)
 
     fun setItems(list: ArrayList<PodcastItem>)
+
+    fun addItem(podcastItem: PodcastItem)
 }

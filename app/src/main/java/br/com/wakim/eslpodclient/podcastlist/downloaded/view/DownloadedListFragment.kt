@@ -49,7 +49,7 @@ class DownloadedListFragment: PodcastListFragment(), DownloadedListView {
     override fun showPopupMenuFor(podcastItem: PodcastItem, anchor: View) {
         val popupMenu = PopupMenu(context, anchor)
 
-        popupMenu.inflate(R.menu.favorited_podcast_item_menu)
+        popupMenu.inflate(R.menu.downloaded_podcast_item_menu)
 
         popupMenu.setOnMenuItemClickListener { menu ->
             when (menu.itemId) {
@@ -69,7 +69,7 @@ class DownloadedListFragment: PodcastListFragment(), DownloadedListView {
         presenter.removeDownload(podcastItem)
     }
 
-    override fun setSynchronizeMenuVisibible(visible: Boolean) {
+    override fun setSynchronizeMenuVisible(visible: Boolean) {
         synchronizeMenuItem?.isVisible = visible
     }
 

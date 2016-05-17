@@ -1,4 +1,3 @@
 package br.com.wakim.eslpodclient.extensions
 
-fun String.getFileName() : String? =
-        split("/").lastOrNull()
+fun String.getFileName() : String = split("/").last().substringBeforeLast(".")

@@ -7,8 +7,10 @@ import android.net.ConnectivityManager
 import android.support.v4.app.NotificationManagerCompat
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.interactor.PreferenceInteractor
+import br.com.wakim.eslpodclient.model.PublishSubjectItem
 import dagger.Module
 import dagger.Provides
+import rx.subjects.PublishSubject
 import javax.inject.Singleton
 
 @Module
@@ -31,4 +33,7 @@ class AppModule(private val app: Application) {
 
     @Provides @Singleton
     fun providesNotificationManagerCompat() = NotificationManagerCompat.from(app)
+
+    @Provides @Singleton
+    fun providesPublishSubject() = PublishSubject.create<PublishSubjectItem<Any>>()
 }

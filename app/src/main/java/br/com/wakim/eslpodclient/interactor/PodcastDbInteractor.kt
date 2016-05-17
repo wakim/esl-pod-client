@@ -12,6 +12,10 @@ import org.threeten.bp.ZonedDateTime
 
 class PodcastDbInteractor(private val app: Application) {
 
+    fun insertPodcast(podcastItem: PodcastItem) {
+        insertPodcasts(arrayListOf(podcastItem))
+    }
+
     fun insertPodcasts(podcasts: List<PodcastItem>) {
         app.database
                 .use {
@@ -133,8 +137,8 @@ class PodcastDbInteractor(private val app: Application) {
                                 .columns(
                                         "remote_id",
                                         "title",
-                                        "blurb",
                                         "mp3_url",
+                                        "blurb",
                                         "date",
                                         "tags",
                                         "type"
