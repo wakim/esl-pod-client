@@ -27,8 +27,8 @@ class PodcastDbInteractor(private val app: Application) {
                                     arrayOf(
                                             "remote_id" to remoteId,
                                             "title" to title,
-                                            "blurb" to blurb,
                                             "mp3_url" to mp3Url,
+                                            "blurb" to blurb,
                                             "date" to date?.toEpochDay(),
                                             "tags" to tags,
                                             "type" to type
@@ -116,8 +116,8 @@ class PodcastDbInteractor(private val app: Application) {
                                     .columns(
                                             "remote_id",
                                             "title",
-                                            "blurb",
                                             "mp3_url",
+                                            "blurb",
                                             "date",
                                             "tags",
                                             "type"

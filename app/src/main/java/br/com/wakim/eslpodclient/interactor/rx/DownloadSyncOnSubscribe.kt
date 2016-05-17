@@ -39,8 +39,8 @@ class DownloadSyncOnSubscribe(private val storageInteractor: StorageInteractor,
                 .map { file -> file.nameWithoutExtension }
                 .filter { filename -> downloadDbInteractor.getDownloadByFilename(filename) == null }
                 .filter { filename -> filename.startsWith("EC") || filename.startsWith("ESLPod")}
-                .map { filename -> filename.replace("EC", "EC ").replace("ESLPod", "ESLPod ") }
-                .map { searchQuery -> searchAndUpdate(searchQuery, if (searchQuery.startsWith("EC")) PodcastItem.ENGLISH_CAFE else PodcastItem.PODCAST) }
+                .map { filename -> filename.replace("EC", "English Cafe ").replace("ESLPod", "ESLPod ") }
+                .map { searchQuery -> searchAndUpdate(searchQuery, if (searchQuery.startsWith("English Cafe")) PodcastItem.ENGLISH_CAFE else PodcastItem.PODCAST) }
                 .filterNotNull()
                 .forEach { pair ->
                     subscriber.onNextIfSubscribed(pair)

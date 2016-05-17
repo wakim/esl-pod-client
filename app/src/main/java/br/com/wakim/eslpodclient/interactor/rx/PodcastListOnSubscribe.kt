@@ -60,7 +60,7 @@ class PodcastListOnSubscribe(val url: String): Single.OnSubscribe<PodcastList> {
         val date = getDate(rootElement)
         val type = getType(mp3Url)
 
-        return PodcastItem(remoteId, title, description, mp3Url, date, tags, type)
+        return PodcastItem(remoteId, title, mp3Url, description, date, tags, type)
     }
 
     fun getTitle(root: Element) : String = root.text()

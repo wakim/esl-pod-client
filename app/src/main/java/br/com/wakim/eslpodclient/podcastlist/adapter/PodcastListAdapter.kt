@@ -79,6 +79,10 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>,
     }
 
     fun add(podcastItem: PodcastItem) {
+        if (list.contains(podcastItem)) {
+            return
+        }
+
         list.add(podcastItem)
         notifyItemInserted(list.size - 1)
     }

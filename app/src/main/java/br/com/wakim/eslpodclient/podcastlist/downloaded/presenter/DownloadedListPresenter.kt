@@ -52,8 +52,13 @@ class DownloadedListPresenter: PodcastListPresenter {
         addSubscription {
             publishSubject
                     .ofIOToMainThread()
+                    .filter { it.type == PublishSubjectItem.PODCAST_SYNC_TYPE || it.type == PublishSubjectItem.PODCAST_SYNC_ENDED_TYPE }
                     .subscribe { item ->
-                        view?.addItem(item.t as PodcastItem)
+                        if (item.type == PublishSubjectItem.PODCAST_SYNC_TYPE) {
+                            view?.addItem(item.t as PodcastItem)
+                        } else {
+                            setSynchronizing(false)
+                        }
                     }
         }
     }
@@ -64,11 +69,18 @@ class DownloadedListPresenter: PodcastListPresenter {
                     pair?.let {
                         storageServiceConnection = pair.first
                         storageService = it.second?.getService()
+
+                        setSynchronizing(storageService?.synchronizing ?: false)
                     }
                 }
     }
 
     fun synchronize() {
+        setSynchronizing(true)
         storageService?.synchronize()
+    }
+
+    fun setSynchronizing(synchronizing: Boolean) {
+        (view as DownloadedListView).setSynchronizeMenuVisible(!synchronizing)
     }
 }

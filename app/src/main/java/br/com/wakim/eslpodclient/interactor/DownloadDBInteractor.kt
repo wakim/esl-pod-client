@@ -49,12 +49,12 @@ class DownloadDbInteractor(private val app: Application) {
                                 }
                     }
 
-    fun updateDownloadStatusByDownloadId(remoteId: Long, status: Long): Boolean =
+    fun updateDownloadStatusByDownloadId(download_id: Long, status: Long): Boolean =
             app
                     .database
                     .use {
                         update(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "status" to status)
-                        .where("remote_id = {remoteId}", "remoteId" to remoteId)
+                        .where("download_id = {download_id}", "download_id" to download_id)
                         .exec() > 0
                     }
 
