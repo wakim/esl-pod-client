@@ -10,7 +10,7 @@ The app uses jsoup to gather the podcasts of ESL Podcast website and allowing th
 
 It uses a combination of MediaPlayer and MediaPlayback for streaming audio and DownloadManager to handle the download complexity.
 
-# Some Screenshots
+## Some Screenshots
 
 <img src="art/home.jpg" width="180" height="320" alt="Home" />
 <img src="art/player_collapsed.jpg" width="180" height="320" alt="Media Player Collapsed" />
@@ -19,7 +19,7 @@ It uses a combination of MediaPlayer and MediaPlayback for streaming audio and D
 
 #### Design made by [Tatipiment](https://github.com/Tatipiment)
 
-# TODO
+## TODO
 
  - Find a way to proxy the MediaPlayer with a local webserver (NanoHTTPD) and store the content of the podcast while it is being played.
   - The implementation may be hard because the user can seek to any position of audio. So the proxy must handle gaps in the downloaded file and must be able to request correctly.
@@ -48,7 +48,7 @@ To run this project you need to have:
 5. Click "Import project (Eclipse ADT, Gradle, etc.)"
 6. Build the project to see if everything is working fine
 
-###License
+## License
 <pre>
 Copyright 2016 Wakim Jraige
 
