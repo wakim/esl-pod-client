@@ -17,6 +17,8 @@ class DownloadedPodcastItemInteractor(private val podcastDbInteractor: PodcastDb
                 subscriber.onSuccessIfSubscribed(podcastDbInteractor.getDownloaded(page, limit))
             }
 
+    override fun getCachedPodcasts(nextPageToken: String?): Single<PodcastList> = getPodcasts(nextPageToken)
+
     override fun getPodcasts(nextPageToken: String?): Single<PodcastList> =
             getDownloaded(nextPageToken?.toInt() ?: 0, ITEMS_PER_PAGE)
                     .map { list ->

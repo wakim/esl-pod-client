@@ -24,9 +24,6 @@ It uses a combination of MediaPlayer and MediaPlayback for streaming audio and D
  - Find a way to proxy the MediaPlayer with a local webserver (NanoHTTPD) and store the content of the podcast while it is being played.
   - The implementation may be hard because the user can seek to any position of audio. So the proxy must handle gaps in the downloaded file and must be able to request correctly.
  
- - Store parsed podcasts from web on local database.
- - Sync folder and update database.
-
 ----
 
 ## Dependencies

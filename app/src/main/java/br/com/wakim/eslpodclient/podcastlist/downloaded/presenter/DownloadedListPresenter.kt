@@ -7,13 +7,11 @@ import br.com.wakim.eslpodclient.extensions.bindService
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.interactor.DownloadedPodcastItemInteractor
 import br.com.wakim.eslpodclient.interactor.FavoritedPodcastItemInteractor
-import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PublishSubjectItem
 import br.com.wakim.eslpodclient.podcastlist.downloaded.view.DownloadedListView
 import br.com.wakim.eslpodclient.podcastlist.presenter.PodcastListPresenter
-import br.com.wakim.eslpodclient.service.PlayerService
 import br.com.wakim.eslpodclient.service.PlaylistManager
 import br.com.wakim.eslpodclient.service.StorageService
 import br.com.wakim.eslpodclient.view.PermissionRequester
@@ -61,6 +59,14 @@ class DownloadedListPresenter: PodcastListPresenter {
                         }
                     }
         }
+    }
+
+    override fun onRefresh() {
+        items.clear()
+
+        nextPageToken = null
+
+        loadNextPage()
     }
 
     fun bindServiceIfNeeded() {

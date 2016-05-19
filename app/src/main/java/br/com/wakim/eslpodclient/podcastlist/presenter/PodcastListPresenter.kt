@@ -23,6 +23,7 @@ import br.com.wakim.eslpodclient.rx.ConnectivityPublishSubject
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.service.PlaylistManager
 import br.com.wakim.eslpodclient.view.PermissionRequester
+import rx.Single
 import rx.android.schedulers.AndroidSchedulers
 import rx.subjects.PublishSubject
 import java.util.*
@@ -40,6 +41,7 @@ open class PodcastListPresenter(protected val app: Application,
         private final val ITEMS_EXTRA = "ITEMS"
         private final val NEXT_PAGE_TOKEN_EXTRA = "NEXT_PAGE_TOKEN"
         private final val DOWNLOAD_PODCAST_EXTRA = "DOWNLOAD_PODCAST"
+        private final val USING_CACHE_EXTRA = "USING_CACHE"
     }
 
     var items : ArrayList<PodcastItem> = ArrayList()
@@ -48,11 +50,16 @@ open class PodcastListPresenter(protected val app: Application,
 
     var downloadPodcastItem: PodcastItem? = null
 
+    var usingCache: Boolean = true
+
+    var loaded = false
+
     override fun onViewCreated(savedInstanceState : Bundle?) {
         savedInstanceState?.let {
             items = it.getParcelableArrayList(ITEMS_EXTRA)
             nextPageToken = it.getString(NEXT_PAGE_TOKEN_EXTRA)
             downloadPodcastItem = it.getParcelable(DOWNLOAD_PODCAST_EXTRA)
+            usingCache = it.getBoolean(USING_CACHE_EXTRA, usingCache)
         }
     }
 
@@ -60,6 +67,7 @@ open class PodcastListPresenter(protected val app: Application,
         outState.putParcelableArrayList(ITEMS_EXTRA, items)
         outState.putString(NEXT_PAGE_TOKEN_EXTRA, nextPageToken)
         outState.putParcelable(DOWNLOAD_PODCAST_EXTRA, downloadPodcastItem)
+        outState.putBoolean(USING_CACHE_EXTRA, usingCache)
     }
 
     override fun onStart() {
@@ -90,6 +98,12 @@ open class PodcastListPresenter(protected val app: Application,
                             } else {
                                 view!!.showMessage(R.string.write_external_storage_permission_needed_to_remove_download)
                             }
+                        } else if (permission.requestCode == Application.LIST_DELETE_DOWNLOAD_WRITE_STORAGE_PERMISSION) {
+                            if (downloadPodcastItem != null && permission.isGranted()) {
+                                removeAndDeleteDownload(downloadPodcastItem!!)
+                            } else {
+                                view!!.showMessage(R.string.write_external_storage_permission_needed_to_remove_download)
+                            }
                         }
                     }
         }
@@ -98,7 +112,7 @@ open class PodcastListPresenter(protected val app: Application,
             ConnectivityPublishSubject
                     .INSTANCE
                     .subscribe { connected ->
-                        if (connected) {
+                        if (connected && !loaded) {
                             loadFirstPageIfNeeded()
                         }
                     }
@@ -126,11 +140,24 @@ open class PodcastListPresenter(protected val app: Application,
     }
 
     fun loadNextPage() {
+        loaded = true
         view!!.setLoading(true)
 
         addSubscription {
-            interactor.getPodcasts(nextPageToken)
-                    .ofIOToMainThread()
+            val single = if (usingCache)  {
+                interactor.getCachedPodcasts(nextPageToken)
+                        .flatMap { podcastList ->
+                            if (podcastList.list.isEmpty()) {
+                                usingCache = false
+                                return@flatMap interactor.getPodcasts(nextPageToken)
+                            }
+
+                            return@flatMap Single.just(podcastList)
+                        }
+            } else
+                interactor.getPodcasts(nextPageToken)
+
+            single.ofIOToMainThread()
                     .subscribe (
                             { podcastList ->
                                 items.addAll(podcastList.list)
@@ -156,7 +183,9 @@ open class PodcastListPresenter(protected val app: Application,
         }
     }
 
-    fun onRefresh() {
+    open fun onRefresh() {
+        usingCache = false
+
         items.clear()
         playlistManager.clearItems()
 
@@ -198,19 +227,45 @@ open class PodcastListPresenter(protected val app: Application,
             return
         }
 
-        val downloadStatus = storageInteractor.startDownloadIfNeeded(podcastItem)
-
         addSubscription {
-            downloadStatus.ofIOToMainThread()
-                    .subscribe{ downloadStatus ->
-                        when (downloadStatus.status) {
-                            DownloadStatus.DOWNLOADED -> view?.showMessage(R.string.podcast_already_downloaded)
-                            DownloadStatus.DOWNLOADING -> view?.showMessage(R.string.podcast_download_started, app.getString(R.string.cancel)) {
-                                storageInteractor.cancelDownload(downloadStatus)
+            storageInteractor.cancelDownload(podcastItem)
+                    .ofIOToMainThread()
+                    .subscribe(
+                            {
+                                items.remove(podcastItem)
+
+                                view?.remove(podcastItem)
+                                view?.showMessage(R.string.podcast_removed_from_downloaded)
+                            },
+                            { e ->
+                                view?.showMessage(R.string.error_removing_downloaded)
                             }
-                        }
-                    }
+                    )
         }
+    }
+
+    fun removeAndDeleteDownload(podcastItem: PodcastItem) {
+        if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            permissionRequester.requestPermissions(Application.LIST_DELETE_DOWNLOAD_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+
+            downloadPodcastItem = podcastItem
+
+            return
+        }
+
+        storageInteractor.deleteDownload(podcastItem)
+                .ofIOToMainThread()
+                .subscribe(
+                        {
+                            items.remove(podcastItem)
+                            view?.remove(podcastItem)
+
+                            view?.showMessage(R.string.podcast_removed_and_deleted)
+                        },
+                        { e ->
+                            view?.showMessage(R.string.error_removing_and_deleting)
+                        }
+                )
     }
 
     fun share(podcastItem: PodcastItem) {

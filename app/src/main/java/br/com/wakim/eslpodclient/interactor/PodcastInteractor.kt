@@ -13,8 +13,13 @@ import br.com.wakim.eslpodclient.model.PodcastItemDetail
 import br.com.wakim.eslpodclient.model.PodcastList
 import rx.Observable
 import rx.Single
+import java.util.*
 
 open class PodcastInteractor(private val podcastDbInteractor: PodcastDbInteractor, private val app: Application) {
+
+    companion object {
+        const final val ITEMS_PER_PAGE = 20
+    }
 
     open fun getPodcasts(nextPageToken: String?) : Single<PodcastList> =
             Single.create(PodcastListOnSubscribe(nextPageToken ?: BuildConfig.BASE_URL))
@@ -22,6 +27,24 @@ open class PodcastInteractor(private val podcastDbInteractor: PodcastDbInteracto
                         podcastDbInteractor.insertPodcasts(podcastList.list)
                     }
                     .connected()
+
+    open fun getCachedPodcasts(nextPageToken: String?) : Single<PodcastList> =
+            Single.create<List<PodcastItem>> { subscriber ->
+                        val page = nextPageToken?.toInt() ?: 0
+                        subscriber.onSuccessIfSubscribed(podcastDbInteractor.getPodcasts(page, ITEMS_PER_PAGE))
+                    }
+                    .map { list ->
+                        val currentPageToken = nextPageToken?.toInt()
+                        val podcastList = PodcastList(currentPageToken.toString(), ((currentPageToken ?: 0) + 1).toString())
+
+                        podcastList.list = list as? ArrayList<PodcastItem> ?: ArrayList(list)
+
+                        if (podcastList.list.size < DownloadedPodcastItemInteractor.ITEMS_PER_PAGE) {
+                            podcastList.nextPageToken = null
+                        }
+
+                        podcastList
+                    }
 
     open fun getPodcastDetail(podcastItem : PodcastItem) : Single<PodcastItemDetail> =
             podcastItem.let {

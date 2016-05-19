@@ -3,9 +3,9 @@ package br.com.wakim.eslpodclient.interactor
 import android.app.DownloadManager
 import android.net.Uri
 import android.support.annotation.RequiresPermission
-import br.com.wakim.eslpodclient.extensions.connected
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.BuildConfig
+import br.com.wakim.eslpodclient.extensions.connected
 import br.com.wakim.eslpodclient.extensions.getFileName
 import br.com.wakim.eslpodclient.extensions.hasPermission
 import br.com.wakim.eslpodclient.interactor.rx.DownloadStatusOnSubscribe
@@ -35,9 +35,8 @@ class StorageInteractor(private var downloadManager: DownloadManager,
             Uri.fromFile(File(getLocalPath(podcastItem)))
 
     @RequiresPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun getDownloadStatus(podcastItem: PodcastItem) : Single<DownloadStatus> {
-        return Single.create(DownloadStatusOnSubscribe(podcastItem.remoteId, getLocalPath(podcastItem), downloadDbInteractor))
-    }
+    fun getDownloadStatus(podcastItem: PodcastItem) : Single<DownloadStatus> =
+            Single.create(DownloadStatusOnSubscribe(podcastItem.remoteId, getLocalPath(podcastItem), downloadDbInteractor))
 
     @RequiresPermission(allOf = arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE))
     fun startDownloadIfNeeded(podcastItem: PodcastItem) : Single<DownloadStatus> {
@@ -90,6 +89,16 @@ class StorageInteractor(private var downloadManager: DownloadManager,
     fun handleDownloadFailed(downloadId: Long) {
         downloadDbInteractor.deleteDownloadByDownloadId(downloadId)
     }
+
+    fun deleteDownload(podcastItem: PodcastItem) =
+            cancelDownload(podcastItem)
+                    .map { result -> if (result) File(getLocalPath(podcastItem)).delete() else false }
+
+    fun cancelDownload(podcastItem: PodcastItem) =
+        Single.defer<Boolean> {
+            downloadDbInteractor.deleteDownloadByRemoteId(podcastItem.remoteId)
+            Single.just(true)
+        }
 
     fun cancelDownload(downloadStatus: DownloadStatus) {
         downloadStatus.downloadId.let {

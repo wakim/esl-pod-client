@@ -20,4 +20,12 @@ class FavoritedListPresenter : PodcastListPresenter {
                 favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
                 baseActivity: Activity) :
     super(app, publishSubject, favoritedPodcastItemInteractor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor, baseActivity)
+
+    override fun onRefresh() {
+        items.clear()
+
+        nextPageToken = null
+
+        loadNextPage()
+    }
 }

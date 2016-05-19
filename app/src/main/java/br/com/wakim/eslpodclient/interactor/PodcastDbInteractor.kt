@@ -39,6 +39,26 @@ class PodcastDbInteractor(private val app: Application) {
                 }
     }
 
+    fun getPodcasts(page: Int, limit: Int): List<PodcastItem> =
+        app.database
+                .use {
+                    select(DatabaseOpenHelper.PODCASTS_TABLE_NAME)
+                            .columns(
+                                    "remote_id",
+                                    "title",
+                                    "mp3_url",
+                                    "blurb",
+                                    "date",
+                                    "tags",
+                                    "type"
+                            )
+                            .orderBy("_id", SqlOrderDirection.ASC)
+                            .limit(page * limit, limit)
+                            .exec {
+                                parseList(PodcastItemRowParser())
+                            }
+                }
+
     fun insertLastSeekPos(remoteId: Long, seekPos: Int): Boolean =
             app.database
                     .use {

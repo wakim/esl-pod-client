@@ -106,12 +106,17 @@ class StorageService : Service() {
     fun notifyProgress(podcastItem: PodcastItem? = null) {
         notificationBuilder = notificationBuilder ?: NotificationCompat.Builder(this)
 
+        val pendingIntent = PendingIntent.getActivity(this, 1,
+                Intent(this, NotificationActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                PendingIntent.FLAG_UPDATE_CURRENT)
+
         notificationBuilder!!
                 .setOngoing(true)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setLargeIcon((ContextCompat.getDrawable(this, R.drawable.ic_sync) as BitmapDrawable).bitmap)
                 .setOnlyAlertOnce(true)
                 .setProgress(0, 100, true)
+                .setContentIntent(pendingIntent)
                 .setContentTitle(getString(R.string.synchronizing_local_database))
                 .setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 
@@ -135,9 +140,10 @@ class StorageService : Service() {
                 .setLargeIcon((ContextCompat.getDrawable(this, R.drawable.ic_sync) as BitmapDrawable).bitmap)
                 .setOngoing(false)
                 .setOnlyAlertOnce(false)
-                .setAutoCancel(false)
+                .setAutoCancel(true)
                 .setProgress(100, 100, false)
                 .setContentTitle(getString(R.string.synchronization_finished))
+                .setDeleteIntent(pendingIntent)
                 .setContentIntent(pendingIntent)
                 .setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 

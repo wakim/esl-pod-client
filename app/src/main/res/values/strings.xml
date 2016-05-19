@@ -23,6 +23,7 @@
 
     <string name="download">Download</string>
     <string name="remove_download">Remove Download</string>
+    <string name="remove_download_and_delete">Remove Download and delete file</string>
     <string name="open_with">Open With&#8230;</string>
     <string name="share">Share</string>
     <string name="favorite">Favorite</string>
@@ -32,6 +33,10 @@
     <string name="podcast_download_started">Podcast download started</string>
     <string name="podcast_favorited">Podcast added to your favorites</string>
     <string name="podcast_removed_from_favorites">Podcast removed from your favorites</string>
+    <string name="podcast_removed_from_downloaded">Downloaded podcast removed from your download list</string>
+    <string name="podcast_removed_and_deleted">Downloaded podcast was deleted</string>
+    <string name="error_removing_downloaded">Error removing podcast from your downloaded list</string>
+    <string name="error_removing_and_deleting">Error deleting downloaded podcast</string>
     <string name="error_removing_favorites">Error removing podcast from your favorites</string>
 
     <string name="slow_dialog_index">Slow dialog (%1$s)</string>
@@ -54,7 +59,7 @@
 
     <string name="about">About</string>
     <string name="oss_licenses">Licenses</string>
-    <string name="source">Source</string>
+    <string name="source">Source Code</string>
     <string name="about_developer">About developer</string>
     <string name="version">Version</string>
 

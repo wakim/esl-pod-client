@@ -53,10 +53,11 @@ class DownloadedListFragment: PodcastListFragment(), DownloadedListView {
 
         popupMenu.setOnMenuItemClickListener { menu ->
             when (menu.itemId) {
-                R.id.share           -> share(podcastItem)
-                R.id.favorite        -> favorite(podcastItem)
-                R.id.remove_download -> removeDownload(podcastItem)
-                R.id.open_with       -> openWith(podcastItem)
+                R.id.share                      -> share(podcastItem)
+                R.id.favorite                   -> favorite(podcastItem)
+                R.id.remove_download            -> removeDownload(podcastItem)
+                R.id.remove_and_delete_download -> removeAndDeleteDownload(podcastItem)
+                R.id.open_with                  -> openWith(podcastItem)
             }
 
             true
@@ -67,6 +68,10 @@ class DownloadedListFragment: PodcastListFragment(), DownloadedListView {
 
     fun removeDownload(podcastItem: PodcastItem) {
         presenter.removeDownload(podcastItem)
+    }
+
+    fun removeAndDeleteDownload(podcastItem: PodcastItem) {
+        presenter.removeAndDeleteDownload(podcastItem)
     }
 
     override fun setSynchronizeMenuVisible(visible: Boolean) {

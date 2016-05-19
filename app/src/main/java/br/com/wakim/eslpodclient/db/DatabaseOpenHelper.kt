@@ -27,7 +27,8 @@ class DatabaseOpenHelper(context: Context): ManagedSQLiteOpenHelper(context, DB_
                 .createTable(
                         PODCASTS_TABLE_NAME,
                         true,
-                        "remote_id" to INTEGER + PRIMARY_KEY + UNIQUE,
+                        "_id" to INTEGER + PRIMARY_KEY,
+                        "remote_id" to INTEGER + UNIQUE,
                         "title" to TEXT,
                         "blurb" to TEXT,
                         "mp3_url" to TEXT,

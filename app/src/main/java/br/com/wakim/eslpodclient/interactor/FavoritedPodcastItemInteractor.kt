@@ -28,6 +28,8 @@ class FavoritedPodcastItemInteractor(private val podcastDbInteractor: PodcastDbI
                 subscriber.onSuccessIfSubscribed(podcastDbInteractor.getFavorites(page, limit))
             }
 
+    override fun getCachedPodcasts(nextPageToken: String?): Single<PodcastList> = getPodcasts(nextPageToken)
+
     override fun getPodcasts(nextPageToken: String?) : Single<PodcastList> =
             getFavorites(nextPageToken?.toInt() ?: 0, ITEMS_PER_PAGE)
                     .map { list ->

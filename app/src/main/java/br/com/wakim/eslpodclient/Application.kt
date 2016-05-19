@@ -72,7 +72,8 @@ open class Application : android.app.Application() {
         final val PLAYER_WRITE_STORAGE_PERMISSION = 12
         final val LIST_DOWNLOAD_WRITE_STORAGE_PERMISSION = 13
         final val LIST_REMOVE_DOWNLOAD_WRITE_STORAGE_PERMISSION = 14
-        final val PICK_FOLDER_READ_STORAGE_PERMISSION = 15
+        final val LIST_DELETE_DOWNLOAD_WRITE_STORAGE_PERMISSION = 15
+        final val PICK_FOLDER_READ_STORAGE_PERMISSION = 16
 
         var INSTANCE: Application? = null
             private set
