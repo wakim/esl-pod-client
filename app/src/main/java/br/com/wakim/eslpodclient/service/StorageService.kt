@@ -147,6 +147,7 @@ class StorageService : Service() {
                 .setContentIntent(pendingIntent)
                 .setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 
+        notificationManager.cancel(NOTIFICATION_ID)
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder!!.build())
     }
 }
