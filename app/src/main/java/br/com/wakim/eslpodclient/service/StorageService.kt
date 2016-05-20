@@ -135,13 +135,13 @@ class StorageService : Service() {
                 PendingIntent.FLAG_UPDATE_CURRENT)
 
         notificationBuilder!!
-                .setSmallIcon(R.drawable.ic_sync)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(null)
                 .setContentText(null)
-                .setLargeIcon((ContextCompat.getDrawable(this, R.drawable.ic_sync) as BitmapDrawable).bitmap)
                 .setOngoing(false)
                 .setOnlyAlertOnce(false)
                 .setAutoCancel(true)
-                .setProgress(100, 100, false)
+                .setProgress(0, 0, false)
                 .setContentTitle(getString(R.string.synchronization_finished))
                 .setDeleteIntent(pendingIntent)
                 .setContentIntent(pendingIntent)
