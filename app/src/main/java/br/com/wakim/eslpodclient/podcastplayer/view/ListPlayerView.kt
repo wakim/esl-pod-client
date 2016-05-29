@@ -11,10 +11,7 @@ import android.util.AttributeSet
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ProgressBar
-import android.widget.SeekBar
-import android.widget.TextView
+import android.widget.*
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.PodcastPlayerComponent
 import br.com.wakim.eslpodclient.extensions.*
@@ -29,12 +26,14 @@ import org.threeten.bp.format.FormatStyle
 import pl.charmas.android.tagview.TagView
 import javax.inject.Inject
 
-open class ListPlayerView : AppBarLayout, PlayerView {
+open class ListPlayerView : LinearLayout, PlayerView {
 
     companion object {
         final const val SUPER_STATE_KEY = "SUPER_STATE"
     }
 
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?) : super(context)
 

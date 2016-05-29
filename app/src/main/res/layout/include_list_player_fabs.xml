@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_play_arrow_white_24dp"
+        app:layout_anchor="@id/player_view"
+        app:layout_anchorGravity="top|right" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_pause_white_24dp"
+        app:layout_anchor="@id/player_view"
+        app:layout_anchorGravity="top|right" />
+
+    <br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
+        android:id="@+id/fab_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_loop_white_24dp"
+        app:layout_anchor="@id/player_view"
+        app:layout_anchorGravity="top|right" />
+</merge>

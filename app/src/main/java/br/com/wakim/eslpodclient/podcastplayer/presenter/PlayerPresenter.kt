@@ -298,6 +298,7 @@ class PlayerPresenter(private val app : Application,
         view!!.setLoading(true)
 
         if (podcastDetail?.remoteId == podcastItem.remoteId) {
+            bindDetail()
             return
         }
 

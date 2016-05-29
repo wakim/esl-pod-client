@@ -18,8 +18,6 @@
         android:layout_marginStart="@dimen/bbn_bottom_navigation_width"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <include layout="@layout/bottomsheet_list_player" />
-
     <it.sephiroth.android.library.bottomnavigation.BottomNavigation
         android:id="@+id/bottom_navigation"
         android:layout_width="wrap_content"
@@ -28,4 +26,5 @@
         app:bbn_entries="@menu/bottombar_menu"
         app:layout_behavior="@string/bbn_default_view_behavior" />
 
+    <include layout="@layout/bottomsheet_list_player" />
 </android.support.design.widget.CoordinatorLayout>
