@@ -31,9 +31,6 @@ abstract class Presenter<T : View>() {
     open fun onRestoreInstanceState(savedInstanceState: Bundle?) {
     }
 
-    open fun onViewCreated(savedInstanceState: Bundle?) {
-    }
-
     open fun onStart() {
     }
 

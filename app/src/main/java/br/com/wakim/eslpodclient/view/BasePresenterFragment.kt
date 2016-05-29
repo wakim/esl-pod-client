@@ -14,18 +14,14 @@ open class BasePresenterFragment<T : Presenter<*>> : Fragment() {
         presenter.onStart()
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        presenter.onViewCreated(savedInstanceState)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         presenter.onSaveInstanceState(outState!!)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        presenter.onRestoreInstanceState(savedInstanceState)
     }
 
     override fun onDestroy() {

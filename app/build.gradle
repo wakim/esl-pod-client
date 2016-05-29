@@ -59,7 +59,6 @@ android {
     dexOptions {
         javaMaxHeapSize "2g"
         preDexLibraries true
-        incremental true
         dexInProcess = true
     }
 
@@ -124,7 +123,7 @@ dependencies {
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'com.nononsenseapps:filepicker:2.5.2'
 
-    compile 'com.aurelhubert:ahbottomnavigation:1.2.0'
+    compile 'it.sephiroth.android.library.bottomnavigation:bottom-navigation:1.0.7'
 
     provided 'org.glassfish:javax.annotation:10.0-b28'
 

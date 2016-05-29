@@ -6,7 +6,6 @@ import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
 import br.com.wakim.eslpodclient.R
@@ -20,9 +19,9 @@ import br.com.wakim.eslpodclient.podcastplayer.view.ListPlayerView
 import br.com.wakim.eslpodclient.settings.view.SettingsActivity
 import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
+import butterknife.bindOptionalView
 import butterknife.bindView
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
+import it.sephiroth.android.library.bottomnavigation.BottomNavigation
 
 open class PodcastListActivity : BaseActivity() {
 
@@ -40,11 +39,11 @@ open class PodcastListActivity : BaseActivity() {
 
     val playerView: ListPlayerView by bindView(R.id.player_view)
 
-    val playFab: FloatingActionButton by bindView(R.id.fab_play)
-    val pauseFab: FloatingActionButton by bindView(R.id.fab_pause)
-    val loadingFab: LoadingFloatingActionButton by bindView(R.id.fab_loading)
+    val playFab: FloatingActionButton? by bindOptionalView(R.id.fab_play)
+    val pauseFab: FloatingActionButton? by bindOptionalView(R.id.fab_pause)
+    val loadingFab: LoadingFloatingActionButton? by bindOptionalView(R.id.fab_loading)
 
-    val bottomBar: AHBottomNavigation by bindView(R.id.bottom_navigation)
+    val bottomBar: BottomNavigation by bindView(R.id.bottom_navigation)
 
     var podcastListFragment: PodcastListFragment? = null
     var downloadedListFragment: DownloadedListFragment? = null
@@ -59,6 +58,8 @@ open class PodcastListActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
+
+        createActivityComponent()
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_podcastlist)
@@ -70,7 +71,9 @@ open class PodcastListActivity : BaseActivity() {
         configureBottomBar()
         addFragmentIfNeeded()
 
-        playerView.setControls(playFab, pauseFab, loadingFab)
+        if (playFab != null && pauseFab != null && loadingFab != null) {
+            playerView.setControls(playFab!!, pauseFab!!, loadingFab!!)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -129,32 +132,26 @@ open class PodcastListActivity : BaseActivity() {
         savedInstanceState?.let {
             val fragmentManager = supportFragmentManager
 
-            podcastListFragment    = fragmentManager.getFragment(it, "PODCAST_LIST")    as PodcastListFragment
-            favoritedListFragment  = fragmentManager.getFragment(it, "FAVORITED_LIST")  as FavoritedListFragment
-            downloadedListFragment = fragmentManager.getFragment(it, "DOWNLOADED_LIST") as DownloadedListFragment
+            podcastListFragment    = fragmentManager.getFragment(it, "PODCAST_LIST")    as? PodcastListFragment
+            favoritedListFragment  = fragmentManager.getFragment(it, "FAVORITED_LIST")  as? FavoritedListFragment
+            downloadedListFragment = fragmentManager.getFragment(it, "DOWNLOADED_LIST") as? DownloadedListFragment
         }
     }
 
     fun configureBottomBar() {
-        bottomBar.addItem(AHBottomNavigationItem(getString(R.string.home), R.drawable.ic_home_grey_600_24dp))
-        bottomBar.addItem(AHBottomNavigationItem(getString(R.string.favorited), R.drawable.ic_favorite_grey_600_24dp))
-        bottomBar.addItem(AHBottomNavigationItem(getString(R.string.downloaded), R.drawable.ic_file_download_grey_600_24dp))
+        bottomBar.setOnMenuItemClickListener(object: BottomNavigation.OnMenuItemSelectionListener {
+            override fun onMenuItemSelect(id: Int, position: Int) {
+                when (position) {
+                    0 -> replaceListFragment(PodcastListFragment(), lastSelectedPosition, position)
+                    1 -> replaceFavoritedFragment(FavoritedListFragment(), lastSelectedPosition, position)
+                    2 -> replaceDownloadedFragment(DownloadedListFragment(), lastSelectedPosition, position)
+                }
 
-        bottomBar.defaultBackgroundColor = ContextCompat.getColor(this, R.color.colorPrimary)
-
-        bottomBar.setOnTabSelectedListener { position, wasSelected ->
-            if (wasSelected) {
-                return@setOnTabSelectedListener
+                lastSelectedPosition = position
             }
 
-            when (position) {
-                0 -> replaceListFragment(PodcastListFragment(), lastSelectedPosition, position)
-                1 -> replaceFavoritedFragment(FavoritedListFragment(), lastSelectedPosition, position)
-                2 -> replaceDownloadedFragment(DownloadedListFragment(), lastSelectedPosition, position)
-            }
-
-            lastSelectedPosition = position
-        }
+            override fun onMenuItemReselect(p0: Int, p1: Int) { }
+        })
     }
 
     fun addFragmentIfNeeded() {

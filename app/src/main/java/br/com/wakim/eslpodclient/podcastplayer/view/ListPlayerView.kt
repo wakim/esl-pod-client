@@ -4,10 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.annotation.StringRes
-import android.support.design.widget.AppBarLayout
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
+import android.support.design.widget.*
 import android.support.v7.widget.PopupMenu
 import android.text.Html
 import android.util.AttributeSet
@@ -32,7 +29,7 @@ import org.threeten.bp.format.FormatStyle
 import pl.charmas.android.tagview.TagView
 import javax.inject.Inject
 
-class ListPlayerView : AppBarLayout, PlayerView {
+open class ListPlayerView : AppBarLayout, PlayerView {
 
     companion object {
         final const val SUPER_STATE_KEY = "SUPER_STATE"
@@ -132,9 +129,9 @@ class ListPlayerView : AppBarLayout, PlayerView {
         super.onAttachedToWindow()
 
         if (!isInEditMode) {
-            (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
-
             setupBehaviorCallback()
+
+            (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
 
             presenter.onStart()
             presenter.onResume()
@@ -163,6 +160,8 @@ class ListPlayerView : AppBarLayout, PlayerView {
 
     override fun onRestoreInstanceState(state: Parcelable?) {
         var realState = state
+
+        (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
 
         if (realState is Bundle) {
             presenter.onRestoreInstanceState(realState)
@@ -216,7 +215,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
         }
     }
 
-    fun setupBehaviorCallback() {
+    open fun setupBehaviorCallback() {
         bottomSheetBehavior = BottomSheetBehavior.from(this)
         bottomSheetBehavior?.setBottomSheetCallback(callback)
     }
@@ -423,7 +422,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
 
     fun isExpanded() = bottomSheetBehavior?.state == BottomSheetBehavior.STATE_EXPANDED
 
-    fun isVisible() =
+    open fun isVisible() =
             visibility == View.VISIBLE &&
             bottomSheetBehavior?.state.let {
                 it == BottomSheetBehavior.STATE_COLLAPSED || it == BottomSheetBehavior.STATE_EXPANDED
@@ -435,7 +434,7 @@ class ListPlayerView : AppBarLayout, PlayerView {
         }
     }
 
-    fun hide() {
+    open fun hide() {
         bottomSheetBehavior?.state = BottomSheetBehavior.STATE_HIDDEN
     }
 

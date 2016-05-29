@@ -54,20 +54,20 @@ open class PodcastListPresenter(protected val app: Application,
 
     var loaded = false
 
-    override fun onViewCreated(savedInstanceState : Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelableArrayList(ITEMS_EXTRA, items)
+        outState.putString(NEXT_PAGE_TOKEN_EXTRA, nextPageToken)
+        outState.putParcelable(DOWNLOAD_PODCAST_EXTRA, downloadPodcastItem)
+        outState.putBoolean(USING_CACHE_EXTRA, usingCache)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         savedInstanceState?.let {
             items = it.getParcelableArrayList(ITEMS_EXTRA)
             nextPageToken = it.getString(NEXT_PAGE_TOKEN_EXTRA)
             downloadPodcastItem = it.getParcelable(DOWNLOAD_PODCAST_EXTRA)
             usingCache = it.getBoolean(USING_CACHE_EXTRA, usingCache)
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelableArrayList(ITEMS_EXTRA, items)
-        outState.putString(NEXT_PAGE_TOKEN_EXTRA, nextPageToken)
-        outState.putParcelable(DOWNLOAD_PODCAST_EXTRA, downloadPodcastItem)
-        outState.putBoolean(USING_CACHE_EXTRA, usingCache)
     }
 
     override fun onStart() {

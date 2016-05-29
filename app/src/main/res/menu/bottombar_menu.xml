@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimary"
+    app:bbn_itemColorActive="@color/bottom_bar_item_active"
+    app:bbn_itemColorInactive="@color/bottom_bar_item_inactive">
 
     <item
         android:id="@+id/menu_home"

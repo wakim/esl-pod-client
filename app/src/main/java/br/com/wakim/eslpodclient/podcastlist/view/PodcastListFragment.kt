@@ -48,16 +48,16 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
         this.presenter = presenter
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        inject()
-        super.onCreate(savedInstanceState)
-    }
-
     open fun inject() =
             (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater?.inflate(R.layout.fragment_podcastlist, container, false)
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        inject()
+        super.onActivityCreated(savedInstanceState)
+    }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         configureAdapter()

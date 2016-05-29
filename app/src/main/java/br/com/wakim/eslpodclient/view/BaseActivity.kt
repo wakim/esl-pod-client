@@ -30,11 +30,6 @@ abstract class BaseActivity: AppCompatActivity(), PermissionRequester {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        activityComponent = getAppComponent().plus(ActivityModule(this))
-        super.onCreate(savedInstanceState)
-    }
-
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
 
@@ -82,6 +77,10 @@ abstract class BaseActivity: AppCompatActivity(), PermissionRequester {
         }
 
         return super.getSystemService(name)
+    }
+
+    fun createActivityComponent() {
+        activityComponent = getAppComponent().plus(ActivityModule(this))
     }
 
     fun showNavigationArrow() {

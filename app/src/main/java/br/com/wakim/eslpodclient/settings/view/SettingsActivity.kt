@@ -8,6 +8,7 @@ class SettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        createActivityComponent()
         setContentView(R.layout.activity_settings)
         showNavigationArrow()
     }

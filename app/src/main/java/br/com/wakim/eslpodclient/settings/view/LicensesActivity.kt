@@ -27,7 +27,9 @@ class LicensesActivity: BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        createActivityComponent()
         setContentView(R.layout.activity_licenses)
+
         showNavigationArrow()
 
         adapter = LicenseListAdapter(this)
