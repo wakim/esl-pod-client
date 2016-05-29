@@ -30,6 +30,8 @@ open class ListPlayerView : LinearLayout, PlayerView {
 
     companion object {
         final const val SUPER_STATE_KEY = "SUPER_STATE"
+        final const val SEEK_MAX_STATE_KEY = "SEEK_MAX_STATE"
+        final const val SEEK_PROGRESS_STATE_KEY = "SEEK_PROGRESS_STATE"
     }
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
@@ -38,8 +40,7 @@ open class ListPlayerView : LinearLayout, PlayerView {
     constructor(context: Context?) : super(context)
 
     val callback = object : BottomSheetBehavior.BottomSheetCallback() {
-        override fun onSlide(bottomSheet: View, slideOffset: Float) {
-        }
+        override fun onSlide(bottomSheet: View, slideOffset: Float) { }
 
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             when (newState) {
@@ -152,6 +153,11 @@ open class ListPlayerView : LinearLayout, PlayerView {
 
         bundle.putParcelable(SUPER_STATE_KEY, superState)
 
+        with (seekBar) {
+            bundle.putInt(SEEK_MAX_STATE_KEY, max)
+            bundle.putInt(SEEK_PROGRESS_STATE_KEY, progress)
+        }
+
         presenter.onSaveInstanceState(bundle)
 
         return bundle
@@ -164,6 +170,10 @@ open class ListPlayerView : LinearLayout, PlayerView {
 
         if (realState is Bundle) {
             presenter.onRestoreInstanceState(realState)
+
+            setProgressValue(realState.getInt(SEEK_PROGRESS_STATE_KEY))
+            setMaxProgress(realState.getInt(SEEK_MAX_STATE_KEY))
+
             realState = realState.getParcelable(SUPER_STATE_KEY)
         }
 
