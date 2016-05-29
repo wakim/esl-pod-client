@@ -12,10 +12,20 @@ It uses a combination of MediaPlayer and MediaPlayback for streaming audio and D
 
 ## Some Screenshots
 
+### Phone Screenshots
+
 <img src="art/home.jpg" width="180" height="320" alt="Home" />
 <img src="art/player_collapsed.jpg" width="180" height="320" alt="Media Player Collapsed" />
 <img src="art/player_full_screen.jpg" width="180" height="320" alt="Medial Player FullScreen" />
 <img src="art/media_playback.jpg" width="180" height="320" alt="Media Playback with Notifications" />
+
+### Tablet Screenshots
+
+<img src="art/original/home-tablet-port.png" width="180" height="320" alt="Home" />
+<img src="art/original/home-tablet-land.png" width="320" height="180" alt="Home" />
+<img src="art/original/player-tablet-land.png" width="320" height="180" alt="Media Player Collapsed" />
+<img src="art/original/player_collapsed-tablet-port.png" width="180" height="320" alt="Media Player Collapsed" />
+<img src="art/original/player_full_screen-tablet-port.png" width="180" height="320" alt="Medial Player FullScreen" />
 
 #### Design made by [Tatipiment](https://github.com/Tatipiment)
 
