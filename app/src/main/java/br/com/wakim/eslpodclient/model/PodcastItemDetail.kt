@@ -65,7 +65,7 @@ data class SeekPos(val slow : Int = PodcastItemDetail.INVALID_SEEK_POS, val expl
 }
 
 class PodcastItemDetailRowParser: RowParser<PodcastItemDetail> {
-    override fun parseRow(columns: Array<Any>): PodcastItemDetail {
+    override fun parseRow(columns: Array<Any?>): PodcastItemDetail {
         var seekPos: SeekPos? = null
 
         if (columns[4] is Long) {

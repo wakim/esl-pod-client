@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import org.jetbrains.anko.db.RowParser
 
 class LongAnyParser: RowParser<Any> {
-    override fun parseRow(columns: Array<Any>): Any = columns[0] as? Long ?: Any()
+    override fun parseRow(columns: Array<Any?>): Any = columns[0] as? Long ?: Any()
 }
 
 fun SQLiteDatabase.insertIgnoringConflict(tableName: String, vararg values: Pair<String, Any?>): Long {

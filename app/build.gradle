@@ -4,9 +4,9 @@ apply plugin: 'kotlin-android'
 
 def final appConfig = [
         versions: [
-                "support_library": "23.4.0",
+                "support_library": "24.0.0",
                 "kotlin_version": "$kotlin_version",
-                "dagger": "2.4",
+                "dagger": "2.5",
                 "support_test": "0.5",
                 "espresso": "2.2.2"
         ],
@@ -36,13 +36,13 @@ def generateVersionName() {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "24.0.0 rc3"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
 
     defaultConfig {
         applicationId "br.com.wakim.eslpodclient"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
 
@@ -107,13 +107,13 @@ dependencies {
     compile "com.android.support:preference-v7:$appConfig.versions.support_library"
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$appConfig.versions.kotlin_version"
-    compile 'org.jetbrains.anko:anko-sqlite:0.8.3'
+    compile 'org.jetbrains.anko:anko-sqlite:0.9'
 
     compile "com.google.dagger:dagger:$appConfig.versions.dagger"
     kapt "com.google.dagger:dagger-compiler:$appConfig.versions.dagger"
 
-    compile 'io.reactivex:rxandroid:1.2.0'
-    compile 'io.reactivex:rxjava:1.1.5'
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxjava:1.1.6'
 
     compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.3'
@@ -121,7 +121,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.9.1'
 
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
-    compile 'com.nononsenseapps:filepicker:2.5.2'
+    compile 'com.nononsenseapps:filepicker:2.5.3'
 
     compile 'it.sephiroth.android.library.bottomnavigation:bottom-navigation:1.0.7'
 

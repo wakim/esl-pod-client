@@ -41,7 +41,7 @@ It uses a combination of MediaPlayer and MediaPlayback for streaming audio and D
 To run this project you need to have:
 
  - JDK 7
- - Android Studio 2.0 or higher
+ - Android Studio 2.2 or higher
  - Kotlin plugin for Android Studio
 
 ---

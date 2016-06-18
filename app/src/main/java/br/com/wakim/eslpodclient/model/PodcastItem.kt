@@ -133,7 +133,7 @@ data class DownloadStatus(val remoteId: Long = -1, val localPath: String? = null
 }
 
 class PodcastItemRowParser: RowParser<PodcastItem> {
-    override fun parseRow(columns: Array<Any>): PodcastItem {
+    override fun parseRow(columns: Array<Any?>): PodcastItem {
         val date = columns[4] as Long
         return PodcastItem(columns[0] as Long, columns[1] as String, columns[2] as String, columns[3] as? String, LocalDate.ofEpochDay(date), columns[5] as String, columns[6] as Long)
     }

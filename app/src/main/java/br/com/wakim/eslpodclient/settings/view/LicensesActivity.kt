@@ -8,7 +8,7 @@ import br.com.wakim.eslpodclient.extensions.resolveRawResIdentifier
 import br.com.wakim.eslpodclient.settings.adapter.LicenseListAdapter
 import br.com.wakim.eslpodclient.view.BaseActivity
 import butterknife.bindView
-import org.jetbrains.anko.async
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import org.json.JSONObject
 
@@ -36,7 +36,7 @@ class LicensesActivity: BaseActivity() {
 
         recyclerView.adapter = adapter
 
-        async() {
+        doAsync {
             val licensesJson = JSONObject(readRawString(R.raw.libraries))
 
             licensesJson
