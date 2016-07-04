@@ -12,6 +12,7 @@ import br.com.wakim.eslpodclient.BuildConfig
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.ActivityComponent
 import br.com.wakim.eslpodclient.extensions.hasPermission
+import br.com.wakim.eslpodclient.extensions.logContentView
 import br.com.wakim.eslpodclient.extensions.startActivity
 import br.com.wakim.eslpodclient.interactor.PreferenceInteractor
 import br.com.wakim.eslpodclient.preference.PickFolderPreference
@@ -34,6 +35,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreate(savedInstanceState: Bundle?) {
         (context.getSystemService(ActivityComponent::class.java.simpleName) as ActivityComponent).inject(this)
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        logContentView()
     }
 
     override fun onDestroyView() {

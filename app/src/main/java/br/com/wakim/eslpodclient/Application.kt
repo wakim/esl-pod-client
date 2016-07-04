@@ -8,7 +8,10 @@ import br.com.wakim.eslpodclient.dagger.DaggerAppComponent
 import br.com.wakim.eslpodclient.dagger.module.AppModule
 import br.com.wakim.eslpodclient.receiver.ConnectivityBroadcastReceiver
 import br.com.wakim.eslpodclient.rx.ConnectivityPublishSubject
+import com.crashlytics.android.Crashlytics
+import com.crashlytics.android.answers.Answers
 import com.jakewharton.threetenabp.AndroidThreeTen
+import io.fabric.sdk.android.Fabric
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import javax.inject.Inject
 
@@ -33,6 +36,8 @@ open class Application : android.app.Application() {
         INSTANCE = this
 
         AndroidThreeTen.init(this)
+
+        Fabric.with(this, Crashlytics(), Answers())
 
         CalligraphyConfig.initDefault(CalligraphyConfig.Builder()
                 .setDefaultFontPath("fonts/Roboto-Regular.ttf")

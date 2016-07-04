@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'io.fabric'
 
 def final appConfig = [
         versions: [
@@ -9,6 +10,10 @@ def final appConfig = [
                 "dagger": "2.5",
                 "support_test": "0.5",
                 "espresso": "2.2.2"
+        ],
+
+        manifestPlaceholder: [
+                "fabricApiKey": rootProject.ext.fabricApiKey
         ],
 
         "base_url": "https://www.eslpod.com/website/show_all.php",
@@ -52,6 +57,8 @@ android {
 
         vectorDrawables.useSupportLibrary = true
 
+        manifestPlaceholders = appConfig.manifestPlaceholder
+
         buildConfigField("String", "BASE_URL", "\"$appConfig.base_url\"")
         buildConfigField("String", "DETAIL_URL", "\"$appConfig.detail_url\"")
         buildConfigField("String", "SEARCH_URL", "\"$appConfig.search_url\"")
@@ -90,6 +97,10 @@ android {
 }
 
 repositories {
+    maven {
+        url 'https://maven.fabric.io/public'
+    }
+
     maven {
         url 'https://oss.sonatype.org/content/repositories/snapshots/'
     }
@@ -132,6 +143,10 @@ dependencies {
     debugCompile 'com.facebook.stetho:stetho:1.3.1'
 
     compile 'org.nanohttpd:nanohttpd:2.3.0'
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.0@aar') {
+        transitive = true;
+    }
 
     testCompile 'junit:junit:4.12'
 

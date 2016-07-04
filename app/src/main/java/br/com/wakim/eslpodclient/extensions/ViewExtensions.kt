@@ -1,11 +1,14 @@
 package br.com.wakim.eslpodclient.extensions
 
 import android.support.design.widget.BottomSheetBehavior
+import android.support.v4.app.Fragment
 import android.support.v4.view.ViewCompat
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter
 import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.view.View
 import android.widget.Toast
+import com.crashlytics.android.answers.Answers
+import com.crashlytics.android.answers.ContentViewEvent
 
 private val interpolator = FastOutSlowInInterpolator()
 
@@ -69,4 +72,11 @@ fun Toast.isVisible(): Boolean {
     }
 
     return true;
+}
+
+inline fun Fragment.logContentView() {
+    val contentView = ContentViewEvent()
+            .putContentName(javaClass.name)
+
+    Answers.getInstance().logContentView(contentView)
 }

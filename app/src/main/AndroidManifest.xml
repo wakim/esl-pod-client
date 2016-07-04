@@ -21,6 +21,10 @@
         android:name=".Application"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="${fabricApiKey}" />
+
         <activity
             android:launchMode="singleTop"
             android:theme="@style/LauncherAppTheme"

@@ -2,9 +2,11 @@ package br.com.wakim.eslpodclient.view
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.view.View
+import br.com.wakim.eslpodclient.extensions.logContentView
 import br.com.wakim.eslpodclient.presenter.Presenter
 
-open class BasePresenterFragment<T : Presenter<*>> : Fragment() {
+open class BasePresenterFragment<T : Presenter<*>>: Fragment() {
 
     lateinit var presenter : T
 
@@ -36,5 +38,10 @@ open class BasePresenterFragment<T : Presenter<*>> : Fragment() {
     override fun onStop() {
         super.onStop()
         presenter.onStop()
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        logContentView()
     }
 }
