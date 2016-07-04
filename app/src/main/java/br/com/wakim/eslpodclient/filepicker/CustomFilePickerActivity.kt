@@ -32,10 +32,10 @@ class CustomFilePickerActivity: FilePickerActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun getFragment(startPath: String?, mode: Int, allowMultiple: Boolean, allowCreateDir: Boolean): AbstractFilePickerFragment<File>? {
+    override fun getFragment(startPath: String?, mode: Int, allowMultiple: Boolean, allowCreateDir: Boolean, allowExistingFile: Boolean, singleClick: Boolean): AbstractFilePickerFragment<File> {
         val fragment = CustomFilePickerFragment()
 
-        fragment.setArgs(startPath ?: Environment.getExternalStorageDirectory().path, mode, allowMultiple, allowCreateDir)
+        fragment.setArgs(startPath ?: Environment.getExternalStorageDirectory().path, mode, allowMultiple, allowCreateDir, allowExistingFile, singleClick)
         fragment.rootDir = Environment.getExternalStorageDirectory()
 
         this.fragment = fragment
