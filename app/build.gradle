@@ -50,6 +50,8 @@ android {
 
         resConfigs "en", "pt-rBR"
 
+        vectorDrawables.useSupportLibrary = true
+
         buildConfigField("String", "BASE_URL", "\"$appConfig.base_url\"")
         buildConfigField("String", "DETAIL_URL", "\"$appConfig.detail_url\"")
         buildConfigField("String", "SEARCH_URL", "\"$appConfig.search_url\"")
