@@ -1,6 +1,7 @@
 package br.com.wakim.eslpodclient.preference
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -8,6 +9,7 @@ import android.os.Environment
 import android.support.v7.preference.Preference
 import android.util.AttributeSet
 import br.com.wakim.eslpodclient.Application
+import br.com.wakim.eslpodclient.extensions.isSAFEnabled
 import br.com.wakim.eslpodclient.filepicker.CustomFilePickerActivity
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.settings.view.SettingsFragment
@@ -38,15 +40,20 @@ class PickFolderPreference: Preference {
                 return
             }
 
-            val intent = Intent(it.context, CustomFilePickerActivity::class.java)
-            val currentPath = Environment.getExternalStorageDirectory().absolutePath
+            if (context.isSAFEnabled()) {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                it.startActivityForResult(intent, RC_PICK_FOLDER)
+            } else {
+                val intent = Intent(it.context, CustomFilePickerActivity::class.java)
+                val currentPath = Environment.getExternalStorageDirectory().absolutePath
 
-            intent  .putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)
-                    .putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false)
-                    .putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR)
-                    .putExtra(FilePickerActivity.EXTRA_START_PATH, currentPath)
+                intent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)
+                        .putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false)
+                        .putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR)
+                        .putExtra(FilePickerActivity.EXTRA_START_PATH, currentPath)
 
-            it.startActivityForResult(intent, RC_PICK_FOLDER)
+                it.startActivityForResult(intent, RC_PICK_FOLDER)
+            }
         }
     }
 
@@ -54,9 +61,15 @@ class PickFolderPreference: Preference {
         this.settingsFragment = settingsFragment
     }
 
+    @SuppressLint("NewApi")
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RC_PICK_FOLDER && resultCode == Activity.RESULT_OK) {
-            val newValue = data!!.data.path
+            val newValue = data!!.data.toString().trim()
+
+            if (context.isSAFEnabled()) {
+                context.contentResolver
+                        .takePersistableUriPermission(data.data, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            }
 
             if (shouldPersist() && callChangeListener(newValue)) {
                 persistString(newValue)

@@ -14,7 +14,7 @@ import br.com.wakim.eslpodclient.dagger.ActivityComponent
 import br.com.wakim.eslpodclient.extensions.hasPermission
 import br.com.wakim.eslpodclient.extensions.logContentView
 import br.com.wakim.eslpodclient.extensions.startActivity
-import br.com.wakim.eslpodclient.interactor.PreferenceInteractor
+import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.preference.PickFolderPreference
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.view.BaseActivity
@@ -26,7 +26,7 @@ import javax.inject.Inject
 class SettingsFragment : PreferenceFragmentCompat() {
 
     @Inject
-    lateinit var preferencesInteractor: PreferenceInteractor
+    lateinit var storageInteractor: StorageInteractor
 
     var pickFolderPreference: PickFolderPreference? = null
 
@@ -66,16 +66,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
         pickFolderPreference?.let {
             it.setFragment(this)
 
-            it.summary = preferencesInteractor.getDownloadLocation()
+            it.summary = storageInteractor.getBaseDir().absolutePath
             it.setDefaultValue(it.summary)
 
             it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, value ->
-                it.summary = preferencesInteractor.getDownloadLocationFor(value.toString())
+                it.summary = storageInteractor.getBaseDir().absolutePath
                 true
             }
         }
 
-        findPreference(getString(R.string.version_key))?.summary = "${BuildConfig.BUILD_TYPE} ${BuildConfig.VERSION_NAME}"
+        findPreference(getString(R.string.version_key))?.summary = "${BuildConfig.BUILD_TYPE.capitalize()} ${BuildConfig.VERSION_NAME}"
 
         findPreference(getString(R.string.oss_licenses_key))?.setOnPreferenceClickListener {
             context.startActivity<LicensesActivity>()

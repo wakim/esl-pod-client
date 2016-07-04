@@ -15,7 +15,6 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import rx.Observable
 import rx.Subscriber
-import java.io.File
 
 class DownloadSyncOnSubscribe(private val storageInteractor: StorageInteractor,
                               private val downloadDbInteractor: DownloadDbInteractor,
@@ -32,7 +31,7 @@ class DownloadSyncOnSubscribe(private val storageInteractor: StorageInteractor,
     }
 
     override fun call(subscriber: Subscriber<in Pair<PodcastItem, PodcastItemDetail>>) {
-        val baseDir = File(storageInteractor.getBaseDir())
+        val baseDir = storageInteractor.getBaseDir()
 
         baseDir.listFiles().asSequence()
                 .map { file -> file.nameWithoutExtension }
