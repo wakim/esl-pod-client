@@ -26,9 +26,8 @@ import it.sephiroth.android.library.bottomnavigation.BottomNavigation
 open class PodcastListActivity : BaseActivity() {
 
     companion object {
-        final const val MINIMUM_THRESHOLD = 5
-        final const val FRAGMENT_TAG = "FRAGMENT"
-        final const val FRAGMENT_STATES_EXTRA = "FRAGMENT_STATES"
+        const val MINIMUM_THRESHOLD = 5
+        const val FRAGMENT_TAG = "FRAGMENT"
     }
 
     private var podcastPlayerComponent: PodcastPlayerComponent? = null

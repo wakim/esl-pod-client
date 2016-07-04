@@ -12,7 +12,7 @@ import rx.SingleSubscriber
 class PodcastDetailOnSubscribe(val podcastItem: PodcastItem, val itemUrl: String) : Single.OnSubscribe<PodcastItemDetail> {
 
     companion object {
-        final val PODCAST_BODY_CLASS = ".podcast_table_home .pod_body"
+        const val PODCAST_BODY_CLASS = ".podcast_table_home .pod_body"
     }
 
     override fun call(subscriber: SingleSubscriber<in PodcastItemDetail>?) {

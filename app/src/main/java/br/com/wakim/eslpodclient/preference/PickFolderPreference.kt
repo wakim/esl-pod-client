@@ -16,7 +16,7 @@ import com.nononsenseapps.filepicker.FilePickerActivity
 class PickFolderPreference: Preference {
 
     companion object {
-        final const val RC_PICK_FOLDER = 56
+        const val RC_PICK_FOLDER = 56
     }
 
     private var settingsFragment: SettingsFragment? = null

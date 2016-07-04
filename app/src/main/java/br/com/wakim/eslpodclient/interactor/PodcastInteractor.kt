@@ -18,7 +18,7 @@ import java.util.*
 open class PodcastInteractor(private val podcastDbInteractor: PodcastDbInteractor, private val app: Application) {
 
     companion object {
-        const final val ITEMS_PER_PAGE = 20
+        const val ITEMS_PER_PAGE = 20
     }
 
     open fun getPodcasts(nextPageToken: String?) : Single<PodcastList> =

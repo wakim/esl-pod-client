@@ -14,8 +14,8 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>,
         View.OnClickListener {
 
     companion object {
-        final const val LOADING_TYPE = 0
-        final const val ITEM_TYPE = 1
+        const val LOADING_TYPE = 0
+        const val ITEM_TYPE = 1
     }
 
     val list : MutableList<PodcastItem> = mutableListOf()
@@ -60,7 +60,7 @@ class PodcastListAdapter : RecyclerView.Adapter<PodcastListAdapter.ViewHolder>,
 
     override fun onBindViewHolder(viewHolder: PodcastListAdapter.ViewHolder?, position: Int) {
         if (viewHolder!!.itemViewType == LOADING_TYPE) {
-            val lp = viewHolder.itemView.layoutParams as? RecyclerView.LayoutParams;
+            val lp = viewHolder.itemView.layoutParams as? RecyclerView.LayoutParams
             lp?.height = if (list.size == 0) RecyclerView.LayoutParams.MATCH_PARENT else RecyclerView.LayoutParams.WRAP_CONTENT
         } else {
             val item = list[position]

@@ -11,7 +11,7 @@ class BottomSpacingItemDecoration(var bottomSpacing: Int) : RecyclerView.ItemDec
         val isLast = (position == (parent?.adapter?.itemCount?.minus(1)))
 
         if (!isLast) {
-            return;
+            return
         }
 
         outRect?.bottom = bottomSpacing

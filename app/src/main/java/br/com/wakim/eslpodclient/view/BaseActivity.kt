@@ -1,7 +1,6 @@
 package br.com.wakim.eslpodclient.view
 
 import android.content.Context
-import android.os.Bundle
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
@@ -52,13 +51,12 @@ abstract class BaseActivity: AppCompatActivity(), PermissionRequester {
         }
 
         if (NavUtils.shouldUpRecreateTask(this, parentIntent)) {
-
             TaskStackBuilder.create(this)
                     .addNextIntentWithParentStack(parentIntent)
                     .startActivities()
 
             supportFinishAfterTransition()
-            return true;
+            return true
         } else {
             startActivity(parentIntent)
             supportFinishAfterTransition()

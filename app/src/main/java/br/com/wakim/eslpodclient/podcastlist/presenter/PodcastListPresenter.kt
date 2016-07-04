@@ -38,10 +38,10 @@ open class PodcastListPresenter(protected val app: Application,
                                 private   val baseActivity: Activity) : Presenter<PodcastListView>() {
 
     companion object {
-        private final val ITEMS_EXTRA = "ITEMS"
-        private final val NEXT_PAGE_TOKEN_EXTRA = "NEXT_PAGE_TOKEN"
-        private final val DOWNLOAD_PODCAST_EXTRA = "DOWNLOAD_PODCAST"
-        private final val USING_CACHE_EXTRA = "USING_CACHE"
+        private const val ITEMS_EXTRA = "ITEMS"
+        private const val NEXT_PAGE_TOKEN_EXTRA = "NEXT_PAGE_TOKEN"
+        private const val DOWNLOAD_PODCAST_EXTRA = "DOWNLOAD_PODCAST"
+        private const val USING_CACHE_EXTRA = "USING_CACHE"
     }
 
     var items : ArrayList<PodcastItem> = ArrayList()

@@ -12,8 +12,8 @@ import org.jetbrains.anko.find
 class LicenseListAdapter : RecyclerView.Adapter<LicenseListAdapter.ViewHolder> {
 
     companion object {
-        final const val LOADING_TYPE = 0
-        final const val ITEM_TYPE = 1
+        const val LOADING_TYPE = 0
+        const val ITEM_TYPE = 1
     }
 
     val list : MutableList<Pair<String, String>> = mutableListOf()
@@ -50,7 +50,7 @@ class LicenseListAdapter : RecyclerView.Adapter<LicenseListAdapter.ViewHolder> {
 
     override fun onBindViewHolder(viewHolder: ViewHolder?, position: Int) {
         if (viewHolder!!.itemViewType == LOADING_TYPE) {
-            val lp = viewHolder.itemView.layoutParams as? RecyclerView.LayoutParams;
+            val lp = viewHolder.itemView.layoutParams as? RecyclerView.LayoutParams
             lp?.height = if (list.size == 0) RecyclerView.LayoutParams.MATCH_PARENT else RecyclerView.LayoutParams.WRAP_CONTENT
         } else {
             val item = list[position]

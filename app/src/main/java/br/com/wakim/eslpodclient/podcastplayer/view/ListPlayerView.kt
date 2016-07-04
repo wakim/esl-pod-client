@@ -4,7 +4,9 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.annotation.StringRes
-import android.support.design.widget.*
+import android.support.design.widget.BottomSheetBehavior
+import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.PopupMenu
 import android.text.Html
 import android.util.AttributeSet
@@ -29,9 +31,9 @@ import javax.inject.Inject
 open class ListPlayerView : LinearLayout, PlayerView {
 
     companion object {
-        final const val SUPER_STATE_KEY = "SUPER_STATE"
-        final const val SEEK_MAX_STATE_KEY = "SEEK_MAX_STATE"
-        final const val SEEK_PROGRESS_STATE_KEY = "SEEK_PROGRESS_STATE"
+        const val SUPER_STATE_KEY = "SUPER_STATE"
+        const val SEEK_MAX_STATE_KEY = "SEEK_MAX_STATE"
+        const val SEEK_PROGRESS_STATE_KEY = "SEEK_PROGRESS_STATE"
     }
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)

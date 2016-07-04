@@ -37,10 +37,10 @@ import javax.inject.Inject
 class PlayerService : Service() {
 
     companion object {
-        final const val ID = 42
-        final const val TAG = "PlayerService Session"
+        const val ID = 42
+        const val TAG = "PlayerService Session"
 
-        final const val CONTENT_INTENT_ACTION = "CONTENT_INTENT"
+        const val CONTENT_INTENT_ACTION = "CONTENT_INTENT"
     }
 
     val localBinder = PlayerLocalBinder(this)
@@ -381,9 +381,9 @@ class PlayerService : Service() {
 
     private fun requestAudioFocus() : Boolean {
         val result = audioManager.requestAudioFocus(audioFocusChangeListener,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
 
-        return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+        return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
     }
 
     fun skipToNext() {
@@ -598,7 +598,7 @@ class DurationUpdatesTask(var service: PlayerService) : AsyncTask<Void , Int, Vo
             try {
                 Thread.sleep(interval)
             } catch (ignored: InterruptedException) {
-                break;
+                break
             }
         }
 

@@ -145,7 +145,7 @@ class TagView : TextView {
                 tagCornerRadius?.toFloat() ?: DEFAULT_CORNER_RADIUS)
     }
 
-    class TagSpan(val text: String, val tagPadding: Int, val textSize: Float, val bold: Boolean, val textColor: Int, val tagColor: Int, val roundCornersFactor: Float) : ImageSpan(TagDrawable(text, tagPadding, textSize, bold, textColor, tagColor, roundCornersFactor))
+    class TagSpan(val text: String, tagPadding: Int, textSize: Float, bold: Boolean, val textColor: Int, tagColor: Int, roundCornersFactor: Float) : ImageSpan(TagDrawable(text, tagPadding, textSize, bold, textColor, tagColor, roundCornersFactor))
 
     class TagDrawable (private val text: String, tagPadding: Int, textSize: Float, bold: Boolean, textColor: Int, tagColor: Int, private val roundCornersFactor: Float) : Drawable() {
         private val textContentPaint: Paint
@@ -198,8 +198,8 @@ class TagView : TextView {
         }
 
         companion object {
-            private val MAGIC_PADDING_LEFT = 0
-            private val MAGIC_PADDING_BOTTOM = 3
+            private const val MAGIC_PADDING_LEFT = 0
+            private const val MAGIC_PADDING_BOTTOM = 3
         }
     }
 }

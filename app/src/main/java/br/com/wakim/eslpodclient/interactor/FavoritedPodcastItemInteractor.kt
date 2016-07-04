@@ -10,7 +10,7 @@ import java.util.*
 class FavoritedPodcastItemInteractor(private val podcastDbInteractor: PodcastDbInteractor, private val app: Application): PodcastInteractor(podcastDbInteractor, app) {
 
     companion object {
-        final const val ITEMS_PER_PAGE = 20
+        const val ITEMS_PER_PAGE = 20
     }
 
     fun addFavorite(podcastItem: PodcastItem): Single<Boolean> =

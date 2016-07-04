@@ -20,9 +20,9 @@ data class PodcastItemDetail(var remoteId : Long = 0, var title : String? = null
     override fun describeContents(): Int = 0
 
     companion object {
-        final const val INVALID_SEEK_POS = -1
+        const val INVALID_SEEK_POS = -1
 
-        @JvmField final val CREATOR: Parcelable.Creator<PodcastItemDetail> = object : Parcelable.Creator<PodcastItemDetail> {
+        @JvmField val CREATOR: Parcelable.Creator<PodcastItemDetail> = object : Parcelable.Creator<PodcastItemDetail> {
             override fun createFromParcel(source: Parcel): PodcastItemDetail {
                 return PodcastItemDetail(source)
             }
@@ -50,9 +50,9 @@ data class SeekPos(val slow : Int = PodcastItemDetail.INVALID_SEEK_POS, val expl
     }
 
     companion object {
-        final const val INVALID_SEEK_POS = -1
+        const val INVALID_SEEK_POS = -1
 
-        @JvmField final val CREATOR: Parcelable.Creator<SeekPos> = object : Parcelable.Creator<SeekPos> {
+        @JvmField val CREATOR: Parcelable.Creator<SeekPos> = object : Parcelable.Creator<SeekPos> {
             override fun createFromParcel(source: Parcel): SeekPos {
                 return SeekPos(source)
             }

@@ -9,7 +9,7 @@ import java.util.*
 
 class DownloadedPodcastItemInteractor(private val podcastDbInteractor: PodcastDbInteractor, private val app: Application): PodcastInteractor(podcastDbInteractor, app) {
     companion object {
-        final const val ITEMS_PER_PAGE = 20
+        const val ITEMS_PER_PAGE = 20
     }
 
     fun getDownloaded(page: Int, limit: Int): Single<List<PodcastItem>> =

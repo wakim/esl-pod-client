@@ -27,8 +27,8 @@ import javax.inject.Inject
 class StorageService : Service() {
 
     companion object {
-        final const val MIME_TYPE = "audio/mpeg"
-        final const val NOTIFICATION_ID = 323
+        const val MIME_TYPE = "audio/mpeg"
+        const val NOTIFICATION_ID = 323
     }
 
     @Inject

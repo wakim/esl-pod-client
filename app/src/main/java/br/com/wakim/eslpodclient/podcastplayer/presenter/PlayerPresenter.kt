@@ -27,8 +27,8 @@ class PlayerPresenter(private val app : Application,
                       private val podcastInteractor: PodcastInteractor) : Presenter<PlayerView>() {
 
     companion object {
-        private final val PODCAST_ITEM = "PODCAST_ITEM"
-        private final val PODCAST_DETAIL = "PODCAST_DETAIL"
+        private val PODCAST_ITEM = "PODCAST_ITEM"
+        private val PODCAST_DETAIL = "PODCAST_DETAIL"
     }
 
     var podcastItem : PodcastItem? = null

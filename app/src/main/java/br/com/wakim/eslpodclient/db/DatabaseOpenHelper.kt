@@ -44,8 +44,7 @@ class DatabaseOpenHelper(context: Context): ManagedSQLiteOpenHelper(context, DB_
                 )
     }
 
-    override fun onUpgrade(database: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-    }
+    override fun onUpgrade(database: SQLiteDatabase, oldVersion: Int, newVersion: Int) { }
 }
 
 val Context.database: DatabaseOpenHelper

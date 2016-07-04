@@ -6,7 +6,7 @@ import br.com.wakim.eslpodclient.presenter.Presenter
 open class BasePresenterActivity<T : Presenter<*>> : BaseActivity(), PermissionRequester {
 
     companion object {
-        final const val PARENT_EXTRA = "PARENT_EXTRA"
+        const val PARENT_EXTRA = "PARENT_EXTRA"
     }
 
     lateinit var presenter : T

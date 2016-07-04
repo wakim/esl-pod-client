@@ -24,7 +24,7 @@ data class PodcastList(var currentPageToken : String? = null, var nextPageToken 
     override fun describeContents(): Int = 0
 
     companion object {
-        @JvmField final val CREATOR: Parcelable.Creator<PodcastList> = object : Parcelable.Creator<PodcastList> {
+        @JvmField val CREATOR: Parcelable.Creator<PodcastList> = object : Parcelable.Creator<PodcastList> {
             override fun createFromParcel(source: Parcel): PodcastList {
                 return PodcastList(source)
             }

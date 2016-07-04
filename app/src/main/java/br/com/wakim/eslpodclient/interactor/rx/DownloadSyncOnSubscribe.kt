@@ -13,7 +13,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.format.DateTimeFormatterBuilder
 import rx.Observable
 import rx.Subscriber
 import java.io.File
@@ -23,13 +22,13 @@ class DownloadSyncOnSubscribe(private val storageInteractor: StorageInteractor,
                               private val url: String): Observable.OnSubscribe<Pair<PodcastItem, PodcastItemDetail>> {
 
     companion object {
-        final val RESULTS_SELECTOR = "#res"
-        final val RESULT_SELECTOR = "li div.g"
-        final val LINK_SELECTOR = "a.l"
-        final val PODCAST_TITLE_SELECTOR = "title"
-        final val PODCAST_DATE_SELECTOR = ".date-header"
-        final val PODCAST_BODIES_SELECTOR = ".pod_body"
-        final val PODCAST_TAGS_SELECTOR = "a:gt(4)"
+        const val RESULTS_SELECTOR = "#res"
+        const val RESULT_SELECTOR = "li div.g"
+        const val LINK_SELECTOR = "a.l"
+        const val PODCAST_TITLE_SELECTOR = "title"
+        const val PODCAST_DATE_SELECTOR = ".date-header"
+        const val PODCAST_BODIES_SELECTOR = ".pod_body"
+        const val PODCAST_TAGS_SELECTOR = "a:gt(4)"
     }
 
     override fun call(subscriber: Subscriber<in Pair<PodcastItem, PodcastItemDetail>>) {

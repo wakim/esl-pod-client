@@ -16,14 +16,14 @@ import java.util.*
 class PodcastListOnSubscribe(val url: String): Single.OnSubscribe<PodcastList> {
 
     companion object {
-        final val PODCAST_TABLE_HOME_CLASS = ".podcast_table_home"
-        final val DATE_SELECTOR = ".date-header"
-        final val BODY_SELECTOR = "span.pod_body"
-        final val TITLE_SELECTOR = "a.podcast_title"
-        final val DESCRIPTION_SELECTOR = "strong ~ .pod_body .pod_body:gt(0)"
-        final val TAGS_SELECTOR = "strong ~ .pod_body > a"
-        final val PAGINATION_NEXT_SELECTOR = ".podcast_table_home:first-of-type td:eq(3) font a"
-        final val ENGLISH_CAFE_TYPE_PREFIX = "EC"
+        const val PODCAST_TABLE_HOME_CLASS = ".podcast_table_home"
+        const val DATE_SELECTOR = ".date-header"
+        const val BODY_SELECTOR = "span.pod_body"
+        const val TITLE_SELECTOR = "a.podcast_title"
+        const val DESCRIPTION_SELECTOR = "strong ~ .pod_body .pod_body:gt(0)"
+        const val TAGS_SELECTOR = "strong ~ .pod_body > a"
+        const val PAGINATION_NEXT_SELECTOR = ".podcast_table_home:first-of-type td:eq(3) font a"
+        const val ENGLISH_CAFE_TYPE_PREFIX = "EC"
     }
 
     override fun call(subscriber: SingleSubscriber<in PodcastList>) {

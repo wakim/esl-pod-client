@@ -85,7 +85,7 @@ data class PodcastItem(val remoteId: Long, val title: String, val mp3Url: String
         const val LOCAL = 0L
         const val REMOTE = 1L
 
-        @JvmField final val CREATOR: Parcelable.Creator<PodcastItem> = object : Parcelable.Creator<PodcastItem> {
+        @JvmField val CREATOR: Parcelable.Creator<PodcastItem> = object : Parcelable.Creator<PodcastItem> {
             override fun createFromParcel(source: Parcel): PodcastItem {
                 return PodcastItem(source)
             }
@@ -120,7 +120,7 @@ data class DownloadStatus(val remoteId: Long = -1, val localPath: String? = null
         const val DOWNLOADING = 1L
         const val DOWNLOADED = 2L
 
-        @JvmField final val CREATOR: Parcelable.Creator<DownloadStatus> = object : Parcelable.Creator<DownloadStatus> {
+        @JvmField val CREATOR: Parcelable.Creator<DownloadStatus> = object : Parcelable.Creator<DownloadStatus> {
             override fun createFromParcel(source: Parcel): DownloadStatus {
                 return DownloadStatus(source)
             }
