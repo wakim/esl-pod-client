@@ -170,4 +170,10 @@ class PodcastDbInteractor(private val app: Application) {
                                     parseList(PodcastItemRowParser())
                                 }
                     }
+
+    fun clearPodcasts() {
+        app.database.use {
+            delete(DatabaseOpenHelper.PODCASTS_TABLE_NAME)
+        }
+    }
 }

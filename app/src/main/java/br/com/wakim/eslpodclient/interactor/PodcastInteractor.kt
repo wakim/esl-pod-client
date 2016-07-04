@@ -24,6 +24,10 @@ open class PodcastInteractor(private val podcastDbInteractor: PodcastDbInteracto
     open fun getPodcasts(nextPageToken: String?) : Single<PodcastList> =
             Single.create(PodcastListOnSubscribe(nextPageToken ?: BuildConfig.BASE_URL))
                     .doOnSuccess { podcastList ->
+                        if (nextPageToken == null) {
+                            podcastDbInteractor.clearPodcasts()
+                        }
+
                         podcastDbInteractor.insertPodcasts(podcastList.list)
                     }
                     .connected()
