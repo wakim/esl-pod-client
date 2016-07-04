@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPropertyAnimatorListenerAdapter
 import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.view.View
 import android.widget.Toast
+import br.com.wakim.eslpodclient.BuildConfig
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.ContentViewEvent
 
@@ -75,8 +76,10 @@ fun Toast.isVisible(): Boolean {
 }
 
 inline fun Fragment.logContentView() {
-    val contentView = ContentViewEvent()
-            .putContentName(javaClass.name)
+    if (!BuildConfig.DEBUG) {
+        val contentView = ContentViewEvent()
+                .putContentName(javaClass.name)
 
-    Answers.getInstance().logContentView(contentView)
+        Answers.getInstance().logContentView(contentView)
+    }
 }

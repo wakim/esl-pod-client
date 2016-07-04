@@ -37,7 +37,9 @@ open class Application : android.app.Application() {
 
         AndroidThreeTen.init(this)
 
-        Fabric.with(this, Crashlytics(), Answers())
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(this, Crashlytics(), Answers())
+        }
 
         CalligraphyConfig.initDefault(CalligraphyConfig.Builder()
                 .setDefaultFontPath("fonts/Roboto-Regular.ttf")
