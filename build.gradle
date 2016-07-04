@@ -15,7 +15,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
 
         // Dex count plugin to keep track dex method count
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.5.4'
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.5.5'
 
         // Dependency version update checker
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'

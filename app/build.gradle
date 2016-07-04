@@ -121,7 +121,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.9.1'
 
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
-    compile 'com.nononsenseapps:filepicker:2.5.3'
+    compile 'com.nononsenseapps:filepicker:3.0.0'
 
     compile 'it.sephiroth.android.library.bottomnavigation:bottom-navigation:1.0.7'
 
