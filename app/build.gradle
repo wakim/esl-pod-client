@@ -148,6 +148,8 @@ dependencies {
         transitive = true;
     }
 
+    compile 'com.danikula:videocache:2.3.4'
+
     testCompile 'junit:junit:4.12'
 
     // Android Testing Support Library's runner and rules

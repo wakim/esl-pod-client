@@ -23,12 +23,14 @@ import android.view.KeyEvent
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.AppComponent
+import br.com.wakim.eslpodclient.extensions.getFileNameWithExtension
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.notification.NotificationActivity
+import com.danikula.videocache.HttpProxyCacheServer
 import rx.Subscription
 import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
@@ -44,6 +46,17 @@ class PlayerService : Service() {
     }
 
     val localBinder = PlayerLocalBinder(this)
+
+    val proxy: HttpProxyCacheServer by lazy {
+        HttpProxyCacheServer.Builder(this)
+                .cacheDirectory(storageInteractor.getBaseDir())
+                .fileNameGenerator { url ->
+                    url.getFileNameWithExtension()
+                    // TODO
+                }
+                .maxCacheFilesCount(Integer.MAX_VALUE)
+                .build()
+    }
 
     internal var mediaPlayer : MediaPlayer? = null
         get() {
@@ -336,7 +349,7 @@ class PlayerService : Service() {
             url = downloadStatus.localPath!!
             callback?.onStreamTypeResolved(PodcastItem.LOCAL)
         } else {
-            url = podcastItem.mp3Url
+            url = proxy.getProxyUrl(podcastItem.mp3Url)
             callback?.onStreamTypeResolved(PodcastItem.REMOTE)
         }
 
