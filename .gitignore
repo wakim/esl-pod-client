@@ -35,7 +35,6 @@ proguard/
 # Android Studio
 .idea
 .gradle
-/gradle/wrapper/*.jar
 /*/local.properties
 /*/out
 /*/*/build
