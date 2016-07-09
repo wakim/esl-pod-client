@@ -28,7 +28,7 @@ class DownloadStatusOnSubscribe(private val remoteId: Long, private val localPat
 
         // Not managed by app or database was cleared
         if (download == null) {
-            downloadDbInteractor.insertDownload(remoteId = remoteId, filename = file.name, downloadId = 0, status = DownloadStatus.DOWNLOADED)
+            downloadDbInteractor.insertDownload(remoteId = remoteId, filename = file.nameWithoutExtension, downloadId = 0, status = DownloadStatus.DOWNLOADED)
             subscriber.onSuccess(DownloadStatus(localPath = localPath.toString(), remoteId = remoteId, downloadId = 0, status = DownloadStatus.DOWNLOADED))
         } else {
             with (download) {

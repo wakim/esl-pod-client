@@ -64,20 +64,19 @@ class TagView : TextView {
 
     private fun init(context: Context, attrs: AttributeSet?, defStyleAttr: Int) {
         if (attrs != null) {
-            val attributesArray = context.theme.obtainStyledAttributes(attrs, R.styleable.TagView, defStyleAttr, R.style.Widget_TagView)
+            context.theme.obtainStyledAttributes(attrs, R.styleable.TagView, defStyleAttr, R.style.Widget_TagView).apply {
 
-            tagPadding = attributesArray.getDimensionPixelSize(R.styleable.TagView_tagPadding, context.dp(DEFAULT_PADDING))
-            tagCornerRadius = attributesArray.getDimensionPixelSize(R.styleable.TagView_tagCornerRadius, context.dp(DEFAULT_CORNER_RADIUS).toInt()).toFloat()
-            tagColor = attributesArray.getColor(R.styleable.TagView_tagColor, DEFAULT_COLOR)
-            tagSeparator = attributesArray.getString(R.styleable.TagView_tagSeparator) ?: DEFAULT_SEPARATOR
+                tagPadding = getDimensionPixelSize(R.styleable.TagView_tagPadding, context.dp(DEFAULT_PADDING))
+                tagCornerRadius = getDimensionPixelSize(R.styleable.TagView_tagCornerRadius, context.dp(DEFAULT_CORNER_RADIUS).toInt()).toFloat()
+                tagColor = getColor(R.styleable.TagView_tagColor, DEFAULT_COLOR)
+                tagSeparator = getString(R.styleable.TagView_tagSeparator)
 
-            isUppercaseTags = attributesArray.getBoolean(R.styleable.TagView_tagUppercase, DEFAULT_UPPERCASE)
+                isUppercaseTags = getBoolean(R.styleable.TagView_tagUppercase, DEFAULT_UPPERCASE)
 
-            if (attributesArray.hasValue(R.styleable.TagView_tagPrefix)) {
-                prefix = attributesArray.getString(R.styleable.TagView_tagPrefix)
-            }
-
-            attributesArray.recycle()
+                if (hasValue(R.styleable.TagView_tagPrefix)) {
+                    prefix = getString(R.styleable.TagView_tagPrefix)
+                }
+            }.recycle()
         } else {
             tagPadding = context.dp(DEFAULT_PADDING)
             tagCornerRadius = context.dp(DEFAULT_CORNER_RADIUS)
@@ -145,7 +144,7 @@ class TagView : TextView {
                 tagCornerRadius?.toFloat() ?: DEFAULT_CORNER_RADIUS)
     }
 
-    class TagSpan(val text: String, tagPadding: Int, textSize: Float, bold: Boolean, val textColor: Int, tagColor: Int, roundCornersFactor: Float) : ImageSpan(TagDrawable(text, tagPadding, textSize, bold, textColor, tagColor, roundCornersFactor))
+    class TagSpan(val text: String, tagPadding: Int, textSize: Float, bold: Boolean, textColor: Int, tagColor: Int, roundCornersFactor: Float) : ImageSpan(TagDrawable(text, tagPadding, textSize, bold, textColor, tagColor, roundCornersFactor))
 
     class TagDrawable (private val text: String, tagPadding: Int, textSize: Float, bold: Boolean, textColor: Int, tagColor: Int, private val roundCornersFactor: Float) : Drawable() {
         private val textContentPaint: Paint

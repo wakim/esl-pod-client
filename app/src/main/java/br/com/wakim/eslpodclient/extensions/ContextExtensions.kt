@@ -14,8 +14,10 @@ import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
+import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.service.TypedBinder
 import br.com.wakim.eslpodclient.view.BasePresenterActivity
 import rx.Observable
@@ -128,3 +130,11 @@ fun Context.readRawString(@RawRes rawResId: Int): String =
 
 fun Context.resolveRawResIdentifier(name: String): Int =
         resources.getIdentifier(name, "raw", packageName)
+
+fun String.d() {
+    Log.d(Application.INSTANCE?.packageName ?: "TAG", this)
+}
+
+fun Throwable.e() {
+    Log.e(Application.INSTANCE?.packageName ?: "TAG", "Error", this)
+}
