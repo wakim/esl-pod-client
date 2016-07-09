@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="base_folder_key">base_folder</string>
+    <string name="should_cache_key">should_cache</string>
     <string name="oss_licenses_key">oss_licenses</string>
     <string name="source_key">source</string>
     <string name="about_developer_key">about_developer</string>

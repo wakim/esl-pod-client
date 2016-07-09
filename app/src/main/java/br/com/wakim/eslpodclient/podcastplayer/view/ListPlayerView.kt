@@ -114,6 +114,8 @@ open class ListPlayerView : LinearLayout, PlayerView {
 
     var podcastItem: PodcastItem? = null
 
+    var progressLocked = false
+
     @Inject
     lateinit var baseActivity: BaseActivity
 
@@ -190,7 +192,10 @@ open class ListPlayerView : LinearLayout, PlayerView {
         }
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(p0: SeekBar, p1: Int, p2: Boolean) {
+            override fun onProgressChanged(seekbar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (progressLocked && fromUser && seekbar.secondaryProgress < progress){
+                    seekBar.progress = seekbar.secondaryProgress
+                }
             }
 
             override fun onStartTrackingTouch(p0: SeekBar) {
@@ -307,6 +312,14 @@ open class ListPlayerView : LinearLayout, PlayerView {
         normalIndexMenu.title = context.getString(R.string.normal_dialog_index, seekPost.normal.secondsToElapsedTime())
     }
 
+    override fun setSecondaryProgressValue(position: Int) {
+        seekBar.secondaryProgress = position
+    }
+
+    override fun setSeekEnabled(enabled: Boolean) {
+        progressLocked = !enabled
+    }
+
     override fun setProgressValue(position: Int) {
         seekBar.progress = position
         this.timer.text = position.millisToElapsedTime()
@@ -316,6 +329,7 @@ open class ListPlayerView : LinearLayout, PlayerView {
         when (streamType) {
             PodcastItem.LOCAL  -> streamTypeText.text = context.getString(R.string.local)
             PodcastItem.REMOTE -> streamTypeText.text = context.getString(R.string.remote)
+            PodcastItem.CACHING -> streamTypeText.text = context.getString(R.string.saving)
         }
     }
 

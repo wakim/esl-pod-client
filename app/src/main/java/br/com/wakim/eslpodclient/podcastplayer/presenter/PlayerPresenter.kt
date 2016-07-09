@@ -45,10 +45,16 @@ class PlayerPresenter(private val app : Application,
         }
 
         override fun onDurationChanged(duration: Int) {
-            view?.setMaxProgress(duration)
+            view?.setMaxProgress(if (duration < 0) 0 else duration)
         }
 
-        override fun onDurationAvailabilityChanged(durationAvailable: Int) { }
+        override fun onCacheProgress(cacheProgress: Int) {
+            view?.setSecondaryProgressValue(cacheProgress)
+        }
+
+        override fun onSeekAvailable(available: Boolean) {
+            view?.setSeekEnabled(available)
+        }
 
         override fun onPositionChanged(position: Int) {
             view?.setProgressValue(position)

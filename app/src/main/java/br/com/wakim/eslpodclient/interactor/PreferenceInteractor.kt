@@ -16,8 +16,12 @@ class PreferenceInteractor(private val app: Application) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(app)
     }
 
-    val baseFolderKey: String by lazy {
+    private val baseFolderKey: String by lazy {
         app.getString(R.string.base_folder_key)
+    }
+
+    private val shouldCacheKey: String by lazy {
+        app.getString(R.string.should_cache_key)
     }
 
     fun hasStoredLocation() = sharedPreferences.contains(baseFolderKey)
@@ -33,6 +37,8 @@ class PreferenceInteractor(private val app: Application) {
     }
 
     fun getStorageLocation(): String? = sharedPreferences.getString(baseFolderKey, null)
+
+    fun shouldCache() = sharedPreferences.getBoolean(shouldCacheKey, true)
 
     fun getDownloadLocationFor(base: String): String =
             "$base${File.separator}${app.getString(R.string.app_name)}"
