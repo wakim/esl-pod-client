@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import br.com.wakim.eslpodclient.BuildConfig
 import br.com.wakim.eslpodclient.R
+import br.com.wakim.eslpodclient.customtabs.browseWithCustomTabs
 import br.com.wakim.eslpodclient.dagger.ActivityComponent
 import br.com.wakim.eslpodclient.extensions.hasPermission
 import br.com.wakim.eslpodclient.extensions.logContentView
@@ -83,12 +84,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         findPreference(getString(R.string.about_developer_key))?.setOnPreferenceClickListener {
-            context.browse("https://github.com/wakim")
+            activity.browseWithCustomTabs("https://github.com/wakim")
             false
         }
 
         findPreference(getString(R.string.source_key))?.setOnPreferenceClickListener {
-            context.browse("https://github.com/wakim/esl-pod-client")
+            activity.browseWithCustomTabs("https://github.com/wakim/esl-pod-client")
             false
         }
     }

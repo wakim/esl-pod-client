@@ -1,15 +1,14 @@
 package br.com.wakim.eslpodclient.podcastlist.presenter
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.ShareCompat
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.BuildConfig
 import br.com.wakim.eslpodclient.R
+import br.com.wakim.eslpodclient.customtabs.browseWithCustomTabs
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.extensions.startActivity
-import br.com.wakim.eslpodclient.extensions.view
 import br.com.wakim.eslpodclient.interactor.FavoritedPodcastItemInteractor
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
@@ -280,9 +279,7 @@ open class PodcastListPresenter(protected val app: Application,
     }
 
     fun openWith(podcastItem: PodcastItem) {
-        Intent()
-                .view(BuildConfig.DETAIL_URL.format(podcastItem.remoteId))
-                .startActivity(baseActivity)
+        baseActivity.browseWithCustomTabs(BuildConfig.DETAIL_URL.format(podcastItem.remoteId))
     }
 
     fun favorite(podcastItem: PodcastItem) {
