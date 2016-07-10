@@ -38,7 +38,6 @@ proguard/
 /gradle/wrapper/*.jar
 /*/local.properties
 /*/out
-/*/*/build
 build
 /*/*/production
 *.iml
