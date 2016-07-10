@@ -6,8 +6,14 @@
 
     <br.com.wakim.eslpodclient.preference.PickFolderPreference
         android:title="@string/download_folder"
-        android:summary="@string/select_folder_to_store_downloads"
+        android:summary="@string/download_folder_summary"
         android:key="@string/base_folder_key" />
+
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:title="@string/use_cache"
+        android:summary="@string/use_cache_summary"
+        android:key="@string/should_cache_key"
+        android:defaultValue="true" />
 
     <android.support.v7.preference.PreferenceCategory
         android:title="@string/about"

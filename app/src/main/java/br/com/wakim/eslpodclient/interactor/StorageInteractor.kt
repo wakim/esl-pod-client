@@ -21,7 +21,7 @@ class StorageInteractor(private var downloadManager: DownloadManager,
                         private val app: Application) {
 
     fun getLocalUri(podcastItem: PodcastItem): Uri {
-        val base = preferenceInteractor.getDownloadLocation()!!
+        val base = preferenceInteractor.getDownloadLocation()
 
         if (hasSAFStored()) {
             return app.createUriFromSAFTree(base, "audio/mp3", podcastItem.mp3Url.getFileNameWithExtension())
@@ -128,4 +128,13 @@ class StorageInteractor(private var downloadManager: DownloadManager,
     fun synchronizeDownloads() =
             Observable.create(DownloadSyncOnSubscribe(this, downloadDbInteractor, BuildConfig.SEARCH_URL))
                     .connected()
+
+    fun prepareFile(filename: String) {
+        if (hasSAFStored()) {
+            val base = preferenceInteractor.getDownloadLocation()
+            app.createUriFromSAFTree(base, "audio/mp3", filename)
+        }
+    }
+
+    fun shouldCache() = preferenceInteractor.shouldCache()
 }

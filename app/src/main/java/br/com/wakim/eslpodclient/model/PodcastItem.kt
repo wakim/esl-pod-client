@@ -12,7 +12,7 @@ data class PodcastItem(val remoteId: Long, val title: String, val mp3Url: String
     @Retention(AnnotationRetention.SOURCE)
     annotation class Type()
 
-    @IntDef(LOCAL, REMOTE)
+    @IntDef(LOCAL, REMOTE, CACHING)
     @Retention(AnnotationRetention.SOURCE)
     annotation class StreamType()
 
@@ -84,6 +84,7 @@ data class PodcastItem(val remoteId: Long, val title: String, val mp3Url: String
 
         const val LOCAL = 0L
         const val REMOTE = 1L
+        const val CACHING = 2L
 
         @JvmField val CREATOR: Parcelable.Creator<PodcastItem> = object : Parcelable.Creator<PodcastItem> {
             override fun createFromParcel(source: Parcel): PodcastItem {

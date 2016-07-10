@@ -47,7 +47,10 @@
 
     <string name="cancel">Cancel</string>
     <string name="download_folder">Download Folder</string>
-    <string name="select_folder_to_store_downloads">Select a folder to store your downloads</string>
+    <string name="download_folder_summary">Select a folder to store your downloads</string>
+
+    <string name="use_cache">Store mp3 (experimental)</string>
+    <string name="use_cache_summary">Store mp3 on storage when streaming</string>
 
     <string name="press_back_again_to_leave">Press back again to leave</string>
 
@@ -65,6 +68,7 @@
 
     <string name="local">Local</string>
     <string name="remote">Remote</string>
+    <string name="saving">Saving...</string>
     <string name="synchronizing_local_database">Synchronizing local database</string>
     <string name="synchronization_finished">Synchronization finished!</string>
     <string name="last_synchronized_podcast">Last synchronized: %1$s</string>

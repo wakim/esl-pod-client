@@ -13,6 +13,9 @@ interface PlayerView : View {
 
     fun getProgressValue(): Int
     fun setProgressValue(position: Int)
+    fun setSecondaryProgressValue(position: Int)
+
+    fun setSeekEnabled(enabled: Boolean)
 
     fun setStreamType(@PodcastItem.StreamType streamType: Long)
 

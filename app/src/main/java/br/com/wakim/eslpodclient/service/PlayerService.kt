@@ -23,13 +23,17 @@ import android.view.KeyEvent
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.AppComponent
+import br.com.wakim.eslpodclient.extensions.getFileNameWithExtension
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.notification.NotificationActivity
+import com.danikula.videocache.CacheListener
+import com.danikula.videocache.HttpProxyCacheServer
 import rx.Subscription
+import java.io.File
 import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -45,6 +49,21 @@ class PlayerService : Service() {
 
     val localBinder = PlayerLocalBinder(this)
 
+    val proxy: HttpProxyCacheServer by lazy {
+        val cacheServer = HttpProxyCacheServer.Builder(this)
+                .cacheDirectory(storageInteractor.getBaseDir())
+                .fileNameGenerator { url ->
+                    val filename = url.getFileNameWithExtension()
+                    storageInteractor.prepareFile(filename)
+
+                    filename
+                }
+                .maxCacheFilesCount(Integer.MAX_VALUE)
+                .build()
+
+        cacheServer
+    }
+
     internal var mediaPlayer : MediaPlayer? = null
         get() {
             if (released || field == null) {
@@ -56,12 +75,6 @@ class PlayerService : Service() {
                     preparing = false
 
                     play()
-                }
-
-                mp.setOnBufferingUpdateListener { mediaPlayer, buffer ->
-                    if (isPlaying()) {
-                        callback?.onDurationAvailabilityChanged(((buffer.toFloat() * getDuration()) / 100F).toInt())
-                    }
                 }
 
                 mp.setOnCompletionListener {
@@ -148,6 +161,24 @@ class PlayerService : Service() {
             field = value
             startTaskIfNeeded()
         }
+
+    val cacheListener = CacheListener { cacheFile: File, url: String, percentsAvailable: Int ->
+        val decimalPercent = percentsAvailable.toFloat() / 100F
+
+        callback?.onSeekAvailable(false)
+
+        if (isPlaying()) {
+            callback?.onCacheProgress((decimalPercent * mediaPlayer!!.duration.toFloat()).toInt())
+        }
+
+        if (percentsAvailable == 100) {
+            storageInteractor.getDownloadStatus(podcastItem!!)
+                    .ofIOToMainThread()
+                    .subscribe()
+
+            callback?.onStreamTypeResolved(PodcastItem.LOCAL)
+        }
+    }
 
     var initalized = false
         private set
@@ -285,6 +316,7 @@ class PlayerService : Service() {
         }
 
         session?.isActive = true
+        callback?.onCacheProgress(0)
 
         registerNoisyReceiver()
 
@@ -336,9 +368,20 @@ class PlayerService : Service() {
             url = downloadStatus.localPath!!
             callback?.onStreamTypeResolved(PodcastItem.LOCAL)
         } else {
-            url = podcastItem.mp3Url
-            callback?.onStreamTypeResolved(PodcastItem.REMOTE)
+            proxy.unregisterCacheListener(cacheListener)
+
+            if (storageInteractor.shouldCache()) {
+                url = proxy.getProxyUrl(podcastItem.mp3Url)
+                callback?.onStreamTypeResolved(PodcastItem.CACHING)
+
+                proxy.registerCacheListener(cacheListener, podcastItem.mp3Url)
+            } else {
+                url = podcastItem.mp3Url
+                callback?.onStreamTypeResolved(PodcastItem.REMOTE)
+            }
         }
+
+        callback?.onSeekAvailable(true)
 
         mediaPlayer!!.setDataSource(url)
         mediaPlayer!!.prepareAsync()
@@ -515,6 +558,8 @@ class PlayerService : Service() {
 
             audioManager.abandonAudioFocus(audioFocusChangeListener)
 
+            proxy.shutdown()
+
             session?.release()
         }
 
@@ -615,9 +660,11 @@ class DurationUpdatesTask(var service: PlayerService) : AsyncTask<Void , Int, Vo
 interface PlayerCallback {
 
     fun onDurationChanged(duration : Int)
-    fun onDurationAvailabilityChanged(durationAvailable: Int)
     fun onPositionChanged(position : Int)
     fun onAudioFocusFailed()
+
+    fun onCacheProgress(position: Int)
+    fun onSeekAvailable(available: Boolean)
 
     fun onPlayerPreparing()
     fun onPlayerStarted()

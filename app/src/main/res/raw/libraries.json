@@ -12,5 +12,6 @@
     ,"filepicker": "NoNonsense-FilePicker"
     ,"stetho": "Stetho"
     ,"ahbottomnavigation": "AHBottomNavigation"
-    ,"androidtagview": "android-tagview"
+    ,"androidtagview": "android-tagview",
+    "androidvideocache": "AndroidVideoCache"
 }

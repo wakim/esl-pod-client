@@ -41,14 +41,19 @@ class PlayerPresenter(private val app : Application,
 
     val playerCallback = object : PlayerCallback {
 
-        override fun onAudioFocusFailed() {
-        }
+        override fun onAudioFocusFailed() { }
 
         override fun onDurationChanged(duration: Int) {
-            view?.setMaxProgress(duration)
+            view?.setMaxProgress(if (duration < 0) 0 else duration)
         }
 
-        override fun onDurationAvailabilityChanged(durationAvailable: Int) { }
+        override fun onCacheProgress(position: Int) {
+            view?.setSecondaryProgressValue(position)
+        }
+
+        override fun onSeekAvailable(available: Boolean) {
+            view?.setSeekEnabled(available)
+        }
 
         override fun onPositionChanged(position: Int) {
             view?.setProgressValue(position)

@@ -113,6 +113,8 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
+    compile project(':androidvideocache-library/library')
+
     compile "com.android.support:appcompat-v7:$appConfig.versions.support_library"
     compile "com.android.support:design:$appConfig.versions.support_library"
     compile "com.android.support:cardview-v7:$appConfig.versions.support_library"
@@ -142,8 +144,6 @@ dependencies {
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
     debugCompile 'com.facebook.stetho:stetho:1.3.1'
-
-    compile 'org.nanohttpd:nanohttpd:2.3.0'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.6.0@aar') {
         transitive = true;
