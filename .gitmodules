@@ -1,0 +1,3 @@
+[submodule "androidvideocache-library"]
+	path = androidvideocache-library
+	url = git@github.com:wakim/AndroidVideoCache.git
