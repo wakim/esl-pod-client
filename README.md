@@ -53,6 +53,11 @@ To run this project you need to have:
 7. Click "Import project (Eclipse ADT, Gradle, etc.)"
 8. Build the project to see if everything is working fine
 
+Optional:
+
+In `androidvideocache-library` submodule, `library` is the important folder, all other siblings files and folders are not needed.
+If you need, configure an sparse-checkout over library folder.
+
 ## License
 <pre>
 Copyright 2016 Wakim Jraige
