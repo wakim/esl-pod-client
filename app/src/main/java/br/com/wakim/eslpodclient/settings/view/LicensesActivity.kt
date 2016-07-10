@@ -22,7 +22,8 @@ class LicensesActivity: BaseActivity() {
     // Keeping reference to prevent being stripped by Proguard
     val licensesRes = arrayOf(R.raw.androidtagview, R.raw.anko, R.raw.ahbottomnavigation, R.raw.calligraphy,
             R.raw.dagger2, R.raw.rxandroid, R.raw.rxjava, R.raw.filepicker, R.raw.threetenabp,
-            R.raw.stetho, R.raw.support_libraries, R.raw.kotlin_stdlib, R.raw.kotterknife)
+            R.raw.stetho, R.raw.support_libraries, R.raw.kotlin_stdlib, R.raw.kotterknife,
+            R.raw.androidvideocache)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
