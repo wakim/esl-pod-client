@@ -49,7 +49,7 @@
     <string name="download_folder">Download Folder</string>
     <string name="download_folder_summary">Select a folder to store your downloads</string>
 
-    <string name="use_cache">Store mp3 (beta)</string>
+    <string name="use_cache">Store mp3 (experimental)</string>
     <string name="use_cache_summary">Store mp3 on storage when streaming</string>
 
     <string name="press_back_again_to_leave">Press back again to leave</string>
