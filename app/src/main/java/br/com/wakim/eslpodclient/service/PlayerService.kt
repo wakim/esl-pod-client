@@ -266,8 +266,16 @@ class PlayerService : Service() {
             return
         }
 
+        if (podcastItem == this.podcastItem) {
+            return
+        }
+
         if (initalized || preparing) {
             reset()
+        }
+
+        if (this.podcastItem != null && storageInteractor.shouldCache()) {
+            proxy.shutdownClient(this.podcastItem!!.mp3Url)
         }
 
         this.podcastItem = podcastItem
