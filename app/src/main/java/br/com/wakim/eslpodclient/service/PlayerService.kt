@@ -19,12 +19,10 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.media.session.MediaButtonReceiver
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
-import android.util.Log
 import android.view.KeyEvent
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.AppComponent
-import br.com.wakim.eslpodclient.extensions.d
 import br.com.wakim.eslpodclient.extensions.getFileNameWithExtension
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
@@ -165,10 +163,13 @@ class PlayerService : Service() {
         }
 
     val cacheListener = CacheListener { cacheFile: File, url: String, percentsAvailable: Int ->
-        callback?.onSeekAvailable(false)
-        callback?.onCacheProgress(percentsAvailable)
+        val decimalPercent = percentsAvailable.toFloat() / 100F
 
-        "cache $percentsAvailable".d()
+        callback?.onSeekAvailable(false)
+
+        if (isPlaying()) {
+            callback?.onCacheProgress((decimalPercent * mediaPlayer!!.duration.toFloat()).toInt())
+        }
 
         if (percentsAvailable == 100) {
             storageInteractor.getDownloadStatus(podcastItem!!)
@@ -315,7 +316,7 @@ class PlayerService : Service() {
         }
 
         session?.isActive = true
-        callback?.onCacheProgress(-1)
+        callback?.onCacheProgress(0)
 
         registerNoisyReceiver()
 
@@ -367,6 +368,8 @@ class PlayerService : Service() {
             url = downloadStatus.localPath!!
             callback?.onStreamTypeResolved(PodcastItem.LOCAL)
         } else {
+            proxy.unregisterCacheListener(cacheListener)
+
             if (storageInteractor.shouldCache()) {
                 url = proxy.getProxyUrl(podcastItem.mp3Url)
                 callback?.onStreamTypeResolved(PodcastItem.CACHING)
@@ -376,8 +379,6 @@ class PlayerService : Service() {
                 url = podcastItem.mp3Url
                 callback?.onStreamTypeResolved(PodcastItem.REMOTE)
             }
-
-            proxy.unregisterCacheListener(cacheListener)
         }
 
         callback?.onSeekAvailable(true)
@@ -662,7 +663,7 @@ interface PlayerCallback {
     fun onPositionChanged(position : Int)
     fun onAudioFocusFailed()
 
-    fun onCacheProgress(progress: Int)
+    fun onCacheProgress(position: Int)
     fun onSeekAvailable(available: Boolean)
 
     fun onPlayerPreparing()

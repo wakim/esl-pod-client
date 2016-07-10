@@ -68,7 +68,7 @@
 
     <string name="local">Local</string>
     <string name="remote">Remote</string>
-    <string name="saving">Saving</string>
+    <string name="saving">Saving...</string>
     <string name="synchronizing_local_database">Synchronizing local database</string>
     <string name="synchronization_finished">Synchronization finished!</string>
     <string name="last_synchronized_podcast">Last synchronized: %1$s</string>
