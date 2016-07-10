@@ -28,11 +28,6 @@ It uses a combination of MediaPlayer and MediaPlayback for streaming audio and D
 <img src="art/original/player_full_screen-tablet-port.png" width="180" height="320" alt="Medial Player FullScreen" />
 
 #### Design made by [Tatipiment](https://github.com/Tatipiment)
-
-## TODO
-
- - Find a way to proxy the MediaPlayer with a local webserver (NanoHTTPD) and store the content of the podcast while it is being played.
-  - The implementation may be hard because the user can seek to any position of audio. So the proxy must handle gaps in the downloaded file and must be able to request correctly.
  
 ----
 
@@ -49,11 +44,14 @@ To run this project you need to have:
 ## Setup the project
 
 1. Install the dependencies above
-2. `$ git clone https://github.com/wakim/esl-pod-client.git` - Clone the project
-3. `$ cd esl-pod-client` - Go into the project folder
-4. Open Android Studio
-5. Click "Import project (Eclipse ADT, Gradle, etc.)"
-6. Build the project to see if everything is working fine
+2. `$ git clone --recursive https://github.com/wakim/esl-pod-client.git` - Clone the project with submodules
+4. if the folder `androidvideocache-library` is empty then:
+ - `$ cd esl-pod-client` - Go into the project folder
+ - `$ git submodule update --init --recursive` - Initialize and fetch submodule
+5. Do not edit any file in submodule, it must be read-only.
+6. Open Android Studio
+7. Click "Import project (Eclipse ADT, Gradle, etc.)"
+8. Build the project to see if everything is working fine
 
 ## License
 <pre>
