@@ -33,10 +33,12 @@ class DownloadSyncOnSubscribe(private val storageInteractor: StorageInteractor,
     override fun call(subscriber: Subscriber<in Pair<PodcastItem, PodcastItemDetail>>) {
         val baseDir = storageInteractor.getBaseDir()
 
+        downloadDbInteractor.clearDatabase()
+
         baseDir.listFiles().asSequence()
                 .map { file -> file.nameWithoutExtension }
                 .filter { filename -> downloadDbInteractor.getDownloadByFilename(filename) == null }
-                .filter { filename -> filename.startsWith("EC") || filename.startsWith("ESLPod")}
+                .filter { filename -> filename.startsWith("EC") || filename.startsWith("ESLPod") }
                 .map { filename -> filename.replace("EC", "English Cafe ").replace("ESLPod", "ESLPod ") }
                 .map { searchQuery -> searchAndUpdate(searchQuery, if (searchQuery.startsWith("English Cafe")) PodcastItem.ENGLISH_CAFE else PodcastItem.PODCAST) }
                 .filterNotNull()

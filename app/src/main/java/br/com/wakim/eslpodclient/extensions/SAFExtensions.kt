@@ -7,6 +7,7 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import android.support.annotation.RequiresApi
 import java.io.File
+import java.net.URLDecoder
 
 fun Context?.isSAFEnabled() = Build.VERSION.SDK_INT > 19
 
@@ -75,12 +76,15 @@ private fun getFileFromDocumentIdSAF(id: String, fileName: String): File? {
             if (externalFile.exists()) {
                 file = externalFile
             }
+
             i++
         }
     }
 
-    if (!file?.name.equals(fileName)) {
-        file = File(file, fileName)
+    val normalizedFileName = URLDecoder.decode(fileName).substringAfterLast(":")
+
+    if (!file?.name.equals(normalizedFileName)) {
+        file = File(file, normalizedFileName)
     }
 
     return file

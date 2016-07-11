@@ -72,6 +72,13 @@ class PlayerService : Service() {
                 val mp = MediaPlayer()
 
                 mp.setAudioStreamType(AudioManager.STREAM_MUSIC)
+
+                mp.setOnBufferingUpdateListener { mediaPlayer, buffer ->
+                    if (isPlaying() && !usingCache) {
+                        callback?.onCacheProgress(((buffer.toFloat() * getDuration()) / 100F).toInt())
+                    }
+                }
+
                 mp.setOnPreparedListener {
                     initalized = true
                     preparing = false
@@ -193,6 +200,8 @@ class PlayerService : Service() {
 
     private var stopped = false
 
+    private var usingCache = false
+
     override fun onCreate() {
         super.onCreate()
         (applicationContext.getSystemService(AppComponent::class.java.simpleName) as AppComponent?)?.inject(this)
@@ -270,7 +279,7 @@ class PlayerService : Service() {
             return
         }
 
-        if (podcastItem == this.podcastItem) {
+        if (isPlaying() && podcastItem == this.podcastItem) {
             return
         }
 
@@ -328,7 +337,6 @@ class PlayerService : Service() {
         }
 
         session?.isActive = true
-        callback?.onCacheProgress(0)
 
         registerNoisyReceiver()
 
@@ -342,6 +350,7 @@ class PlayerService : Service() {
         }
 
         notifyPlaying()
+        callback?.onCacheProgress(if (downloadStatus?.status == DownloadStatus.DOWNLOADED) getDuration().toInt() else 0)
     }
 
     fun notifyPlaying() {
@@ -376,6 +385,8 @@ class PlayerService : Service() {
 
         this.downloadStatus = downloadStatus
 
+        usingCache = false
+
         if (downloadStatus.status == DownloadStatus.DOWNLOADED) {
             url = downloadStatus.localPath!!
             callback?.onStreamTypeResolved(PodcastItem.LOCAL)
@@ -387,6 +398,8 @@ class PlayerService : Service() {
                 callback?.onStreamTypeResolved(PodcastItem.CACHING)
 
                 proxy.registerCacheListener(cacheListener, podcastItem.mp3Url)
+
+                usingCache = true
             } else {
                 url = podcastItem.mp3Url
                 callback?.onStreamTypeResolved(PodcastItem.REMOTE)

@@ -73,4 +73,12 @@ class DownloadDbInteractor(private val app: Application) {
                     delete(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "remote_id = ?", arrayOf(remoteId.toString()))
                 }
     }
+
+    fun clearDatabase() {
+        app
+                .database
+                .use {
+                    delete(DatabaseOpenHelper.DOWNLOADS_TABLE_NAME, "", emptyArray())
+                }
+    }
 }

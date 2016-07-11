@@ -22,17 +22,17 @@ class DownloadStatusOnSubscribe(private val remoteId: Long, private val localPat
                 downloadDbInteractor.deleteDownloadByRemoteId(remoteId)
             }
 
-            subscriber.onSuccess(DownloadStatus(localPath = localPath.toString(), remoteId = remoteId, downloadId = 0, status = DownloadStatus.NOT_DOWNLOADED))
+            subscriber.onSuccess(DownloadStatus(localPath = file.absolutePath, remoteId = remoteId, downloadId = 0, status = DownloadStatus.NOT_DOWNLOADED))
             return
         }
 
         // Not managed by app or database was cleared
         if (download == null) {
             downloadDbInteractor.insertDownload(remoteId = remoteId, filename = file.nameWithoutExtension, downloadId = 0, status = DownloadStatus.DOWNLOADED)
-            subscriber.onSuccess(DownloadStatus(localPath = localPath.toString(), remoteId = remoteId, downloadId = 0, status = DownloadStatus.DOWNLOADED))
+            subscriber.onSuccess(DownloadStatus(localPath = file.absolutePath, remoteId = remoteId, downloadId = 0, status = DownloadStatus.DOWNLOADED))
         } else {
             with (download) {
-                subscriber.onSuccess(DownloadStatus(localPath = localPath.toString(), remoteId = remoteId, downloadId = downloadId, status = status))
+                subscriber.onSuccess(DownloadStatus(localPath = file.absolutePath, remoteId = remoteId, downloadId = downloadId, status = status))
             }
         }
     }
