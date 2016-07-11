@@ -11,6 +11,14 @@ import java.io.File
 fun Context?.isSAFEnabled() = Build.VERSION.SDK_INT > 19
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+fun Context.getUriFromSAFTree(path: String, fileName: String): Uri {
+    val treeUri = Uri.parse(path)
+    val docUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, DocumentsContract.getTreeDocumentId(treeUri))
+
+    return Uri.parse("${docUri.toString()}${File.separator}$fileName")
+}
+
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 fun Context.createUriFromSAFTree(path: String, mimeType: String, fileName: String): Uri {
     val treeUri = Uri.parse(path)
     val docUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, DocumentsContract.getTreeDocumentId(treeUri))
@@ -26,7 +34,7 @@ fun Context.deleteDocumentFromSAF(fileUri: Uri) {
 fun Uri.toFile(): File {
     if (Build.VERSION.SDK_INT > 19 && isSAFUri()) {
         val id = DocumentsContract.getDocumentId(this)
-        return getFileFromDocumentIdSAF(id)!!
+        return getFileFromDocumentIdSAF(id, toString().getFileNameWithExtension())!!
     }
 
     return File(path)
@@ -37,13 +45,13 @@ fun String.getFolderFromSAFTree(): File? {
     val treeUri = Uri.parse(this)
     val docUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, DocumentsContract.getTreeDocumentId(treeUri))
 
-    return getFileFromDocumentIdSAF(DocumentsContract.getTreeDocumentId(docUri))
+    return getFileFromDocumentIdSAF(DocumentsContract.getTreeDocumentId(docUri), getFileNameWithExtension())
 }
 
 fun Uri.isSAFUri() =
         Build.VERSION.SDK_INT > 19 && "com.android.externalstorage.documents" == authority
 
-private fun getFileFromDocumentIdSAF(id: String): File? {
+private fun getFileFromDocumentIdSAF(id: String, fileName: String): File? {
     var file: File? = null
 
     val split = id.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -60,6 +68,7 @@ private fun getFileFromDocumentIdSAF(id: String): File? {
         }
 
         var i = 0
+
         while (storagePoints != null && i < storagePoints.size && file == null) {
             val externalFile = File(storagePoints[i], path)
 
@@ -68,6 +77,10 @@ private fun getFileFromDocumentIdSAF(id: String): File? {
             }
             i++
         }
+    }
+
+    if (!file?.name.equals(fileName)) {
+        file = File(file, fileName)
     }
 
     return file

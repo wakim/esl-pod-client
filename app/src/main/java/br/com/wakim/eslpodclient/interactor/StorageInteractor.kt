@@ -25,7 +25,7 @@ class StorageInteractor(private var downloadManager: DownloadManager,
         val base = preferenceInteractor.getDownloadLocation()
 
         if (hasSAFStored()) {
-            return app.createUriFromSAFTree(base, "audio/mp3", podcastItem.mp3Url.getFileNameWithExtension())
+            return app.getUriFromSAFTree(base, podcastItem.mp3Url.getFileNameWithExtension())
         } else {
             return Uri.parse("$base${File.separator}${podcastItem.mp3Url.getFileNameWithExtension()}")
         }
@@ -134,6 +134,17 @@ class StorageInteractor(private var downloadManager: DownloadManager,
         if (hasSAFStored()) {
             val base = preferenceInteractor.getDownloadLocation()
             app.createUriFromSAFTree(base, "audio/mp3", filename)
+        }
+    }
+
+    fun deleteFile(fileName: String) {
+        val base = preferenceInteractor.getDownloadLocation()
+
+        if (hasSAFStored()) {
+            val uri = app.getUriFromSAFTree(base, fileName)
+            app.deleteDocumentFromSAF(uri)
+        } else {
+            File(base, fileName).delete()
         }
     }
 

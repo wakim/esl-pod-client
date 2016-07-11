@@ -54,7 +54,9 @@ class PlayerService : Service() {
                 .cacheDirectory(storageInteractor.getBaseDir())
                 .fileNameGenerator { url ->
                     val filename = url.getFileNameWithExtension()
+
                     storageInteractor.prepareFile(filename)
+                    storageInteractor.prepareFile("$filename.download")
 
                     filename
                 }
@@ -172,6 +174,8 @@ class PlayerService : Service() {
         }
 
         if (percentsAvailable == 100) {
+            storageInteractor.deleteFile("${podcastItem!!.mp3Url}.download")
+
             storageInteractor.getDownloadStatus(podcastItem!!)
                     .ofIOToMainThread()
                     .subscribe()
