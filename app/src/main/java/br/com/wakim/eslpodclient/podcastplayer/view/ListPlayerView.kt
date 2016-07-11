@@ -24,6 +24,8 @@ import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
 import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
 import butterknife.bindView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle
 import pl.charmas.android.tagview.TagView
@@ -215,6 +217,18 @@ open class ListPlayerView : LinearLayout, PlayerView {
         nextButton.setOnClickListener(clickListener)
 
         overflowButton.setOnClickListener(clickListener)
+
+        setupAdView()
+    }
+
+    fun setupAdView() {
+        val adView = findViewById(R.id.adView) as AdView
+        val adRequest = AdRequest.Builder()
+                .setIsDesignedForFamilies(true)
+                .addTestDevice("1FE3D6ABBB54E8FED73AA3582F320467")
+                .build()
+
+        adView.loadAd(adRequest)
     }
 
     fun setControls(playFab: FloatingActionButton, pauseFab: FloatingActionButton, loadingFab: LoadingFloatingActionButton) {

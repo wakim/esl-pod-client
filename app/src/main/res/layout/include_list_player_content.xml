@@ -269,17 +269,31 @@
             android:layout_height="wrap_content"
             android:paddingBottom="16dp">
 
-            <TextView
-                android:id="@+id/tv_script"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginEnd="16dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                fontPath="fonts/Roboto-Regular.ttf" />
+                android:orientation="vertical">
+
+                <com.google.android.gms.ads.AdView
+                    android:id="@+id/adView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:adSize="BANNER"
+                    app:adUnitId="@string/add_player_unit_id">
+                </com.google.android.gms.ads.AdView>
+
+                <TextView
+                    android:id="@+id/tv_script"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    fontPath="fonts/Roboto-Regular.ttf" />
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/pb_loading"

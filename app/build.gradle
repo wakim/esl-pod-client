@@ -59,6 +59,8 @@ android {
 
         manifestPlaceholders = appConfig.manifestPlaceholder
 
+        resValue "string", "add_player_unit_id", rootProject.ext.admobAppPlayerUnitId
+
         buildConfigField("String", "BASE_URL", "\"$appConfig.base_url\"")
         buildConfigField("String", "DETAIL_URL", "\"$appConfig.detail_url\"")
         buildConfigField("String", "SEARCH_URL", "\"$appConfig.search_url\"")
@@ -71,10 +73,21 @@ android {
         dexInProcess = true
     }
 
+    signingConfigs {
+        release {
+            storeFile file("debug.keystore.jks")
+            storePassword rootProject.ext.storePassword
+            keyAlias rootProject.ext.keyAlias
+            keyPassword rootProject.ext.keyPassword
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
+
+            signingConfig signingConfigs.release
 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
@@ -87,6 +100,10 @@ android {
                     variant.mergedFlavor.versionName = versionName
                 }
             }
+        }
+
+        debug {
+            signingConfig signingConfigs.release
         }
     }
 
@@ -149,6 +166,8 @@ dependencies {
         transitive = true;
     }
 
+    compile 'com.google.firebase:firebase-ads:9.0.0'
+
     testCompile 'junit:junit:4.12'
 
     // Android Testing Support Library's runner and rules
@@ -177,3 +196,5 @@ dependencies {
 kapt {
     generateStubs = true
 }
+
+apply plugin: 'com.google.gms.google-services'
