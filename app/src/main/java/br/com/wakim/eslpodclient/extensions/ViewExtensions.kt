@@ -39,7 +39,7 @@ fun View.hideAnimated() {
                 override fun onAnimationEnd(view: View) {
                     view.visibility = View.GONE
                 }
-            });
+            })
 
 }
 
@@ -53,7 +53,7 @@ fun View.showAnimated() {
             .scaleY(1f)
             .alpha(1f)
             .setInterpolator(interpolator)
-            .setListener(null);
+            .setListener(null)
 }
 
 fun BottomSheetBehavior<*>.toggleState(@BottomSheetBehavior.State state1 : Int, @BottomSheetBehavior.State state2 : Int) {
@@ -68,14 +68,14 @@ fun Toast.isVisible(): Boolean {
         return false
     }
 
-    if (view.getWindowToken() == null) {
+    if (view.windowToken == null) {
         return false
     }
 
-    return true;
+    return true
 }
 
-inline fun Fragment.logContentView() {
+fun Fragment.logContentView() {
     if (!BuildConfig.DEBUG) {
         val contentView = ContentViewEvent()
                 .putContentName(javaClass.name)

@@ -32,8 +32,9 @@ class AppModule(private val app: Application) {
     fun providesConnectivityManager() = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     @Provides @Singleton
-    fun providesNotificationManagerCompat() = NotificationManagerCompat.from(app)
+    fun providesNotificationManagerCompat(): NotificationManagerCompat = NotificationManagerCompat.from(app)
 
     @Provides @Singleton
-    fun providesPublishSubject() = PublishSubject.create<PublishSubjectItem<Any>>()
+    fun providesPublishSubject(): PublishSubject<PublishSubjectItem<Any>> =
+            PublishSubject.create<PublishSubjectItem<Any>>()
 }

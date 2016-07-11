@@ -1,22 +1,13 @@
 package br.com.wakim.eslpodclient.extensions
 
 import android.content.ContentValues
-import android.database.sqlite.SQLiteDatabase
 import org.jetbrains.anko.db.RowParser
 
 class LongAnyParser: RowParser<Any> {
     override fun parseRow(columns: Array<Any?>): Any = columns[0] as? Long ?: Any()
 }
 
-fun SQLiteDatabase.insertIgnoringConflict(tableName: String, vararg values: Pair<String, Any?>): Long {
-    return insertWithOnConflict(tableName, null, values.toContentValues(), SQLiteDatabase.CONFLICT_IGNORE)
-}
-
 // Extracted from Anko
-fun Pair<String, Any?>.toContentValues(): ContentValues {
-    return arrayOf(this).toContentValues()
-}
-
 fun Array<out Pair<String, Any?>>.toContentValues(): ContentValues {
     val values = ContentValues()
 

@@ -198,7 +198,6 @@ class TagView : TextView {
 
         companion object {
             private const val MAGIC_PADDING_LEFT = 0
-            private const val MAGIC_PADDING_BOTTOM = 3
         }
     }
 }

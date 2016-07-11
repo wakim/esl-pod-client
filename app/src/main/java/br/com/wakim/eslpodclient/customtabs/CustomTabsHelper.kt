@@ -7,7 +7,6 @@ import android.net.Uri
 import android.support.customtabs.CustomTabsService
 import android.text.TextUtils
 import android.util.Log
-import br.com.wakim.eslpodclient.extensions.e
 import java.util.*
 
 /**

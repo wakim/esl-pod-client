@@ -49,22 +49,22 @@ class DownloadManagerReceiver: BroadcastReceiver() {
                     .setFilterById(id)
                     .setFilterByStatus(status)
 
-            val cursor = downloadManager.query(query)
-            val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+            downloadManager.query(query)
+                    .apply {
+                        val statusIndex = getColumnIndex(DownloadManager.COLUMN_STATUS)
 
-            if (cursor.moveToFirst()) {
-                status = cursor.getInt(statusIndex)
+                        if (moveToFirst()) {
+                            status = getInt(statusIndex)
 
-                if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                    storageInteractor.handleDownloadCompletion(id)
-                } else {
-                    storageInteractor.handleDownloadFailed(id)
-                }
-            } else {
-                storageInteractor.handleDownloadFailed(id)
-            }
-
-            cursor.close()
+                            if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                                storageInteractor.handleDownloadCompletion(id)
+                            } else {
+                                storageInteractor.handleDownloadFailed(id)
+                            }
+                        } else {
+                            storageInteractor.handleDownloadFailed(id)
+                        }
+                    }.close()
         }
     }
 }

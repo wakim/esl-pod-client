@@ -5,6 +5,6 @@ import rx.subjects.PublishSubject
 class ConnectivityPublishSubject {
 
     companion object {
-        val INSTANCE = PublishSubject.create<Boolean>()
+        val INSTANCE: PublishSubject<Boolean> = PublishSubject.create<Boolean>()
     }
 }

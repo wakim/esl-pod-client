@@ -6,10 +6,10 @@ import rx.subjects.PublishSubject
 class PermissionPublishSubject {
 
     companion object {
-        val INSTANCE = PublishSubject.create<Permission>()
+        val INSTANCE: PublishSubject<Permission> = PublishSubject.create<Permission>()
     }
 
-    data class Permission(val requestCode: Int, val permissions: Array<out String>, val grantResults: IntArray) {
+    class Permission(val requestCode: Int, val permissions: Array<out String>, val grantResults: IntArray) {
         fun isGranted() : Boolean {
 
             for (result: Int in grantResults) {

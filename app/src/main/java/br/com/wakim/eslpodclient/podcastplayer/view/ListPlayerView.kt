@@ -1,6 +1,7 @@
 package br.com.wakim.eslpodclient.podcastplayer.view
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.annotation.StringRes
@@ -440,8 +441,14 @@ open class ListPlayerView : LinearLayout, PlayerView {
             bindPodcastInfo(podcastItem)
     }
 
+    @Suppress("DEPRECATION")
     override fun bindPodcastDetail(podcastItemDetail: PodcastItemDetail) {
-        script.text = Html.fromHtml(podcastItemDetail.script)
+        if (Build.VERSION.SDK_INT < 24) {
+            script.text = Html.fromHtml(podcastItemDetail.script)
+        } else {
+            script.text = Html.fromHtml(podcastItemDetail.script, Html.FROM_HTML_OPTION_USE_CSS_COLORS)
+        }
+
         setupOverflowMenu(podcastItemDetail)
     }
 

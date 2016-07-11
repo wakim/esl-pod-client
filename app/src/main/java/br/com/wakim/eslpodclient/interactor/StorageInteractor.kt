@@ -10,6 +10,7 @@ import br.com.wakim.eslpodclient.interactor.rx.DownloadStatusOnSubscribe
 import br.com.wakim.eslpodclient.interactor.rx.DownloadSyncOnSubscribe
 import br.com.wakim.eslpodclient.model.DownloadStatus
 import br.com.wakim.eslpodclient.model.PodcastItem
+import br.com.wakim.eslpodclient.model.PodcastItemDetail
 import br.com.wakim.eslpodclient.service.StorageService
 import rx.Observable
 import rx.Single
@@ -98,7 +99,7 @@ class StorageInteractor(private var downloadManager: DownloadManager,
         downloadDbInteractor.deleteDownloadByDownloadId(downloadId)
     }
 
-    fun deleteDownload(podcastItem: PodcastItem) =
+    fun deleteDownload(podcastItem: PodcastItem): Single<Any> =
             cancelDownload(podcastItem)
                     .map { result ->
                         if (result) {
@@ -112,7 +113,7 @@ class StorageInteractor(private var downloadManager: DownloadManager,
                         } else false
                     }
 
-    fun cancelDownload(podcastItem: PodcastItem) =
+    fun cancelDownload(podcastItem: PodcastItem): Single<Boolean> =
             Single.defer<Boolean> {
                 downloadDbInteractor.deleteDownloadByRemoteId(podcastItem.remoteId)
                 Single.just(true)
@@ -125,7 +126,7 @@ class StorageInteractor(private var downloadManager: DownloadManager,
         }
     }
 
-    fun synchronizeDownloads() =
+    fun synchronizeDownloads(): Observable<Pair<PodcastItem, PodcastItemDetail>> =
             Observable.create(DownloadSyncOnSubscribe(this, downloadDbInteractor, BuildConfig.SEARCH_URL))
                     .connected()
 
