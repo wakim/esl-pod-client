@@ -24,6 +24,7 @@ import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
 import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
 import butterknife.bindView
+import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import org.threeten.bp.format.DateTimeFormatter
@@ -50,7 +51,11 @@ open class ListPlayerView : LinearLayout, PlayerView {
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             when (newState) {
                 BottomSheetBehavior.STATE_COLLAPSED -> showFabs()
-                BottomSheetBehavior.STATE_EXPANDED  -> hideFabs()
+                BottomSheetBehavior.STATE_EXPANDED  -> {
+                    hideFabs()
+                    setupAdViewIfNeeded()
+                }
+
                 BottomSheetBehavior.STATE_HIDDEN    -> hideFabs()
             }
         }
@@ -100,6 +105,8 @@ open class ListPlayerView : LinearLayout, PlayerView {
     private val overflowButton: ImageButton by bindView(R.id.ib_overflow)
     private val streamTypeText: TextView by bindView(R.id.tv_stream_type)
 
+    private val adView: AdView by bindView(R.id.ad_view)
+
     private val popupMenu: PopupMenu by lazy {
         val menu = PopupMenu(context, overflowButton)
 
@@ -118,6 +125,7 @@ open class ListPlayerView : LinearLayout, PlayerView {
     var podcastItem: PodcastItem? = null
 
     var progressLocked = false
+    var adsLoaded = false
 
     @Inject
     lateinit var baseActivity: BaseActivity
@@ -217,18 +225,27 @@ open class ListPlayerView : LinearLayout, PlayerView {
         nextButton.setOnClickListener(clickListener)
 
         overflowButton.setOnClickListener(clickListener)
-
-        setupAdView()
     }
 
-    fun setupAdView() {
+    fun setupAdViewIfNeeded() {
+        if (adsLoaded) {
+            return
+        }
+
+        val extras = Bundle().apply {
+            putBoolean("is_designed_for_families", true)
+        }
+
         val adView = findViewById(R.id.adView) as AdView
         val adRequest = AdRequest.Builder()
                 .setIsDesignedForFamilies(true)
+                .addNetworkExtrasBundle(AdMobAdapter::class.java, extras)
                 .addTestDevice("1FE3D6ABBB54E8FED73AA3582F320467")
                 .build()
 
         adView.loadAd(adRequest)
+
+        adsLoaded = true
     }
 
     fun setControls(playFab: FloatingActionButton, pauseFab: FloatingActionButton, loadingFab: LoadingFloatingActionButton) {

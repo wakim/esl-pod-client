@@ -275,8 +275,8 @@
                 android:orientation="vertical">
 
                 <com.google.android.gms.ads.AdView
-                    android:id="@+id/adView"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/ad_view"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:adSize="BANNER"
                     app:adUnitId="@string/add_player_unit_id">

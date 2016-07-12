@@ -81,7 +81,7 @@ private fun getFileFromDocumentIdSAF(id: String, fileName: String): File? {
         }
     }
 
-    val normalizedFileName = URLDecoder.decode(fileName).substringAfterLast(":")
+    val normalizedFileName = URLDecoder.decode(fileName, "utf-8").substringAfterLast(":")
 
     if (!file?.name.equals(normalizedFileName)) {
         file = File(file, normalizedFileName)
