@@ -3,11 +3,13 @@ package br.com.wakim.eslpodclient.settings.view
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import br.com.wakim.eslpodclient.R
+import br.com.wakim.eslpodclient.extensions.loadAds
 import br.com.wakim.eslpodclient.extensions.readRawString
 import br.com.wakim.eslpodclient.extensions.resolveRawResIdentifier
 import br.com.wakim.eslpodclient.settings.adapter.LicenseListAdapter
 import br.com.wakim.eslpodclient.view.BaseActivity
 import butterknife.bindView
+import com.google.android.gms.ads.AdView
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import org.json.JSONObject
@@ -15,6 +17,7 @@ import org.json.JSONObject
 class LicensesActivity: BaseActivity() {
 
     val recyclerView: RecyclerView by bindView(R.id.recycler_view)
+    val adView: AdView by bindView(R.id.ad_view)
 
     var adapter: LicenseListAdapter? = null
     var licenses: MutableList<Pair<String, String>>? = mutableListOf()
@@ -36,6 +39,8 @@ class LicensesActivity: BaseActivity() {
         adapter = LicenseListAdapter(this)
 
         recyclerView.adapter = adapter
+
+        adView.loadAds()
 
         doAsync {
             val licensesJson = JSONObject(readRawString(R.raw.libraries))

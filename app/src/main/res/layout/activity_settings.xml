@@ -13,4 +13,6 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:tag="SETTINGS" />
+
+    <include layout="@layout/include_ads" />
 </LinearLayout>

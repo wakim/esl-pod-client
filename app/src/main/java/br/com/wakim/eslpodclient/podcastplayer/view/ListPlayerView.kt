@@ -24,8 +24,6 @@ import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
 import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
 import butterknife.bindView
-import com.google.ads.mediation.admob.AdMobAdapter
-import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle
@@ -232,18 +230,7 @@ open class ListPlayerView : LinearLayout, PlayerView {
             return
         }
 
-        val extras = Bundle().apply {
-            putBoolean("is_designed_for_families", true)
-        }
-
-        val adView = findViewById(R.id.adView) as AdView
-        val adRequest = AdRequest.Builder()
-                .setIsDesignedForFamilies(true)
-                .addNetworkExtrasBundle(AdMobAdapter::class.java, extras)
-                .addTestDevice("1FE3D6ABBB54E8FED73AA3582F320467")
-                .build()
-
-        adView.loadAd(adRequest)
+        adView.loadAds()
 
         adsLoaded = true
     }

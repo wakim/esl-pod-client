@@ -1,5 +1,6 @@
 package br.com.wakim.eslpodclient.extensions
 
+import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewCompat
@@ -10,6 +11,9 @@ import android.widget.Toast
 import br.com.wakim.eslpodclient.BuildConfig
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.ContentViewEvent
+import com.google.ads.mediation.admob.AdMobAdapter
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 
 private val interpolator = FastOutSlowInInterpolator()
 
@@ -82,4 +86,18 @@ fun Fragment.logContentView() {
 
         Answers.getInstance().logContentView(contentView)
     }
+}
+
+fun AdView.loadAds() {
+    val extras = Bundle().apply {
+        putBoolean("is_designed_for_families", true)
+    }
+
+    val adRequest = AdRequest.Builder()
+            .setIsDesignedForFamilies(true)
+            .addNetworkExtrasBundle(AdMobAdapter::class.java, extras)
+            .addTestDevice("1FE3D6ABBB54E8FED73AA3582F320467")
+            .build()
+
+    loadAd(adRequest)
 }

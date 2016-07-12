@@ -14,11 +14,13 @@ import br.com.wakim.eslpodclient.customtabs.browseWithCustomTabs
 import br.com.wakim.eslpodclient.dagger.ActivityComponent
 import br.com.wakim.eslpodclient.extensions.hasPermission
 import br.com.wakim.eslpodclient.extensions.logContentView
+import br.com.wakim.eslpodclient.extensions.logFirebaseContentView
 import br.com.wakim.eslpodclient.extensions.startActivity
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
 import br.com.wakim.eslpodclient.preference.PickFolderPreference
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.view.BaseActivity
+import com.google.firebase.analytics.FirebaseAnalytics
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
@@ -27,6 +29,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     @Inject
     lateinit var storageInteractor: StorageInteractor
+
+    @Inject
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
     var pickFolderPreference: PickFolderPreference? = null
 
@@ -39,7 +44,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         logContentView()
+        firebaseAnalytics.logFirebaseContentView()
     }
 
     override fun onDestroyView() {

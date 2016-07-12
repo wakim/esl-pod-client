@@ -16,4 +16,6 @@
         android:layout_weight="1"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         tools:listitem="@layout/list_item_license" />
+
+    <include layout="@layout/include_ads" />
 </LinearLayout>

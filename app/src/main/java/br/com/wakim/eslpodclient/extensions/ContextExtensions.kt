@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Bundle
 import android.os.IBinder
 import android.support.annotation.RawRes
 import android.support.annotation.StringRes
@@ -20,6 +21,7 @@ import android.view.View
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.service.TypedBinder
 import br.com.wakim.eslpodclient.view.BasePresenterActivity
+import com.google.firebase.analytics.FirebaseAnalytics
 import rx.Observable
 import rx.Subscriber
 import java.io.BufferedReader
@@ -137,4 +139,13 @@ fun String.d() {
 
 fun Throwable.e() {
     Log.e(Application.INSTANCE?.packageName ?: "TAG", "Error", this)
+}
+
+fun FirebaseAnalytics.logFirebaseContentView() {
+    val params = Bundle().apply {
+        putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "screen")
+        putString(FirebaseAnalytics.Param.ITEM_NAME, javaClass.name)
+    }
+
+    logEvent(FirebaseAnalytics.Event.VIEW_ITEM, params)
 }
