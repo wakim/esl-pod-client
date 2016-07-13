@@ -274,7 +274,7 @@ open class PodcastListPresenter(protected val app: Application,
         ShareCompat.IntentBuilder.from(baseActivity)
                 .setText(text)
                 .setType("text/plain")
-                .intent
+                .createChooserIntent()
                 .startActivity(baseActivity)
     }
 
