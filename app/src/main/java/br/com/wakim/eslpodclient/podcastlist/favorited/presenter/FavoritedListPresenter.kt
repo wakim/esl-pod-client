@@ -1,6 +1,5 @@
 package br.com.wakim.eslpodclient.podcastlist.favorited.presenter
 
-import android.app.Activity
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.interactor.FavoritedPodcastItemInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
@@ -17,9 +16,8 @@ class FavoritedListPresenter : PodcastListPresenter {
                 permissionRequester: PermissionRequester,
                 playlistManager: PlaylistManager,
                 storageInteractor: StorageInteractor,
-                favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
-                baseActivity: Activity) :
-    super(app, publishSubject, favoritedPodcastItemInteractor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor, baseActivity)
+                favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor) :
+    super(app, publishSubject, favoritedPodcastItemInteractor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor)
 
     override fun onRefresh() {
         items.clear()

@@ -1,6 +1,5 @@
 package br.com.wakim.eslpodclient.podcastlist.downloaded.presenter
 
-import android.app.Activity
 import android.content.ServiceConnection
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.extensions.bindService
@@ -25,9 +24,8 @@ class DownloadedListPresenter: PodcastListPresenter {
                 permissionRequester: PermissionRequester,
                 playlistManager: PlaylistManager,
                 storageInteractor: StorageInteractor,
-                favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
-                baseActivity: Activity) :
-    super(app, publishSubject, downloadedPodcastItemInteractor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor, baseActivity)
+                favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor) :
+    super(app, publishSubject, downloadedPodcastItemInteractor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor)
 
     var storageService: StorageService? = null
     var storageServiceConnection: ServiceConnection? = null

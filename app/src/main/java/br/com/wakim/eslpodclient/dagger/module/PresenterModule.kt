@@ -1,6 +1,5 @@
 package br.com.wakim.eslpodclient.dagger.module
 
-import android.app.Activity
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.dagger.scope.ActivityScope
 import br.com.wakim.eslpodclient.interactor.DownloadedPodcastItemInteractor
@@ -28,9 +27,8 @@ class PresenterModule() {
                                      playlistManager: PlaylistManager,
                                      storageInteractor: StorageInteractor,
                                      podcastInteractor: PodcastInteractor,
-                                     favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
-                                     activity: Activity) =
-            PodcastListPresenter(app, publishSubject, podcastInteractor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor, activity)
+                                     favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor) =
+            PodcastListPresenter(app, publishSubject, podcastInteractor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor)
 
     @Provides @ActivityScope
     fun providesPlayerPresenter(app: Application, permissionRequester: PermissionRequester, podcastInteractor: PodcastInteractor) =
@@ -42,9 +40,8 @@ class PresenterModule() {
                                        permissionRequester: PermissionRequester,
                                        playlistManager: PlaylistManager,
                                        storageInteractor: StorageInteractor,
-                                       favoritesInteractor: FavoritedPodcastItemInteractor,
-                                       activity: Activity) =
-            FavoritedListPresenter(app, publishSubject, permissionRequester, playlistManager, storageInteractor, favoritesInteractor, activity)
+                                       favoritesInteractor: FavoritedPodcastItemInteractor) =
+            FavoritedListPresenter(app, publishSubject, permissionRequester, playlistManager, storageInteractor, favoritesInteractor)
 
     @Provides @ActivityScope
     fun providesDownloadedListPresenter(app: Application,
@@ -53,7 +50,6 @@ class PresenterModule() {
                                         playlistManager: PlaylistManager,
                                         storageInteractor: StorageInteractor,
                                         interactor: DownloadedPodcastItemInteractor,
-                                        favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
-                                        activity: Activity) =
-            DownloadedListPresenter(app, publishSubject, interactor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor, activity)
+                                        favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor) =
+            DownloadedListPresenter(app, publishSubject, interactor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor)
 }
