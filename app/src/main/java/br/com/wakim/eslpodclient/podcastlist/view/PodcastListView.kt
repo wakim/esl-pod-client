@@ -15,4 +15,8 @@ interface PodcastListView : View {
     fun setItems(list: ArrayList<PodcastItem>)
 
     fun addItem(podcastItem: PodcastItem)
+
+    fun share(text: String?)
+
+    fun openUrlOnBrowser(url: String)
 }

@@ -2,6 +2,7 @@ package br.com.wakim.eslpodclient.podcastlist.view
 
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.app.ShareCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
@@ -10,9 +11,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import br.com.wakim.eslpodclient.R
+import br.com.wakim.eslpodclient.customtabs.browseWithCustomTabs
 import br.com.wakim.eslpodclient.dagger.PodcastPlayerComponent
 import br.com.wakim.eslpodclient.extensions.dp
 import br.com.wakim.eslpodclient.extensions.makeVisible
+import br.com.wakim.eslpodclient.extensions.startActivity
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.podcastlist.adapter.PodcastListAdapter
 import br.com.wakim.eslpodclient.podcastlist.presenter.PodcastListPresenter
@@ -197,6 +200,18 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
 
     override fun addItem(podcastItem: PodcastItem) {
         adapter.add(podcastItem)
+    }
+
+    override fun share(text: String?) {
+        ShareCompat.IntentBuilder.from(baseActivity)
+                .setText(text)
+                .setType("text/plain")
+                .createChooserIntent()
+                .startActivity(baseActivity)
+    }
+
+    override fun openUrlOnBrowser(url: String) {
+        baseActivity.browseWithCustomTabs(url)
     }
 
     override fun remove(podcastItem: PodcastItem) {

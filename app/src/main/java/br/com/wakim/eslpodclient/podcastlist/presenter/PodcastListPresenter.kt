@@ -1,13 +1,9 @@
 package br.com.wakim.eslpodclient.podcastlist.presenter
 
-import android.app.Activity
-import android.support.v4.app.ShareCompat
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.BuildConfig
 import br.com.wakim.eslpodclient.R
-import br.com.wakim.eslpodclient.customtabs.browseWithCustomTabs
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
-import br.com.wakim.eslpodclient.extensions.startActivity
 import br.com.wakim.eslpodclient.interactor.FavoritedPodcastItemInteractor
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.interactor.StorageInteractor
@@ -32,8 +28,7 @@ open class PodcastListPresenter(protected val app: Application,
                                 private   val permissionRequester: PermissionRequester,
                                 private   val playlistManager: PlaylistManager,
                                 protected val storageInteractor: StorageInteractor,
-                                private   val favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
-                                private   val baseActivity: Activity) : Presenter<PodcastListView>() {
+                                private   val favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor) : Presenter<PodcastListView>() {
 
     var items : ArrayList<PodcastItem> = ArrayList()
 
@@ -254,15 +249,11 @@ open class PodcastListPresenter(protected val app: Application,
         val url = BuildConfig.DETAIL_URL.format(podcastItem.remoteId.toString())
         val text = app.getString(R.string.share_text, podcastItem.userFriendlyTitle, url)
 
-        ShareCompat.IntentBuilder.from(baseActivity)
-                .setText(text)
-                .setType("text/plain")
-                .createChooserIntent()
-                .startActivity(baseActivity)
+        view?.share(text)
     }
 
     fun openWith(podcastItem: PodcastItem) {
-        baseActivity.browseWithCustomTabs(BuildConfig.DETAIL_URL.format(podcastItem.remoteId))
+        view?.openUrlOnBrowser(BuildConfig.DETAIL_URL.format(podcastItem.remoteId))
     }
 
     fun favorite(podcastItem: PodcastItem) {
