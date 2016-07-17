@@ -73,6 +73,7 @@
     <string name="synchronization_finished">Synchronization finished!</string>
     <string name="last_synchronized_podcast">Last synchronized: %1$s</string>
 
+    <string name="write_external_storage_permission_needed_to_cache_streaming">Write External Storage permission is needed to cache streaming</string>
     <string name="write_external_storage_permission_needed_to_download">Write External Storage permission is needed to download any podcast</string>
     <string name="write_external_storage_permission_needed_to_remove_download">Write External Storage permission is needed to remove any downloaded podcast</string>
 </resources>

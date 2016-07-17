@@ -25,5 +25,4 @@
         android:layout_gravity="bottom"
         app:bbn_entries="@menu/bottombar_menu"
         app:layout_behavior="@string/bbn_phone_view_behavior" />
-
 </android.support.design.widget.CoordinatorLayout>

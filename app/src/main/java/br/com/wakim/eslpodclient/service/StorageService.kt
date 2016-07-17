@@ -150,6 +150,8 @@ class StorageService : Service() {
         notificationManager.cancel(NOTIFICATION_ID)
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder!!.build())
     }
+
+    fun  shouldCache() = storageInteractor.shouldCache()
 }
 
 class StorageLocalBinder : TypedBinder<StorageService> {

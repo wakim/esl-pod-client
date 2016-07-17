@@ -1,6 +1,7 @@
 package br.com.wakim.eslpodclient.view
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
@@ -101,6 +102,8 @@ abstract class BaseActivity: AppCompatActivity(), PermissionRequester {
     override fun requestPermissions(requestCode: Int, vararg permissions: String) {
         ActivityCompat.requestPermissions(this, permissions, requestCode)
     }
+
+    override fun hasPermission(permission: String) = ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

@@ -12,12 +12,14 @@ import android.os.Bundle
 import android.os.IBinder
 import android.support.annotation.RawRes
 import android.support.annotation.StringRes
+import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewTreeObserver
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.service.TypedBinder
 import br.com.wakim.eslpodclient.view.BasePresenterActivity
@@ -97,10 +99,25 @@ fun Fragment.dp(dpValue: Int): Int = context.dp(dpValue)
 fun Context.dp(dpValue : Int) : Int =
         TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue.toFloat(), resources.displayMetrics).toInt()
 
-fun snack(view: View, @StringRes message: Int, duration: Int = Snackbar.LENGTH_LONG) : Snackbar {
+fun snack(view: View, @StringRes message: Int, duration: Int = Snackbar.LENGTH_LONG): Snackbar {
     val snack = Snackbar.make(view, message, duration)
 
     snack.show()
+
+    snack.view.viewTreeObserver
+            .addOnPreDrawListener(object: ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    val listener = this
+
+                    with (snack.view) {
+                        viewTreeObserver.removeOnPreDrawListener(listener)
+                        // Disabling swipe to dismiss due to BottomBar bug :(
+                        (layoutParams as CoordinatorLayout.LayoutParams).behavior = null
+                    }
+
+                    return true
+                }
+            })
 
     return snack
 }

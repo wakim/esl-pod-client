@@ -59,7 +59,7 @@ android {
 
         manifestPlaceholders = appConfig.manifestPlaceholder
 
-        resValue "string", "add_player_unit_id", rootProject.ext.admobAppPlayerUnitId
+        resValue "string", "ad_settings_ads_unit_id", rootProject.ext.admobAppSettingsUnitId
 
         buildConfigField("String", "BASE_URL", "\"$appConfig.base_url\"")
         buildConfigField("String", "DETAIL_URL", "\"$appConfig.detail_url\"")

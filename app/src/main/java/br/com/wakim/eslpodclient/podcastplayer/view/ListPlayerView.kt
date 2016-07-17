@@ -24,7 +24,6 @@ import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
 import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
 import butterknife.bindView
-import com.google.android.gms.ads.AdView
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle
 import pl.charmas.android.tagview.TagView
@@ -49,11 +48,7 @@ open class ListPlayerView : LinearLayout, PlayerView {
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             when (newState) {
                 BottomSheetBehavior.STATE_COLLAPSED -> showFabs()
-                BottomSheetBehavior.STATE_EXPANDED  -> {
-                    hideFabs()
-                    setupAdViewIfNeeded()
-                }
-
+                BottomSheetBehavior.STATE_EXPANDED -> hideFabs()
                 BottomSheetBehavior.STATE_HIDDEN    -> hideFabs()
             }
         }
@@ -102,8 +97,6 @@ open class ListPlayerView : LinearLayout, PlayerView {
     private val previousButton: ImageButton by bindView(R.id.ib_previous)
     private val overflowButton: ImageButton by bindView(R.id.ib_overflow)
     private val streamTypeText: TextView by bindView(R.id.tv_stream_type)
-
-    private val adView: AdView by bindView(R.id.ad_view)
 
     private val popupMenu: PopupMenu by lazy {
         val menu = PopupMenu(context, overflowButton)
@@ -223,16 +216,6 @@ open class ListPlayerView : LinearLayout, PlayerView {
         nextButton.setOnClickListener(clickListener)
 
         overflowButton.setOnClickListener(clickListener)
-    }
-
-    fun setupAdViewIfNeeded() {
-        if (adsLoaded) {
-            return
-        }
-
-        adView.loadAds()
-
-        adsLoaded = true
     }
 
     fun setControls(playFab: FloatingActionButton, pauseFab: FloatingActionButton, loadingFab: LoadingFloatingActionButton) {

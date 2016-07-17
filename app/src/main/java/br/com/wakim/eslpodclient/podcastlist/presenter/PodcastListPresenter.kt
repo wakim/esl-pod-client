@@ -194,7 +194,7 @@ open class PodcastListPresenter(protected val app: Application,
     }
 
     fun download(podcastItem: PodcastItem) {
-        if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!permissionRequester.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             permissionRequester.requestPermissions(Application.LIST_DOWNLOAD_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
             downloadPodcastItem = podcastItem
@@ -218,7 +218,7 @@ open class PodcastListPresenter(protected val app: Application,
     }
 
     fun removeDownload(podcastItem: PodcastItem) {
-        if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!permissionRequester.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             permissionRequester.requestPermissions(Application.LIST_REMOVE_DOWNLOAD_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
             downloadPodcastItem = podcastItem
@@ -244,7 +244,7 @@ open class PodcastListPresenter(protected val app: Application,
     }
 
     fun removeAndDeleteDownload(podcastItem: PodcastItem) {
-        if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!permissionRequester.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             permissionRequester.requestPermissions(Application.LIST_DELETE_DOWNLOAD_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
             downloadPodcastItem = podcastItem

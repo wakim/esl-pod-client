@@ -11,7 +11,7 @@ import br.com.wakim.eslpodclient.BuildConfig
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.ContentViewEvent
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.NativeExpressAdView
 
 private val interpolator = FastOutSlowInInterpolator()
 
@@ -86,7 +86,7 @@ fun Fragment.logContentView() {
     }
 }
 
-fun AdView.loadAds() {
+fun NativeExpressAdView.loadAds() {
     val adRequest = AdRequest.Builder()
             .addTestDevice("1FE3D6ABBB54E8FED73AA3582F320467")
             .build()

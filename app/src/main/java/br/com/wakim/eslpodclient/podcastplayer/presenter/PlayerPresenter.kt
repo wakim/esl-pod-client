@@ -124,14 +124,22 @@ class PlayerPresenter(private val app : Application,
                     .INSTANCE
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe { permission ->
-                        (permission.requestCode == Application.PLAYER_WRITE_STORAGE_PERMISSION).let {
-                            if (permission.isGranted()) {
-                                doPlay()
-                            } else {
-                                view!!.showMessage(R.string.write_external_storage_permission_needed_to_download)
+                        with (permission) {
+                            if (requestCode == Application.LIST_DOWNLOAD_WRITE_STORAGE_PERMISSION) {
+                                if (isGranted()) {
+                                    startDownload()
+                                } else {
+                                    view!!.showMessage(R.string.write_external_storage_permission_needed_to_download)
+                                }
+                            } else if (requestCode == Application.PLAYER_WRITE_STORAGE_PERMISSION) {
+                                if (isGranted()) {
+                                    doPlay()
+                                } else {
+                                    view!!.showMessage(R.string.write_external_storage_permission_needed_to_cache_streaming)
+                                }
                             }
 
-                            null
+                            permission
                         }
                     }
         }
@@ -250,6 +258,11 @@ class PlayerPresenter(private val app : Application,
             return
         }
 
+        if (storageService!!.shouldCache() && !permissionRequester.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            permissionRequester.requestPermissions(Application.PLAYER_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            return
+        }
+
         val item = podcastItem as PodcastItem
 
         playerService?.let {
@@ -262,8 +275,8 @@ class PlayerPresenter(private val app : Application,
 
     fun startDownload() {
         podcastItem?.let {
-            if (!hasPermission(app, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                permissionRequester.requestPermissions(Application.PLAYER_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            if (!permissionRequester.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                permissionRequester.requestPermissions(Application.LIST_DOWNLOAD_WRITE_STORAGE_PERMISSION, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
                 return
             }
@@ -294,8 +307,6 @@ class PlayerPresenter(private val app : Application,
     }
 
     fun isPlaying() = playerService?.isPlaying() ?: false
-
-    fun isPrepared() : Boolean = playerService?.initalized ?: false
 
     // Details
 

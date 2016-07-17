@@ -1,9 +1,6 @@
 package br.com.wakim.eslpodclient.presenter
 
-import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import br.com.wakim.eslpodclient.view.View
 import rx.Subscription
 import rx.subscriptions.CompositeSubscription
@@ -43,8 +40,4 @@ abstract class Presenter<T : View>() {
     }
 
     inline fun addSubscription(fn : () -> Subscription) = compositeSubscription?.add(fn())
-
-    protected fun hasPermission(context: Context, permission: String) : Boolean {
-        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
-    }
 }
