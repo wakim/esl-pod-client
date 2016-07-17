@@ -184,14 +184,14 @@ open class PodcastListPresenter(protected val app: Application,
 
         addSubscription {
             downloadStatus.ofIOToMainThread()
-            .subscribe{ downloadStatus ->
-                when (downloadStatus.status) {
-                    DownloadStatus.DOWNLOADED -> view?.showMessage(R.string.podcast_already_downloaded)
-                    DownloadStatus.DOWNLOADING -> view?.showMessage(R.string.podcast_download_started, app.getString(R.string.cancel)) {
-                        storageInteractor.cancelDownload(downloadStatus)
+                    .subscribe{ downloadStatus ->
+                        when (downloadStatus.status) {
+                            DownloadStatus.DOWNLOADED -> view?.showMessage(R.string.podcast_already_downloaded)
+                            DownloadStatus.DOWNLOADING -> view?.showMessage(R.string.podcast_download_started, app.getString(R.string.cancel)) {
+                                storageInteractor.cancelDownload(downloadStatus)
+                            }
+                        }
                     }
-                }
-            }
         }
     }
 

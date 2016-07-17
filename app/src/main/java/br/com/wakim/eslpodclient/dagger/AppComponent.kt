@@ -22,6 +22,6 @@ interface AppComponent {
     fun inject(downloadManagerReceiver: DownloadManagerReceiver)
     fun inject(connectivityBroadcastReceiver: ConnectivityBroadcastReceiver)
 
-    fun prefencesManager() : PreferenceInteractor
+    fun preferencesManager() : PreferenceInteractor
     fun plus(activityModule: ActivityModule) : ActivityComponent
 }

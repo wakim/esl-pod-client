@@ -1,9 +1,7 @@
 package br.com.wakim.eslpodclient.podcastplayer.presenter
 
-import android.content.ServiceConnection
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.R
-import br.com.wakim.eslpodclient.extensions.bindService
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.interactor.PodcastInteractor
 import br.com.wakim.eslpodclient.model.DownloadStatus
@@ -16,9 +14,7 @@ import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
 import br.com.wakim.eslpodclient.service.PlayerCallback
 import br.com.wakim.eslpodclient.service.PlayerService
 import br.com.wakim.eslpodclient.service.StorageService
-import br.com.wakim.eslpodclient.service.TypedBinder
 import br.com.wakim.eslpodclient.view.PermissionRequester
-import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 
 class PlayerPresenter(private val app : Application,
@@ -91,9 +87,6 @@ class PlayerPresenter(private val app : Application,
         }
     }
 
-    var playerServiceConnection : ServiceConnection? = null
-    var storageServiceConnection : ServiceConnection? = null
-
     fun onRestoreInstanceState(podcastItem: PodcastItem, podcastDetail: PodcastItemDetail) {
         this.podcastItem = podcastItem
         this.podcastDetail = podcastDetail
@@ -101,8 +94,6 @@ class PlayerPresenter(private val app : Application,
 
     override fun onStart() {
         super.onStart()
-
-        bindServiceIfNeeded()
 
         addSubscription {
             PermissionPublishSubject
@@ -138,50 +129,20 @@ class PlayerPresenter(private val app : Application,
     fun unbindToService() {
         playerService?.let {
             it.callback = null
-            app.unbindService(playerServiceConnection)
         }
 
-        storageService?.let {
-            app.unbindService(storageServiceConnection)
-        }
+        playerService = null
+        storageService = null
     }
 
-    fun bindServiceIfNeeded() {
-        var playerObservable : Observable<Pair<ServiceConnection, TypedBinder<PlayerService>?>> = Observable.empty()
-        var storageObservable : Observable<Pair<ServiceConnection, TypedBinder<StorageService>?>> = Observable.empty()
+    fun setServices(playerService: PlayerService, storageService: StorageService) {
+        this.playerService = playerService
+        this.storageService = storageService
 
-        if (playerService == null) {
-            playerObservable = app.bindService<PlayerService>()
+        playerService.callback = playerCallback
 
-            playerObservable = playerObservable
-                .doOnNext { pair ->
-                    pair?.let {
-                        playerServiceConnection = pair.first
-                        playerService = pair.second?.getService()
-
-                        playerService?.callback = playerCallback
-                    }
-                }
-        }
-
-        if (storageService == null) {
-            storageObservable = app.bindService<StorageService>(false)
-
-            storageObservable = storageObservable
-                .doOnNext { pair ->
-                    pair?.let {
-                        storageServiceConnection = pair.first
-                        storageService = pair.second?.getService()
-                    }
-                }
-        }
-
-        addSubscription {
-            Observable.combineLatest(playerObservable, storageObservable, { t1, t2 ->
-                setupInitialState()
-                doPlay()
-            }).subscribe()
-        }
+        setupInitialState()
+        doPlay()
     }
 
     fun setupInitialState() {

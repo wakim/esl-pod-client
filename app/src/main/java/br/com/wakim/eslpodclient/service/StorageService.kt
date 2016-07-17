@@ -156,11 +156,12 @@ class StorageService : Service() {
 
 class StorageLocalBinder : TypedBinder<StorageService> {
 
-    lateinit var reference : WeakReference<StorageService>
+    lateinit var reference: WeakReference<StorageService>
+
+    override val service: StorageService?
+        get() = reference.get()
 
     constructor(storageService : StorageService) : super() {
         reference = WeakReference(storageService)
     }
-
-    override fun getService(): StorageService? = reference.get()
 }

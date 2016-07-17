@@ -1,6 +1,7 @@
 package br.com.wakim.eslpodclient.podcastplayer.view
 
 import android.content.Context
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -21,12 +22,17 @@ import br.com.wakim.eslpodclient.extensions.*
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastItemDetail
 import br.com.wakim.eslpodclient.podcastplayer.presenter.PlayerPresenter
+import br.com.wakim.eslpodclient.service.PlayerService
+import br.com.wakim.eslpodclient.service.StorageService
+import br.com.wakim.eslpodclient.service.TypedBinder
 import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
 import butterknife.bindView
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle
 import pl.charmas.android.tagview.TagView
+import rx.Observable
+import rx.Subscription
 import javax.inject.Inject
 
 open class ListPlayerView : LinearLayout, PlayerView {
@@ -118,7 +124,11 @@ open class ListPlayerView : LinearLayout, PlayerView {
     var podcastItem: PodcastItem? = null
 
     var progressLocked = false
-    var adsLoaded = false
+
+    var playerServiceConnection: ServiceConnection? = null
+    var storageServiceConnection: ServiceConnection? = null
+
+    var serviceSubscription: Subscription? = null
 
     @Inject
     lateinit var baseActivity: BaseActivity
@@ -141,18 +151,57 @@ open class ListPlayerView : LinearLayout, PlayerView {
 
             (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
 
+            bindServices()
+
             presenter.onStart()
             presenter.onResume()
         }
     }
 
+    fun bindServices() {
+        var playerObservable : Observable<Pair<ServiceConnection, TypedBinder<PlayerService>?>> = Observable.empty()
+        var storageObservable : Observable<Pair<ServiceConnection, TypedBinder<StorageService>?>> = Observable.empty()
+
+        if (playerServiceConnection == null) {
+            playerObservable = context.bindService<PlayerService>()
+        }
+
+        if (storageServiceConnection == null) {
+            storageObservable = context.bindService<StorageService>(false)
+        }
+
+        serviceSubscription = Observable.combineLatest(playerObservable, storageObservable, { pairPlayer, pairStorage ->
+            playerServiceConnection = pairPlayer.first
+            storageServiceConnection = pairStorage.first
+
+            presenter.setServices(pairPlayer.second!!.service!!, pairStorage.second!!.service!!)
+        }).subscribe()
+    }
+
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+
+        unbindServices()
 
         with (presenter) {
             onStop()
             onDestroy()
         }
+    }
+
+    fun unbindServices() {
+        playerServiceConnection?.let {
+            context.unbindService(playerServiceConnection)
+        }
+
+        storageServiceConnection?.let {
+            context.unbindService(storageServiceConnection)
+        }
+
+        playerServiceConnection = null
+        storageServiceConnection = null
+
+        serviceSubscription?.unsubscribe()
     }
 
     override fun onSaveInstanceState(): Parcelable? {
@@ -430,10 +479,6 @@ open class ListPlayerView : LinearLayout, PlayerView {
 
     fun explicitlyStop() {
         presenter.explicitlyStop()
-    }
-
-    fun stop() {
-        presenter.onStopClicked()
     }
 
     override fun setLoading(loading: Boolean) {

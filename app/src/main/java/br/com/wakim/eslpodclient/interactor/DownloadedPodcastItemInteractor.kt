@@ -7,7 +7,7 @@ import br.com.wakim.eslpodclient.model.PodcastList
 import rx.Single
 import java.util.*
 
-class DownloadedPodcastItemInteractor(private val podcastDbInteractor: PodcastDbInteractor, private val app: Application): PodcastInteractor(podcastDbInteractor, app) {
+class DownloadedPodcastItemInteractor(private val podcastDbInteractor: PodcastDbInteractor, app: Application): PodcastInteractor(podcastDbInteractor, app) {
     companion object {
         const val ITEMS_PER_PAGE = 20
     }

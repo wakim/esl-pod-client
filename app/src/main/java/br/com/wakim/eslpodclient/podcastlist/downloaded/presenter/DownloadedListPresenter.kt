@@ -1,8 +1,6 @@
 package br.com.wakim.eslpodclient.podcastlist.downloaded.presenter
 
-import android.content.ServiceConnection
 import br.com.wakim.eslpodclient.Application
-import br.com.wakim.eslpodclient.extensions.bindService
 import br.com.wakim.eslpodclient.extensions.ofIOToMainThread
 import br.com.wakim.eslpodclient.interactor.DownloadedPodcastItemInteractor
 import br.com.wakim.eslpodclient.interactor.FavoritedPodcastItemInteractor
@@ -28,22 +26,13 @@ class DownloadedListPresenter: PodcastListPresenter {
     super(app, publishSubject, downloadedPodcastItemInteractor, permissionRequester, playlistManager, storageInteractor, favoritedPodcastItemInteractor)
 
     var storageService: StorageService? = null
-    var storageServiceConnection: ServiceConnection? = null
-
-    override fun onStop() {
-        super.onStop()
-        unbindToService()
-    }
-
-    fun unbindToService() {
-        storageService?.let {
-            app.unbindService(storageServiceConnection)
+        set(value) {
+            setSynchronizing(value?.synchronizing ?: false)
+            field = value
         }
-    }
 
     override fun onStart() {
         super.onStart()
-        bindServiceIfNeeded()
 
         addSubscription {
             publishSubject
@@ -65,18 +54,6 @@ class DownloadedListPresenter: PodcastListPresenter {
         nextPageToken = null
 
         loadNextPage()
-    }
-
-    fun bindServiceIfNeeded() {
-        app.bindService<StorageService>(false)
-                .subscribe { pair ->
-                    pair?.let {
-                        storageServiceConnection = pair.first
-                        storageService = it.second?.getService()
-
-                        setSynchronizing(storageService?.synchronizing ?: false)
-                    }
-                }
     }
 
     fun synchronize() {

@@ -650,11 +650,12 @@ class PlayerLocalBinder : TypedBinder<PlayerService> {
 
     lateinit var reference : WeakReference<PlayerService>
 
+    override val service: PlayerService?
+        get() = reference.get()
+
     constructor(playerService: PlayerService) : super() {
         reference = WeakReference(playerService)
     }
-
-    override fun getService(): PlayerService? = reference.get()
 }
 
 class DurationUpdatesTask(var service: PlayerService) : AsyncTask<Void , Int, Void>() {

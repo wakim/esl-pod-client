@@ -6,6 +6,8 @@ import br.com.wakim.eslpodclient.extensions.logContentView
 import br.com.wakim.eslpodclient.extensions.logFirebaseContentView
 import br.com.wakim.eslpodclient.presenter.Presenter
 import com.google.firebase.analytics.FirebaseAnalytics
+import rx.Subscription
+import rx.subscriptions.CompositeSubscription
 import javax.inject.Inject
 
 open class BasePresenterFragment<T : Presenter<*>>: Fragment() {
@@ -14,6 +16,15 @@ open class BasePresenterFragment<T : Presenter<*>>: Fragment() {
     lateinit var firebaseAnalytics: FirebaseAnalytics
 
     lateinit var presenter : T
+
+    var compositeSubscription : CompositeSubscription? = CompositeSubscription()
+        get() {
+            if (field == null) {
+                field = CompositeSubscription()
+            }
+
+            return field
+        }
 
     override fun onStart() {
         super.onStart()
@@ -30,6 +41,9 @@ open class BasePresenterFragment<T : Presenter<*>>: Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         presenter.onDestroy()
+
+        compositeSubscription?.unsubscribe()
+        compositeSubscription = null
     }
 
     override fun onResume() {
@@ -41,4 +55,6 @@ open class BasePresenterFragment<T : Presenter<*>>: Fragment() {
         super.onStop()
         presenter.onStop()
     }
+
+    inline fun addSubscription(fn : () -> Subscription) = compositeSubscription?.add(fn())
 }

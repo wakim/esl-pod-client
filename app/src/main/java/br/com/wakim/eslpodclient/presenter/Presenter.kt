@@ -29,8 +29,7 @@ abstract class Presenter<T : View>() {
         compositeSubscription = null
     }
 
-    open fun onResume() {
-    }
+    open fun onResume() { }
 
     inline fun addSubscription(fn : () -> Subscription) = compositeSubscription?.add(fn())
 }

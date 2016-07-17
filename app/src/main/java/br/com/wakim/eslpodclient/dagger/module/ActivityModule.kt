@@ -21,5 +21,5 @@ class ActivityModule(private val presenterActivity: BaseActivity) {
     fun providesPermissionRequests(): PermissionRequester = presenterActivity
 
     @Provides @ActivityScope
-    fun providesFirebaseAnalytics() = FirebaseAnalytics.getInstance(presenterActivity)
+    fun providesFirebaseAnalytics(): FirebaseAnalytics = FirebaseAnalytics.getInstance(presenterActivity)
 }
