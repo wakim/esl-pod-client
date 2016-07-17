@@ -27,6 +27,13 @@ import javax.inject.Inject
 
 open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), PodcastListView {
 
+    companion object {
+        const val ITEMS_EXTRA = "ITEMS"
+        const val NEXT_PAGE_TOKEN_EXTRA = "NEXT_PAGE_TOKEN"
+        const val DOWNLOAD_PODCAST_EXTRA = "DOWNLOAD_PODCAST"
+        const val USING_CACHE_EXTRA = "USING_CACHE"
+    }
+
     override var hasMore: Boolean = false
 
     val recyclerView: RecyclerView by bindView(R.id.recycler_view)
@@ -57,6 +64,26 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         inject()
         super.onActivityCreated(savedInstanceState)
+
+        savedInstanceState?.let {
+            val items: ArrayList<PodcastItem> = it.getParcelableArrayList(ITEMS_EXTRA)
+            val token: String? = it.getString(NEXT_PAGE_TOKEN_EXTRA)
+            val downloadPodcast: PodcastItem? = it.getParcelable(DOWNLOAD_PODCAST_EXTRA)
+            val usingCache = it.getBoolean(USING_CACHE_EXTRA)
+
+            presenter.onRestoreInstanceState(items, token, downloadPodcast, usingCache)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+
+        outState?.let {
+            it.putParcelableArrayList(ITEMS_EXTRA, presenter.items)
+            it.putString(NEXT_PAGE_TOKEN_EXTRA, presenter.nextPageToken)
+            it.putParcelable(DOWNLOAD_PODCAST_EXTRA, presenter.downloadPodcastItem)
+            it.putBoolean(USING_CACHE_EXTRA, presenter.usingCache)
+        }
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {

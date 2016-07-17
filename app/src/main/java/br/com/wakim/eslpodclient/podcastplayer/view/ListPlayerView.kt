@@ -35,6 +35,8 @@ open class ListPlayerView : LinearLayout, PlayerView {
         const val SUPER_STATE_KEY = "SUPER_STATE"
         const val SEEK_MAX_STATE_KEY = "SEEK_MAX_STATE"
         const val SEEK_PROGRESS_STATE_KEY = "SEEK_PROGRESS_STATE"
+        const val PODCAST_ITEM_KEY = "PODCAST_ITEM"
+        const val PODCAST_ITEM_DETAIL_KEY = "PODCAST_ITEM_DETAIL"
     }
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
@@ -164,7 +166,8 @@ open class ListPlayerView : LinearLayout, PlayerView {
             bundle.putInt(SEEK_PROGRESS_STATE_KEY, progress)
         }
 
-        presenter.onSaveInstanceState(bundle)
+        bundle.putParcelable(PODCAST_ITEM_KEY, presenter.podcastItem)
+        bundle.putParcelable(PODCAST_ITEM_DETAIL_KEY, presenter.podcastDetail)
 
         return bundle
     }
@@ -175,7 +178,7 @@ open class ListPlayerView : LinearLayout, PlayerView {
         (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
 
         if (realState is Bundle) {
-            presenter.onRestoreInstanceState(realState)
+            presenter.onRestoreInstanceState(realState.getParcelable(PODCAST_ITEM_KEY), realState.getParcelable(PODCAST_ITEM_DETAIL_KEY))
 
             setProgressValue(realState.getInt(SEEK_PROGRESS_STATE_KEY))
             setMaxProgress(realState.getInt(SEEK_MAX_STATE_KEY))

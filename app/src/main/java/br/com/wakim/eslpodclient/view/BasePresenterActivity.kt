@@ -1,6 +1,5 @@
 package br.com.wakim.eslpodclient.view
 
-import android.os.Bundle
 import br.com.wakim.eslpodclient.presenter.Presenter
 
 open class BasePresenterActivity<T : Presenter<*>> : BaseActivity(), PermissionRequester {
@@ -14,16 +13,6 @@ open class BasePresenterActivity<T : Presenter<*>> : BaseActivity(), PermissionR
     override fun onStart() {
         super.onStart()
         presenter.onStart()
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-        presenter.onRestoreInstanceState(savedInstanceState)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-        presenter.onSaveInstanceState(outState!!)
     }
 
     override fun onDestroy() {

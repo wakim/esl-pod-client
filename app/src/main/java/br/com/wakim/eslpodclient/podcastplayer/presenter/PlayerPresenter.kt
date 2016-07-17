@@ -1,7 +1,6 @@
 package br.com.wakim.eslpodclient.podcastplayer.presenter
 
 import android.content.ServiceConnection
-import android.os.Bundle
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.bindService
@@ -25,11 +24,6 @@ import rx.android.schedulers.AndroidSchedulers
 class PlayerPresenter(private val app : Application,
                       private val permissionRequester: PermissionRequester,
                       private val podcastInteractor: PodcastInteractor) : Presenter<PlayerView>() {
-
-    companion object {
-        private val PODCAST_ITEM = "PODCAST_ITEM"
-        private val PODCAST_DETAIL = "PODCAST_DETAIL"
-    }
 
     var podcastItem : PodcastItem? = null
     var podcastDetail : PodcastItemDetail? = null
@@ -100,18 +94,9 @@ class PlayerPresenter(private val app : Application,
     var playerServiceConnection : ServiceConnection? = null
     var storageServiceConnection : ServiceConnection? = null
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        outState.putParcelable(PODCAST_DETAIL, podcastDetail)
-        outState.putParcelable(PODCAST_ITEM, podcastItem)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-
-        podcastItem = savedInstanceState?.getParcelable<PodcastItem>(PODCAST_ITEM)
-        podcastDetail = savedInstanceState?.getParcelable<PodcastItemDetail>(PODCAST_DETAIL)
+    fun onRestoreInstanceState(podcastItem: PodcastItem, podcastDetail: PodcastItemDetail) {
+        this.podcastItem = podcastItem
+        this.podcastDetail = podcastDetail
     }
 
     override fun onStart() {

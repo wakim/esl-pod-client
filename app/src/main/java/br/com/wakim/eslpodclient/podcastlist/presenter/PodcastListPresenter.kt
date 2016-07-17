@@ -1,7 +1,6 @@
 package br.com.wakim.eslpodclient.podcastlist.presenter
 
 import android.app.Activity
-import android.os.Bundle
 import android.support.v4.app.ShareCompat
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.BuildConfig
@@ -36,13 +35,6 @@ open class PodcastListPresenter(protected val app: Application,
                                 private   val favoritedPodcastItemInteractor: FavoritedPodcastItemInteractor,
                                 private   val baseActivity: Activity) : Presenter<PodcastListView>() {
 
-    companion object {
-        private const val ITEMS_EXTRA = "ITEMS"
-        private const val NEXT_PAGE_TOKEN_EXTRA = "NEXT_PAGE_TOKEN"
-        private const val DOWNLOAD_PODCAST_EXTRA = "DOWNLOAD_PODCAST"
-        private const val USING_CACHE_EXTRA = "USING_CACHE"
-    }
-
     var items : ArrayList<PodcastItem> = ArrayList()
 
     var nextPageToken : String? = null
@@ -53,20 +45,11 @@ open class PodcastListPresenter(protected val app: Application,
 
     var loaded = false
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelableArrayList(ITEMS_EXTRA, items)
-        outState.putString(NEXT_PAGE_TOKEN_EXTRA, nextPageToken)
-        outState.putParcelable(DOWNLOAD_PODCAST_EXTRA, downloadPodcastItem)
-        outState.putBoolean(USING_CACHE_EXTRA, usingCache)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        savedInstanceState?.let {
-            items = it.getParcelableArrayList(ITEMS_EXTRA)
-            nextPageToken = it.getString(NEXT_PAGE_TOKEN_EXTRA)
-            downloadPodcastItem = it.getParcelable(DOWNLOAD_PODCAST_EXTRA)
-            usingCache = it.getBoolean(USING_CACHE_EXTRA, usingCache)
-        }
+    fun onRestoreInstanceState(items: ArrayList<PodcastItem>, nextPageToken: String?, downloadPodcastItem: PodcastItem?, usingCache: Boolean) {
+            this.items = items
+            this.nextPageToken = nextPageToken
+            this.downloadPodcastItem = downloadPodcastItem
+            this.usingCache = usingCache
     }
 
     override fun onStart() {

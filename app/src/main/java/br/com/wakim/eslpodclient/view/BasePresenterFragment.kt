@@ -20,14 +20,8 @@ open class BasePresenterFragment<T : Presenter<*>>: Fragment() {
         presenter.onStart()
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-        presenter.onSaveInstanceState(outState!!)
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        presenter.onRestoreInstanceState(savedInstanceState)
 
         logContentView()
         firebaseAnalytics.logFirebaseContentView()

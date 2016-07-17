@@ -1,6 +1,5 @@
 package br.com.wakim.eslpodclient.presenter
 
-import android.os.Bundle
 import br.com.wakim.eslpodclient.view.View
 import rx.Subscription
 import rx.subscriptions.CompositeSubscription
@@ -20,12 +19,6 @@ abstract class Presenter<T : View>() {
 
     open fun onDestroy() {
         view = null
-    }
-
-    open fun onSaveInstanceState(outState: Bundle) {
-    }
-
-    open fun onRestoreInstanceState(savedInstanceState: Bundle?) {
     }
 
     open fun onStart() {
