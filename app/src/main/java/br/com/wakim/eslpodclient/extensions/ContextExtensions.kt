@@ -22,7 +22,7 @@ import android.view.View
 import android.view.ViewTreeObserver
 import br.com.wakim.eslpodclient.Application
 import br.com.wakim.eslpodclient.service.TypedBinder
-import br.com.wakim.eslpodclient.view.BasePresenterActivity
+import br.com.wakim.eslpodclient.view.BaseActivity
 import com.google.firebase.analytics.FirebaseAnalytics
 import rx.Observable
 import rx.Subscriber
@@ -32,7 +32,7 @@ import java.io.InputStreamReader
 inline fun <reified T: Activity> Context.startActivity(noinline callback : ((Intent) -> Unit)? = null) {
     val intent = Intent(this, T::class.java)
 
-    intent.putExtra(BasePresenterActivity.PARENT_EXTRA, this.javaClass)
+    intent.putExtra(BaseActivity.PARENT_EXTRA, this.javaClass)
 
     callback?.invoke(intent)
 

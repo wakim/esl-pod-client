@@ -22,6 +22,10 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 abstract class BaseActivity: AppCompatActivity(), PermissionRequester {
 
+    companion object {
+        const val PARENT_EXTRA = "PARENT_EXTRA"
+    }
+
     val toolbar : Toolbar? by bindOptionalView(R.id.toolbar)
 
     lateinit var activityComponent : ActivityComponent
@@ -39,7 +43,7 @@ abstract class BaseActivity: AppCompatActivity(), PermissionRequester {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        if (intent.hasExtra(BasePresenterActivity.PARENT_EXTRA)) {
+        if (intent.hasExtra(PARENT_EXTRA)) {
             supportFinishAfterTransition()
             return true
         }
