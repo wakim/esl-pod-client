@@ -485,7 +485,9 @@ class PlayerService : Service() {
     }
 
     fun notifyStopped() {
-        notify(podcastItem!!.title, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
+        podcastItem?.let {
+            notify(it.title, generateAction(R.drawable.ic_play_arrow_white_36dp, R.string.play, KeyEvent.KEYCODE_MEDIA_PLAY))
+        }
     }
 
     private fun innerStop() {
