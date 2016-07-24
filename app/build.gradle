@@ -56,8 +56,6 @@ android {
 
         resConfigs "en", "pt-rBR"
 
-        vectorDrawables.useSupportLibrary = true
-
         manifestPlaceholders = appConfig.manifestPlaceholder
 
         resValue "string", "ad_settings_ads_unit_id", rootProject.ext.admobAppSettingsUnitId
