@@ -14,7 +14,6 @@ import android.text.Html
 import android.util.AttributeSet
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.dagger.PodcastPlayerComponent
@@ -27,7 +26,9 @@ import br.com.wakim.eslpodclient.service.StorageService
 import br.com.wakim.eslpodclient.service.TypedBinder
 import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
-import butterknife.bindView
+import butterknife.BindView
+import butterknife.ButterKnife
+import butterknife.OnClick
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle
 import pl.charmas.android.tagview.TagView
@@ -62,17 +63,6 @@ open class ListPlayerView : LinearLayout, PlayerView {
         }
     }
 
-    private val clickListener = { view: View ->
-        when (view.id) {
-            R.id.ib_play     -> presenter.onPlayClicked()
-            R.id.ib_pause    -> presenter.onPauseClicked()
-            R.id.ib_stop     -> presenter.onStopClicked()
-            R.id.ib_next     -> presenter.onNextClicked()
-            R.id.ib_previous -> presenter.onPreviousClicked()
-            R.id.ib_overflow -> showOverflow()
-        }
-    }
-
     private val menuClickListener = { menu: MenuItem ->
         when (menu.itemId) {
             R.id.download      -> presenter.startDownload()
@@ -84,27 +74,50 @@ open class ListPlayerView : LinearLayout, PlayerView {
         true
     }
 
-    private val titleContainer : ViewGroup by bindView(R.id.ll_title)
+    @BindView(R.id.tv_title)
+    lateinit var title: TextView
 
-    private val title : TextView by bindView(R.id.tv_title)
-    private val subtitle: TextView by bindView(R.id.tv_subtitle)
-    private val tagView: TagView by bindView(R.id.tv_tags)
+    @BindView(R.id.tv_subtitle)
+    lateinit var subtitle: TextView
 
-    private val seekBar : SeekBar by bindView(R.id.seek_bar)
+    @BindView(R.id.tv_tags)
+    lateinit var tagView: TagView
 
-    private val loading : ProgressBar by bindView(R.id.pb_loading)
-    private val script : TextView by bindView(R.id.tv_script)
+    @BindView(R.id.seek_bar)
+    lateinit var seekBar: SeekBar
 
-    private val timer : TextView by bindView(R.id.tv_timer)
-    private val duration : TextView by bindView(R.id.tv_duration)
+    @BindView(R.id.pb_loading)
+    lateinit var loading: ProgressBar
 
-    private val playButton: ImageButton by bindView(R.id.ib_play)
-    private val pauseButton: ImageButton by bindView(R.id.ib_pause)
-    private val stopButton: ImageButton by bindView(R.id.ib_stop)
-    private val nextButton: ImageButton by bindView(R.id.ib_next)
-    private val previousButton: ImageButton by bindView(R.id.ib_previous)
-    private val overflowButton: ImageButton by bindView(R.id.ib_overflow)
-    private val streamTypeText: TextView by bindView(R.id.tv_stream_type)
+    @BindView(R.id.tv_script)
+    lateinit var script: TextView
+
+    @BindView(R.id.tv_timer)
+    lateinit var timer: TextView
+
+    @BindView(R.id.tv_duration)
+    lateinit var duration: TextView
+
+    @BindView(R.id.ib_play)
+    lateinit var playButton: ImageButton
+
+    @BindView(R.id.ib_pause)
+    lateinit var pauseButton: ImageButton
+
+    @BindView(R.id.ib_stop)
+    lateinit var stopButton: ImageButton
+
+    @BindView(R.id.ib_next)
+    lateinit var nextButton: ImageButton
+
+    @BindView(R.id.ib_previous)
+    lateinit var previousButton: ImageButton
+
+    @BindView(R.id.ib_overflow)
+    lateinit var overflowButton: ImageButton
+
+    @BindView(R.id.tv_stream_type)
+    lateinit var streamTypeText: TextView
 
     private val popupMenu: PopupMenu by lazy {
         val menu = PopupMenu(context, overflowButton)
@@ -241,14 +254,12 @@ open class ListPlayerView : LinearLayout, PlayerView {
     override fun onFinishInflate() {
         super.onFinishInflate()
 
-        titleContainer.setOnClickListener {
-            bottomSheetBehavior?.toggleState(BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.STATE_COLLAPSED)
-        }
+        ButterKnife.bind(this)
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekbar: SeekBar, progress: Int, fromUser: Boolean) {
-                if (progressLocked && fromUser && seekbar.secondaryProgress < progress){
-                    seekBar.progress = seekbar.secondaryProgress
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (progressLocked && fromUser && seekBar.secondaryProgress < progress){
+                    seekBar.progress = seekBar.secondaryProgress
                 }
             }
 
@@ -259,15 +270,23 @@ open class ListPlayerView : LinearLayout, PlayerView {
                 presenter.seekTo(p0.progress)
             }
         })
+    }
 
-        playButton.setOnClickListener(clickListener)
-        stopButton.setOnClickListener(clickListener)
-        pauseButton.setOnClickListener(clickListener)
+    @OnClick(R.id.ll_title)
+    fun onTitleClicked() {
+        bottomSheetBehavior?.toggleState(BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.STATE_COLLAPSED)
+    }
 
-        previousButton.setOnClickListener(clickListener)
-        nextButton.setOnClickListener(clickListener)
-
-        overflowButton.setOnClickListener(clickListener)
+    @OnClick(R.id.ib_play, R.id.ib_pause, R.id.ib_stop, R.id.ib_next, R.id.ib_previous, R.id.ib_overflow)
+    fun onButtonClicked(view: View) {
+        when (view.id) {
+            R.id.ib_play     -> presenter.onPlayClicked()
+            R.id.ib_pause    -> presenter.onPauseClicked()
+            R.id.ib_stop     -> presenter.onStopClicked()
+            R.id.ib_next     -> presenter.onNextClicked()
+            R.id.ib_previous -> presenter.onPreviousClicked()
+            R.id.ib_overflow -> showOverflow()
+        }
     }
 
     fun setControls(playFab: FloatingActionButton, pauseFab: FloatingActionButton, loadingFab: LoadingFloatingActionButton) {

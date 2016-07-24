@@ -13,19 +13,29 @@ import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.makeHidden
 import br.com.wakim.eslpodclient.extensions.makeVisible
 import br.com.wakim.eslpodclient.model.PodcastItem
-import butterknife.bindView
+import butterknife.BindView
+import butterknife.ButterKnife
+import butterknife.OnClick
 import pl.charmas.android.tagview.TagView
 
 class PodcastListItemView : CardView {
 
-    val ivCategory: ImageView by bindView(R.id.iv_category)
-    val flCategory: FrameLayout by bindView(R.id.fl_category)
-    val tvTitle: TextView by bindView(R.id.tv_title)
-    val tvSubtitle: TextView by bindView(R.id.tv_subtitle)
-    val tvTags: TagView by bindView(R.id.tv_tags)
-    val btnOverflow: ImageButton by bindView(R.id.ib_overflow)
+    @BindView(R.id.iv_category)
+    lateinit var ivCategory: ImageView
 
-    var overflowMenuClickListener : ((PodcastItem, View) -> Unit)? = null
+    @BindView(R.id.fl_category)
+    lateinit var flCategory: FrameLayout
+
+    @BindView(R.id.tv_title)
+    lateinit var tvTitle: TextView
+
+    @BindView(R.id.tv_subtitle)
+    lateinit var tvSubtitle: TextView
+
+    @BindView(R.id.tv_tags)
+    lateinit var tvTags: TagView
+
+    var overflowMenuClickListener: ((PodcastItem, View) -> Unit)? = null
 
     var podcastItem: PodcastItem? = null
 
@@ -36,9 +46,12 @@ class PodcastListItemView : CardView {
     override fun onFinishInflate() {
         super.onFinishInflate()
 
-        btnOverflow.setOnClickListener {
-            overflowMenuClickListener?.invoke(podcastItem!!, btnOverflow)
-        }
+        ButterKnife.bind(this)
+    }
+
+    @OnClick(R.id.ib_overflow)
+    fun onOverflowClick(btnOverflow: ImageButton) {
+        overflowMenuClickListener?.invoke(podcastItem!!, btnOverflow)
     }
 
     fun bind(podcastItem : PodcastItem) {

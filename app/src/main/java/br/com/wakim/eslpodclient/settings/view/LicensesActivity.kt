@@ -8,7 +8,7 @@ import br.com.wakim.eslpodclient.extensions.readRawString
 import br.com.wakim.eslpodclient.extensions.resolveRawResIdentifier
 import br.com.wakim.eslpodclient.settings.adapter.LicenseListAdapter
 import br.com.wakim.eslpodclient.view.BaseActivity
-import butterknife.bindView
+import butterknife.BindView
 import com.google.android.gms.ads.NativeExpressAdView
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -16,8 +16,11 @@ import org.json.JSONObject
 
 class LicensesActivity: BaseActivity() {
 
-    val recyclerView: RecyclerView by bindView(R.id.recycler_view)
-    val adView: NativeExpressAdView by bindView(R.id.ad_view)
+    @BindView(R.id.recycler_view)
+    lateinit var recyclerView: RecyclerView
+
+    @BindView(R.id.ad_view)
+    lateinit var adView: NativeExpressAdView
 
     var adapter: LicenseListAdapter? = null
     var licenses: MutableList<Pair<String, String>>? = mutableListOf()

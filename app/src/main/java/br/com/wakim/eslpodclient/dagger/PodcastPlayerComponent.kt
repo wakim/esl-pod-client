@@ -5,7 +5,6 @@ import br.com.wakim.eslpodclient.dagger.scope.PodcastPlayerScope
 import br.com.wakim.eslpodclient.podcastlist.downloaded.view.DownloadedListFragment
 import br.com.wakim.eslpodclient.podcastlist.favorited.view.FavoritedListFragment
 import br.com.wakim.eslpodclient.podcastlist.view.PodcastListFragment
-import br.com.wakim.eslpodclient.podcastplayer.view.ListPlayerView
 import dagger.Subcomponent
 
 @PodcastPlayerScope
@@ -14,6 +13,4 @@ interface PodcastPlayerComponent {
     fun inject(podcastListFragment: PodcastListFragment)
     fun inject(favoritedListFragment: FavoritedListFragment)
     fun inject(downloadedListFragment: DownloadedListFragment)
-
-    fun inject(playerView: ListPlayerView)
 }

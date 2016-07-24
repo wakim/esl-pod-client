@@ -2,7 +2,7 @@
 apply from: 'buildsystem/secret.gradle'
 
 buildscript {
-    ext.kotlin_version = '1.0.3'
+    ext.kotlin = '1.0.3'
 
     repositories {
         jcenter()
@@ -11,10 +11,10 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0-alpha5'
+        classpath 'com.android.tools.build:gradle:2.2.0-alpha6'
 
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin"
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin"
         classpath 'com.google.gms:google-services:3.0.0'
 
         // Dex count plugin to keep track dex method count

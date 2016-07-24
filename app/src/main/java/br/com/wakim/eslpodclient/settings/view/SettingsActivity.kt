@@ -4,11 +4,13 @@ import android.os.Bundle
 import br.com.wakim.eslpodclient.R
 import br.com.wakim.eslpodclient.extensions.loadAds
 import br.com.wakim.eslpodclient.view.BaseActivity
-import butterknife.bindView
+import butterknife.BindView
 import com.google.android.gms.ads.NativeExpressAdView
 
 class SettingsActivity : BaseActivity() {
-    val adView: NativeExpressAdView by bindView(R.id.ad_view)
+
+    @BindView(R.id.ad_view)
+    lateinit var adView: NativeExpressAdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -15,7 +15,8 @@ import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.dagger.module.ActivityModule
 import br.com.wakim.eslpodclient.extensions.snack
 import br.com.wakim.eslpodclient.rx.PermissionPublishSubject
-import butterknife.bindOptionalView
+import butterknife.ButterKnife
+import butterknife.Unbinder
 import org.jetbrains.anko.find
 import org.jetbrains.anko.findOptional
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
@@ -26,16 +27,26 @@ abstract class BaseActivity: AppCompatActivity(), PermissionRequester {
         const val PARENT_EXTRA = "PARENT_EXTRA"
     }
 
-    val toolbar : Toolbar? by bindOptionalView(R.id.toolbar)
+    var unbinder: Unbinder? = null
 
-    lateinit var activityComponent : ActivityComponent
+    lateinit var activityComponent: ActivityComponent
+
+    var toolbar: Toolbar? = null
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        unbinder?.unbind()
+    }
+
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
+
+        toolbar = findOptional(R.id.toolbar)
+        unbinder = ButterKnife.bind(this)
 
         toolbar?.let {
             setSupportActionBar(toolbar)

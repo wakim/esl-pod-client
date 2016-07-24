@@ -24,7 +24,7 @@ import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.view.BasePresenterFragment
 import br.com.wakim.eslpodclient.widget.BottomSpacingItemDecoration
 import br.com.wakim.eslpodclient.widget.SpacingItemDecoration
-import butterknife.bindView
+import butterknife.BindView
 import java.util.*
 import javax.inject.Inject
 
@@ -39,8 +39,11 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
 
     override var hasMore: Boolean = false
 
-    val recyclerView: RecyclerView by bindView(R.id.recycler_view)
-    val swipeRefresh: SwipeRefreshLayout by bindView(R.id.swipe_refresh)
+    @BindView(R.id.recycler_view)
+    lateinit var recyclerView: RecyclerView
+
+    @BindView(R.id.swipe_refresh)
+    lateinit var swipeRefresh: SwipeRefreshLayout
 
     val bottomSpacingDecoration = BottomSpacingItemDecoration(0)
 
@@ -89,7 +92,9 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
         }
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         configureAdapter()
         configureRecyclerView()
 
@@ -123,6 +128,7 @@ open class PodcastListFragment: BasePresenterFragment<PodcastListPresenter>(), P
 
     fun configureAdapter() {
         adapter = PodcastListAdapter(context)
+
         adapter.clickListener = { podcastItem ->
             showPlayerViewIfNeeded()
             playerView.play(podcastItem)

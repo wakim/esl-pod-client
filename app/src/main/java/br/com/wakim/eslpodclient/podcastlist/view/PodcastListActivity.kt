@@ -19,8 +19,7 @@ import br.com.wakim.eslpodclient.podcastplayer.view.ListPlayerView
 import br.com.wakim.eslpodclient.settings.view.SettingsActivity
 import br.com.wakim.eslpodclient.view.BaseActivity
 import br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
-import butterknife.bindOptionalView
-import butterknife.bindView
+import butterknife.BindView
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation
 
 open class PodcastListActivity : BaseActivity() {
@@ -32,17 +31,26 @@ open class PodcastListActivity : BaseActivity() {
 
     private var podcastPlayerComponent: PodcastPlayerComponent? = null
 
-    val coordinatorLayout: CoordinatorLayout by bindView(R.id.coordinator_layout)
+    @BindView(R.id.coordinator_layout)
+    lateinit var coordinatorLayout: CoordinatorLayout
 
-    val appBarLayout: AppBarLayout by bindView(R.id.appbar)
+    @BindView(R.id.appbar)
+    lateinit var appBarLayout: AppBarLayout
 
-    val playerView: ListPlayerView by bindView(R.id.player_view)
+    @BindView(R.id.player_view)
+    lateinit var playerView: ListPlayerView
 
-    val playFab: FloatingActionButton? by bindOptionalView(R.id.fab_play)
-    val pauseFab: FloatingActionButton? by bindOptionalView(R.id.fab_pause)
-    val loadingFab: LoadingFloatingActionButton? by bindOptionalView(R.id.fab_loading)
+    @BindView(R.id.fab_play)
+    lateinit var playFab: FloatingActionButton
 
-    val bottomBar: BottomNavigation by bindView(R.id.bottom_navigation)
+    @BindView(R.id.fab_pause)
+    lateinit var pauseFab: FloatingActionButton
+
+    @BindView(R.id.fab_loading)
+    lateinit var loadingFab: LoadingFloatingActionButton
+
+    @BindView(R.id.bottom_navigation)
+    lateinit var bottomBar: BottomNavigation
 
     var podcastListFragment: PodcastListFragment? = null
     var downloadedListFragment: DownloadedListFragment? = null
@@ -59,6 +67,7 @@ open class PodcastListActivity : BaseActivity() {
         setTheme(R.style.AppTheme)
 
         createActivityComponent()
+
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_podcastlist)
@@ -70,9 +79,7 @@ open class PodcastListActivity : BaseActivity() {
         configureBottomBar()
         addFragmentIfNeeded()
 
-        if (playFab != null && pauseFab != null && loadingFab != null) {
-            playerView.setControls(playFab!!, pauseFab!!, loadingFab!!)
-        }
+        playerView.setControls(playFab, pauseFab, loadingFab)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -211,7 +218,7 @@ open class PodcastListActivity : BaseActivity() {
     }
 
     fun createPlayerComponent() {
-        podcastPlayerComponent = activityComponent.plus(PodcastPlayerModule(playerView))
+        podcastPlayerComponent = activityComponent + PodcastPlayerModule(playerView)
     }
 
     override fun onBackPressed() {
