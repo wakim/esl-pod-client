@@ -6,6 +6,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="windowActionModeOverlay">true</item>
+
         <item name="preferenceTheme">@style/CustomPreferenceThemeOverlay</item>
         <item name="tagViewStyle">@style/TagView</item>
     </style>

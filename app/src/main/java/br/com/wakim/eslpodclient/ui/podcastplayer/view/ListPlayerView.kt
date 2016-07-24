@@ -12,6 +12,8 @@ import android.support.design.widget.Snackbar
 import android.support.v7.widget.PopupMenu
 import android.text.Html
 import android.util.AttributeSet
+import android.view.ActionMode
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
@@ -126,6 +128,31 @@ open class ListPlayerView : LinearLayout, PlayerView {
         menu.setOnMenuItemClickListener(menuClickListener)
 
         menu
+    }
+
+    private val textCallback = object: ActionMode.Callback {
+        override fun onPrepareActionMode(p0: ActionMode?, p1: Menu?): Boolean = true
+
+        override fun onActionItemClicked(p0: ActionMode?, menuItem: MenuItem?): Boolean = false
+
+        override fun onCreateActionMode(actionMode: ActionMode?, menu: Menu): Boolean {
+            var menuItemOrder = 100
+
+            for (resolveInfo in context.getSupportedActivities()) {
+                val menuItem = menu.add(Menu.NONE, Menu.NONE,
+                        menuItemOrder++,
+                        resolveInfo.loadLabel(context.packageManager))
+
+                menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menuItem.setIcon(R.drawable.ic_translate_white_24dp)
+
+                menuItem.intent = createProcessTextIntentForResolveInfo(resolveInfo)
+            }
+
+            return true
+        }
+
+        override fun onDestroyActionMode(p0: ActionMode?) { }
     }
 
     var playFab: FloatingActionButton? = null
@@ -255,6 +282,8 @@ open class ListPlayerView : LinearLayout, PlayerView {
         super.onFinishInflate()
 
         ButterKnife.bind(this)
+
+        script.customSelectionActionModeCallback = textCallback
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {

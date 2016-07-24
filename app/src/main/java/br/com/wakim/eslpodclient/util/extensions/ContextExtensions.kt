@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
@@ -166,3 +167,15 @@ fun FirebaseAnalytics.logFirebaseContentView() {
 
     logEvent(FirebaseAnalytics.Event.VIEW_ITEM, params)
 }
+
+private fun createProcessTextIntent(): Intent =
+        Intent()
+                .setAction(Intent.ACTION_PROCESS_TEXT)
+                .setType("text/plain")
+
+fun createProcessTextIntentForResolveInfo(info: ResolveInfo): Intent =
+        createProcessTextIntent()
+                .setClassName(info.activityInfo.packageName, info.activityInfo.name)
+
+fun Context.getSupportedActivities(): List<ResolveInfo> =
+        packageManager.queryIntentActivities(createProcessTextIntent(), 0)
