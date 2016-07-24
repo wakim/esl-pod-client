@@ -87,7 +87,7 @@ class PlayerPresenter(private val app : Application,
         }
     }
 
-    fun onRestoreInstanceState(podcastItem: PodcastItem, podcastDetail: PodcastItemDetail) {
+    fun onRestoreInstanceState(podcastItem: PodcastItem?, podcastDetail: PodcastItemDetail?) {
         this.podcastItem = podcastItem
         this.podcastDetail = podcastDetail
     }

@@ -16,7 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import br.com.wakim.eslpodclient.R
-import br.com.wakim.eslpodclient.dagger.PodcastPlayerComponent
+import br.com.wakim.eslpodclient.dagger.ActivityComponent
 import br.com.wakim.eslpodclient.extensions.*
 import br.com.wakim.eslpodclient.model.PodcastItem
 import br.com.wakim.eslpodclient.model.PodcastItemDetail
@@ -162,7 +162,7 @@ open class ListPlayerView : LinearLayout, PlayerView {
         if (!isInEditMode) {
             setupBehaviorCallback()
 
-            (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
+            (context.getSystemService(ActivityComponent::class.java.simpleName) as ActivityComponent).inject(this)
 
             bindServices()
 
@@ -237,7 +237,7 @@ open class ListPlayerView : LinearLayout, PlayerView {
     override fun onRestoreInstanceState(state: Parcelable?) {
         var realState = state
 
-        (context.getSystemService(PodcastPlayerComponent::class.java.simpleName) as PodcastPlayerComponent).inject(this)
+        (context.getSystemService(ActivityComponent::class.java.simpleName) as ActivityComponent).inject(this)
 
         if (realState is Bundle) {
             presenter.onRestoreInstanceState(realState.getParcelable(PODCAST_ITEM_KEY), realState.getParcelable(PODCAST_ITEM_DETAIL_KEY))
