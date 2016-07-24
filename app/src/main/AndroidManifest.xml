@@ -42,7 +42,7 @@
             android:name=".ui.settings.view.SettingsActivity" />
 
         <activity
-            android:name=".filepicker.CustomFilePickerActivity"
+            android:name=".ui.settings.view.CustomFilePickerActivity"
             android:label="@string/app_name"
             android:theme="@style/FilePickerTheme" />
 
