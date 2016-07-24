@@ -433,6 +433,8 @@ open class ListPlayerView : LinearLayout, PlayerView {
             PodcastItem.REMOTE -> streamTypeText.text = context.getString(R.string.remote)
             PodcastItem.CACHING -> streamTypeText.text = context.getString(R.string.saving)
         }
+
+        popupMenu.menu.findItem(R.id.download).isVisible = streamType == PodcastItem.REMOTE
     }
 
     override fun getProgressValue(): Int = seekBar.progress

@@ -17,19 +17,19 @@ import br.com.wakim.eslpodclient.ui.view.PermissionRequester
 import br.com.wakim.eslpodclient.util.extensions.ofIOToMainThread
 import rx.android.schedulers.AndroidSchedulers
 
-class PlayerPresenter(private val app : Application,
+class PlayerPresenter(private val app: Application,
                       private val permissionRequester: PermissionRequester,
                       private val podcastInteractor: PodcastInteractor) : Presenter<PlayerView>() {
 
-    var podcastItem : PodcastItem? = null
-    var podcastDetail : PodcastItemDetail? = null
+    var podcastItem: PodcastItem? = null
+    var podcastDetail: PodcastItemDetail? = null
 
-    var playerService : PlayerService? = null
-    var storageService : StorageService? = null
+    var playerService: PlayerService? = null
+    var storageService: StorageService? = null
 
-    var playPending : Boolean = false
+    var playPending: Boolean = false
 
-    val playerCallback = object : PlayerCallback {
+    val playerCallback = object: PlayerCallback {
 
         override fun onAudioFocusFailed() { }
 
@@ -96,8 +96,7 @@ class PlayerPresenter(private val app : Application,
         super.onStart()
 
         addSubscription {
-            PermissionPublishSubject
-                    .INSTANCE
+            PermissionPublishSubject.INSTANCE
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe { permission ->
                         with (permission) {
@@ -146,16 +145,19 @@ class PlayerPresenter(private val app : Application,
     }
 
     fun setupInitialState() {
+
         playerService?.apply {
             if (isPlaying()) {
                 view!!.showPauseButton()
             }
 
-            getPodcastItem()?.let {
-                podcastItem = it
+            this@PlayerPresenter.podcastItem = podcastItem
+
+            podcastItem?.let {
+                val podcast = it
 
                 view?.let {
-                    it.bindPodcastItem(podcastItem!!)
+                    it.bindPodcastItem(podcast)
                     it.setVisible()
 
                     if (!isPlaying()) {
@@ -163,8 +165,6 @@ class PlayerPresenter(private val app : Application,
                     } else {
                         it.setMaxProgress(getDuration().toInt())
                     }
-
-                    it.setStreamType(getStreamType())
                 }
 
                 loadDetail(it)
@@ -257,7 +257,10 @@ class PlayerPresenter(private val app : Application,
     // Details
 
     fun loadDetail(podcastItem: PodcastItem) {
-        view!!.setLoading(true)
+        view!!.let {
+            it.setLoading(true)
+            it.setStreamType(playerService!!.getStreamType())
+        }
 
         if (podcastDetail?.remoteId == podcastItem.remoteId) {
             bindDetail()

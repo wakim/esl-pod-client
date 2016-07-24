@@ -156,7 +156,9 @@ class PlayerService : Service() {
     private var session: MediaSessionCompat? = null
     private var controller: MediaControllerCompat? = null
 
-    private var podcastItem: PodcastItem? = null
+    var podcastItem: PodcastItem? = null
+        private set
+
     private var downloadStatus: DownloadStatus? = null
 
     private var initialPosition: Int = 0
@@ -389,22 +391,21 @@ class PlayerService : Service() {
 
         if (downloadStatus.status == DownloadStatus.DOWNLOADED) {
             url = downloadStatus.localPath!!
-            callback?.onStreamTypeResolved(PodcastItem.LOCAL)
         } else {
             proxy.unregisterCacheListener(cacheListener)
 
             if (storageInteractor.shouldCache()) {
                 url = proxy.getProxyUrl(podcastItem.mp3Url)
-                callback?.onStreamTypeResolved(PodcastItem.CACHING)
 
                 proxy.registerCacheListener(cacheListener, podcastItem.mp3Url)
 
                 usingCache = true
             } else {
                 url = podcastItem.mp3Url
-                callback?.onStreamTypeResolved(PodcastItem.REMOTE)
             }
         }
+
+        callback?.onStreamTypeResolved(getStreamType())
 
         callback?.onSeekAvailable(true)
 
@@ -554,10 +555,16 @@ class PlayerService : Service() {
 
     fun isPlaying() = initalized && mediaPlayer!!.isPlaying
 
-    fun getPodcastItem() = podcastItem
+    @PodcastItem.StreamType
+    fun getStreamType(): Long {
+        if (downloadStatus?.status == DownloadStatus.DOWNLOADED) {
+            return PodcastItem.LOCAL
+        } else if (storageInteractor.shouldCache()) {
+            return PodcastItem.CACHING
+        }
 
-    fun getStreamType() =
-            if (downloadStatus?.status == DownloadStatus.DOWNLOADED) PodcastItem.LOCAL else PodcastItem.REMOTE
+        return PodcastItem.REMOTE
+    }
 
     fun getDuration() : Float {
         if (isPlaying()) {

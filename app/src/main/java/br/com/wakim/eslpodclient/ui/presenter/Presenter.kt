@@ -6,16 +6,9 @@ import rx.subscriptions.CompositeSubscription
 
 abstract class Presenter<T : View>() {
 
-    var view : T? = null
+    var view: T? = null
 
-    var compositeSubscription : CompositeSubscription? = CompositeSubscription()
-        get() {
-            if (field == null) {
-                field = CompositeSubscription()
-            }
-
-            return field
-        }
+    val compositeSubscription: CompositeSubscription = CompositeSubscription()
 
     open fun onDestroy() {
         view = null
@@ -25,11 +18,10 @@ abstract class Presenter<T : View>() {
     }
 
     open fun onStop() {
-        compositeSubscription?.unsubscribe()
-        compositeSubscription = null
+        compositeSubscription.clear()
     }
 
     open fun onResume() { }
 
-    inline fun addSubscription(fn : () -> Subscription) = compositeSubscription?.add(fn())
+    inline fun addSubscription(fn: () -> Subscription) = compositeSubscription.add(fn())
 }
