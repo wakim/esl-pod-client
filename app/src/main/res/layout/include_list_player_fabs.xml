@@ -27,7 +27,7 @@
         app:layout_anchor="@id/player_view"
         app:layout_anchorGravity="top|right" />
 
-    <br.com.wakim.eslpodclient.widget.LoadingFloatingActionButton
+    <br.com.wakim.eslpodclient.android.widget.LoadingFloatingActionButton
         android:id="@+id/fab_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

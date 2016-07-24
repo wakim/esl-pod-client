@@ -6,8 +6,8 @@ import android.media.AudioManager
 import android.net.ConnectivityManager
 import android.support.v4.app.NotificationManagerCompat
 import br.com.wakim.eslpodclient.Application
-import br.com.wakim.eslpodclient.interactor.PreferenceInteractor
-import br.com.wakim.eslpodclient.model.PublishSubjectItem
+import br.com.wakim.eslpodclient.data.interactor.PreferenceInteractor
+import br.com.wakim.eslpodclient.data.model.PublishSubjectItem
 import dagger.Module
 import dagger.Provides
 import rx.subjects.PublishSubject

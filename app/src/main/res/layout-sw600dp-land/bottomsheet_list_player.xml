@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <br.com.wakim.eslpodclient.podcastplayer.view.TabletListPlayerView
+    <br.com.wakim.eslpodclient.ui.podcastplayer.view.TabletListPlayerView
         android:id="@+id/player_view"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -13,5 +13,5 @@
         tools:visibility="visible">
 
         <include layout="@layout/include_list_player_content" />
-    </br.com.wakim.eslpodclient.podcastplayer.view.TabletListPlayerView>
+    </br.com.wakim.eslpodclient.ui.podcastplayer.view.TabletListPlayerView>
 </merge>

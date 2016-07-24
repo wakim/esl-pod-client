@@ -8,7 +8,7 @@
     <include layout="@layout/include_app_bar" />
 
     <fragment
-        android:name="br.com.wakim.eslpodclient.settings.view.SettingsFragment"
+        android:name="br.com.wakim.eslpodclient.ui.settings.view.SettingsFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

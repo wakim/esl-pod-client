@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <br.com.wakim.eslpodclient.podcastplayer.view.ListPlayerView
+    <br.com.wakim.eslpodclient.ui.podcastplayer.view.ListPlayerView
         android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,11 +13,11 @@
         android:visibility="gone"
         app:behavior_hideable="true"
         app:behavior_peekHeight="128dp"
-        app:layout_behavior="br.com.wakim.eslpodclient.behavior.BottomSheetSnackPushBehavior"
+        app:layout_behavior="br.com.wakim.eslpodclient.util.BottomSheetSnackPushBehavior"
         tools:visibility="visible">
 
         <include layout="@layout/include_list_player_content" />
-    </br.com.wakim.eslpodclient.podcastplayer.view.ListPlayerView>
+    </br.com.wakim.eslpodclient.ui.podcastplayer.view.ListPlayerView>
 
     <include layout="@layout/include_list_player_fabs" />
 </merge>

@@ -28,7 +28,7 @@
         <activity
             android:launchMode="singleTop"
             android:theme="@style/LauncherAppTheme"
-            android:name=".podcastlist.view.PodcastListActivity">
+            android:name=".ui.podcastlist.view.PodcastListActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,9 +37,9 @@
         </activity>
 
         <activity
-            android:parentActivityName=".podcastlist.view.PodcastListActivity"
+            android:parentActivityName=".ui.podcastlist.view.PodcastListActivity"
             android:label="@string/settings"
-            android:name=".settings.view.SettingsActivity" />
+            android:name=".ui.settings.view.SettingsActivity" />
 
         <activity
             android:name=".filepicker.CustomFilePickerActivity"
@@ -47,14 +47,14 @@
             android:theme="@style/FilePickerTheme" />
 
         <activity
-            android:parentActivityName=".settings.view.SettingsActivity"
+            android:parentActivityName=".ui.settings.view.SettingsActivity"
             android:label="@string/oss_licenses"
-            android:name=".settings.view.LicensesActivity" />
+            android:name=".ui.settings.view.LicensesActivity" />
 
         <activity
             android:documentLaunchMode="none"
             android:noHistory="true"
-            android:name=".notification.NotificationActivity"
+            android:name="br.com.wakim.eslpodclient.android.notification.NotificationActivity"
             tools:ignore="UnusedAttribute" />
 
         <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
@@ -63,7 +63,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".service.DownloadManagerReceiver">
+        <receiver android:name="br.com.wakim.eslpodclient.android.service.DownloadManagerReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
@@ -71,7 +71,7 @@
         </receiver>
 
         <service
-            android:name=".service.PlayerService"
+            android:name="br.com.wakim.eslpodclient.android.service.PlayerService"
             android:exported="false">
 
             <intent-filter>
@@ -80,7 +80,7 @@
         </service>
 
         <service
-            android:name=".service.StorageService"
+            android:name="br.com.wakim.eslpodclient.android.service.StorageService"
             android:exported="false" />
     </application>
 </manifest>

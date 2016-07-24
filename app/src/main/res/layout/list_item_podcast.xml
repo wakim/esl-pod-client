@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<br.com.wakim.eslpodclient.podcastlist.view.PodcastListItemView
+<br.com.wakim.eslpodclient.ui.podcastlist.view.PodcastListItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -82,4 +82,4 @@
             tools:src="@drawable/ic_more_vert_grey_700_24dp"
             tools:ignore="MissingPrefix" />
     </LinearLayout>
-</br.com.wakim.eslpodclient.podcastlist.view.PodcastListItemView>
+</br.com.wakim.eslpodclient.ui.podcastlist.view.PodcastListItemView>

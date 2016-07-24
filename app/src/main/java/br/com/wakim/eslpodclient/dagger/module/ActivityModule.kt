@@ -2,8 +2,8 @@ package br.com.wakim.eslpodclient.dagger.module
 
 import android.app.Activity
 import br.com.wakim.eslpodclient.dagger.scope.ActivityScope
-import br.com.wakim.eslpodclient.view.BaseActivity
-import br.com.wakim.eslpodclient.view.PermissionRequester
+import br.com.wakim.eslpodclient.ui.view.BaseActivity
+import br.com.wakim.eslpodclient.ui.view.PermissionRequester
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <br.com.wakim.eslpodclient.preference.PickFolderPreference
+    <br.com.wakim.eslpodclient.ui.settings.view.PickFolderPreference
         android:title="@string/download_folder"
         android:summary="@string/download_folder_summary"
         android:key="@string/base_folder_key" />

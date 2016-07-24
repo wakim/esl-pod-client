@@ -25,7 +25,7 @@ import android.text.style.ImageSpan
 import android.util.AttributeSet
 import android.widget.TextView
 import br.com.wakim.eslpodclient.R
-import br.com.wakim.eslpodclient.extensions.dp
+import br.com.wakim.eslpodclient.util.extensions.dp
 
 class TagView : TextView {
 

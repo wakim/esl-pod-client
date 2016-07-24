@@ -10,7 +10,7 @@
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".podcastlist.view.PodcastListActivity">
+        tools:context=".ui.podcastlist.view.PodcastListActivity">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"

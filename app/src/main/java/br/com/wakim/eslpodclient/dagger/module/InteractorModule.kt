@@ -2,7 +2,7 @@ package br.com.wakim.eslpodclient.dagger.module
 
 import android.app.DownloadManager
 import br.com.wakim.eslpodclient.Application
-import br.com.wakim.eslpodclient.interactor.*
+import br.com.wakim.eslpodclient.data.interactor.*
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

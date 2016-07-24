@@ -3,11 +3,11 @@ package br.com.wakim.eslpodclient
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.support.annotation.VisibleForTesting
+import br.com.wakim.eslpodclient.android.receiver.ConnectivityBroadcastReceiver
 import br.com.wakim.eslpodclient.dagger.AppComponent
 import br.com.wakim.eslpodclient.dagger.DaggerAppComponent
 import br.com.wakim.eslpodclient.dagger.module.AppModule
-import br.com.wakim.eslpodclient.receiver.ConnectivityBroadcastReceiver
-import br.com.wakim.eslpodclient.rx.ConnectivityPublishSubject
+import br.com.wakim.eslpodclient.ui.rx.ConnectivityPublishSubject
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.Answers
 import com.jakewharton.threetenabp.AndroidThreeTen
