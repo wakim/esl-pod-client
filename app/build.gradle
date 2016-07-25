@@ -74,7 +74,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("debug.keystore.jks")
+            storeFile file("../buildsystem/debug.keystore.jks")
             storePassword rootProject.ext.storePassword
             keyAlias rootProject.ext.keyAlias
             keyPassword rootProject.ext.keyPassword
