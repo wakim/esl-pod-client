@@ -38,7 +38,7 @@ import rx.Observable
 import rx.Subscription
 import javax.inject.Inject
 
-open class ListPlayerView : LinearLayout, PlayerView {
+open class ListPlayerView: LinearLayout, PlayerView {
 
     companion object {
         const val SUPER_STATE_KEY = "SUPER_STATE"
@@ -48,18 +48,18 @@ open class ListPlayerView : LinearLayout, PlayerView {
         const val PODCAST_ITEM_DETAIL_KEY = "PODCAST_ITEM_DETAIL"
     }
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int): super(context, attrs, defStyleAttr, defStyleRes)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int): super(context, attrs, defStyleAttr)
+    constructor(context: Context?, attrs: AttributeSet?): super(context, attrs)
+    constructor(context: Context?): super(context)
 
-    val callback = object : BottomSheetBehavior.BottomSheetCallback() {
+    val callback = object: BottomSheetBehavior.BottomSheetCallback() {
         override fun onSlide(bottomSheet: View, slideOffset: Float) { }
 
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             when (newState) {
                 BottomSheetBehavior.STATE_COLLAPSED -> showFabs()
-                BottomSheetBehavior.STATE_EXPANDED -> hideFabs()
+                BottomSheetBehavior.STATE_EXPANDED  -> hideFabs()
                 BottomSheetBehavior.STATE_HIDDEN    -> hideFabs()
             }
         }
@@ -170,15 +170,15 @@ open class ListPlayerView : LinearLayout, PlayerView {
 
     var serviceSubscription: Subscription? = null
 
-    @Inject
-    lateinit var baseActivity: BaseActivity
-
-    private var bottomSheetBehavior : BottomSheetBehavior<*>? = null
+    private var bottomSheetBehavior: BottomSheetBehavior<*>? = null
 
     lateinit var presenter: PlayerPresenter
 
     @Inject
-    fun injectPlayerPresenter(presenter : PlayerPresenter) {
+    lateinit var baseActivity: BaseActivity
+
+    @Inject
+    fun injectPlayerPresenter(presenter: PlayerPresenter) {
         presenter.view = this
         this.presenter = presenter
     }
@@ -199,8 +199,8 @@ open class ListPlayerView : LinearLayout, PlayerView {
     }
 
     fun bindServices() {
-        var playerObservable : Observable<Pair<ServiceConnection, TypedBinder<PlayerService>?>> = Observable.empty()
-        var storageObservable : Observable<Pair<ServiceConnection, TypedBinder<StorageService>?>> = Observable.empty()
+        var playerObservable: Observable<Pair<ServiceConnection, TypedBinder<PlayerService>?>> = Observable.empty()
+        var storageObservable: Observable<Pair<ServiceConnection, TypedBinder<StorageService>?>> = Observable.empty()
 
         if (playerServiceConnection == null) {
             playerObservable = context.bindService<PlayerService>()
@@ -365,7 +365,7 @@ open class ListPlayerView : LinearLayout, PlayerView {
     override fun setVisible() {
         visibility = View.VISIBLE
 
-        if (bottomSheetBehavior!!.state == BottomSheetBehavior.STATE_HIDDEN) {
+        if (bottomSheetBehavior?.state == BottomSheetBehavior.STATE_HIDDEN) {
             bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
@@ -429,8 +429,8 @@ open class ListPlayerView : LinearLayout, PlayerView {
 
     override fun setStreamType(@PodcastItem.StreamType streamType: Long) {
         when (streamType) {
-            PodcastItem.LOCAL  -> streamTypeText.text = context.getString(R.string.local)
-            PodcastItem.REMOTE -> streamTypeText.text = context.getString(R.string.remote)
+            PodcastItem.LOCAL   -> streamTypeText.text = context.getString(R.string.local)
+            PodcastItem.REMOTE  -> streamTypeText.text = context.getString(R.string.remote)
             PodcastItem.CACHING -> streamTypeText.text = context.getString(R.string.saving)
         }
 

@@ -20,6 +20,7 @@ import br.com.wakim.eslpodclient.ui.view.BaseActivity
 import br.com.wakim.eslpodclient.util.extensions.snack
 import br.com.wakim.eslpodclient.util.extensions.startActivity
 import butterknife.BindView
+import it.sephiroth.android.library.bottomnavigation.BottomBehavior
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation
 
 open class PodcastListActivity : BaseActivity() {
@@ -82,26 +83,26 @@ open class PodcastListActivity : BaseActivity() {
         playerView.setControls(playFab, pauseFab, loadingFab)
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
         val fragmentManager = supportFragmentManager
 
         podcastListFragment?.let {
             if (it.isAdded) {
-                fragmentManager.putFragment(outState!!, "PODCAST_LIST", it)
+                fragmentManager.putFragment(outState, "PODCAST_LIST", it)
             }
         }
 
         favoritedListFragment?.let {
             if (it.isAdded) {
-                fragmentManager.putFragment(outState!!, "FAVORITED_LIST", it)
+                fragmentManager.putFragment(outState, "FAVORITED_LIST", it)
             }
         }
 
         downloadedListFragment?.let {
             if (it.isAdded) {
-                fragmentManager.putFragment(outState!!, "DOWNLOADED_LIST", it)
+                fragmentManager.putFragment(outState, "DOWNLOADED_LIST", it)
             }
         }
     }
